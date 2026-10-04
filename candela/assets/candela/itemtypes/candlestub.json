@@ -1,0 +1,33 @@
+{
+	code: "candlestub",
+	class: "CandelaCandleStub",
+	variantgroups: [
+		{ code: "material", states: ["beeswax"] },
+		{ code: "left", states: ["75", "50", "25"] }
+	],
+	attributes: {
+		candela: {
+			bunch: "game:bunchocandles",
+			single: "game:candle",
+			burnHoursByType: {
+				"*-75": 36,
+				"*-50": 24,
+				"*-25": 12
+			}
+		}
+	},
+	// Placeholder: the vanilla candle, drawn smaller the less is left.
+	shape: { base: "game:block/wax/candle3" },
+	textures: { "candle": { base: "game:block/candle" } },
+	creativeinventory: { "general": ["*"], "items": ["*"] },
+	maxstacksize: 32,
+	combustibleProps: {
+		burnTemperature: 500,
+		burnDurationByType: { "*-75": 6, "*-50": 4, "*-25": 2 }
+	},
+	guiTransformByType: {
+		"*-75": { origin: { x: 0.5, y: 0.2, z: 0.5 }, scale: 2.6 },
+		"*-50": { origin: { x: 0.5, y: 0.2, z: 0.5 }, scale: 2.2 },
+		"*-25": { origin: { x: 0.5, y: 0.2, z: 0.5 }, scale: 1.8 }
+	}
+}

@@ -5,17 +5,20 @@ Candle-making beyond the cooking pot, and candles that burn down and need tendin
 Vintage Story's only candle is beeswax and flax cooked in a pot, and once placed it
 burns forever. Candela adds the candles people actually made and gives light a cost.
 
-## Planned for 0.1
+## Features
 
-- **Tallow** from vanilla's rendered fat - the everyday, cheaper candle
-- **Wicks** twisted from flax fibre
-- **Dipping** - build tapers up a layer at a time from a vat of melted tallow or wax
-- **Burn-down** - candles shorten in stages (full, ¾, ½, stub), and keep their
-  remaining burn when picked up
-- **Snuffing** - put a candle out to save it, relight it later
-- **Lantern fuel** - lanterns burn a candle, and need a fresh one when it is spent
+- **Dipping** - melt rendered fat into tallow in a cooking pot, keep it molten on a
+  burning firepit, and build tapers up on a dipping rod one coat at a time
+- **Burn-down** - vanilla's beeswax candles burn for 48 game hours each, shrinking
+  in quarters as they go. A part-burned candle taken off a bunch comes back as a
+  stub carrying the hours it has left (rounded down)
+- **Snuffing** - shift-right-click a bunch with a free hand to put it out and save
+  it; light it again with a lit torch or a firestarter. A lit candle can light a torch
+- Candles placed before Candela was installed carry on as vanilla until first
+  touched, when they start out new
 
-Later: clay candle molds, chandeliers.
+Planned: tallow candles that can be placed, lanterns that burn a candle, clay
+candle molds, chandeliers.
 
 Oil lamps are left to [Immersive Lighting](https://mods.vintagestory.at/techyimmersivelighting),
 and torches to vanilla.

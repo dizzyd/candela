@@ -1,0 +1,8 @@
+[
+	{
+		op: "add",
+		path: "/behaviorsByType/*/-",
+		value: { name: "CandelaDipVat" },
+		file: "game:blocktypes/wood/firepit.json"
+	}
+]

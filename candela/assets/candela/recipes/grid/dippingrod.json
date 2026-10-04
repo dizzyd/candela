@@ -1,0 +1,25 @@
+[
+	{
+		ingredientPattern: "ST",
+		ingredients: {
+			"S": { type: "item", code: "game:stick" },
+			"T": { type: "item", code: "game:flaxtwine", quantity: 4 }
+		},
+		width: 2,
+		height: 1,
+		shapeless: true,
+		output: { type: "item", code: "candela:dippingrod-0" }
+	},
+	{
+		// Cutting the finished tapers free gives the stick back.
+		ingredientPattern: "KR",
+		ingredients: {
+			"K": { type: "item", tags: ["tool-knife"], isTool: true },
+			"R": { type: "item", code: "candela:dippingrod-6", returnedStack: { type: "item", code: "game:stick" } }
+		},
+		width: 2,
+		height: 1,
+		shapeless: true,
+		output: { type: "item", code: "candela:candle-tallow", quantity: 4 }
+	}
+]

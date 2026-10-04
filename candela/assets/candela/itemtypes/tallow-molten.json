@@ -1,0 +1,35 @@
+{
+	code: "tallow",
+	class: "CandelaMoltenTallow",
+	variantgroups: [
+		{ code: "state", states: ["molten"] }
+	],
+	shape: { base: "game:item/resource/fat-rendered" },
+	texture: { base: "game:block/food/dairy/curdledmilk" },
+	creativeinventory: { "general": ["*"], "items": ["*"] },
+	attributes: {
+		inContainerTexture: { base: "game:block/food/dairy/curdledmilk" },
+		handbook: {
+			extraSections: [ { title: "candela:handbook-tallow-title", text: "candela:handbook-tallow-text" } ]
+		}
+	},
+	maxstacksize: 64,
+	materialDensity: 620,
+	// Held at zero while the tallow is hot - see ItemMoltenTallow.
+	transitionableProps: [{
+		type: "Harden",
+		freshHours: { avg: 0.5 },
+		transitionHours: { avg: 0.1 },
+		transitionedStack: { type: "item", code: "game:fat-rendered" },
+		transitionRatio: 1
+	}],
+	guiTransform: {
+		rotation: { x: 154, y: 20, z: -5 },
+		origin: { x: 0.48, y: 0.06, z: 0.5 },
+		scale: 3.55
+	},
+	groundTransform: {
+		origin: { x: 0.5, y: 0, z: 0.5 },
+		scale: 4
+	}
+}

@@ -1,2 +1,19 @@
 {
+	"item-tallow-molten": "Molten tallow",
+	"item-dippingrod-*": "Dipping rod",
+	"item-candle-tallow": "Tallow candle",
+
+	"handbook-tallow-title": "Dipping candles",
+	"handbook-tallow-text": "Melt rendered fat in a cooking pot. Leave the pot on a burning firepit to keep the tallow molten, and hold right-click on the firepit with a dipping rod to give its wicks a coat. Let each coat set before the next. Six coats make finished tapers; cut them free with a knife. Off the fire, the tallow soon sets back into rendered fat.",
+
+	"dippingrod-layers": "Coats: {0} of {1}",
+	"dippingrod-setting": "The last coat is still soft",
+	"dippingrod-finished": "Finished - cut the candles free with a knife",
+
+	"blockhelp-dip": "Dip candles",
+
+	"ingameerror-rodfinished": "These tapers are finished - cut them free with a knife",
+	"ingameerror-notallow": "Needs a pot of molten tallow on the fire",
+	"ingameerror-tallowcold": "The tallow has gone cold - rekindle the fire",
+	"ingameerror-coatsetting": "Let the last coat set first"
 }

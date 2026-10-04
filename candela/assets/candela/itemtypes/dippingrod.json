@@ -1,0 +1,17 @@
+{
+	code: "dippingrod",
+	class: "CandelaDippingRod",
+	variantgroups: [
+		{ code: "layers", states: ["0", "1", "2", "3", "4", "5", "6"] }
+	],
+	// Placeholder: every stage is a bare stick until the rod has shapes of its own.
+	shape: { base: "game:item/stick" },
+	textures: { "oak": { base: "game:block/wood/debarked/oak" } },
+	creativeinventory: { "general": ["*"], "items": ["*"] },
+	maxstacksize: 1,
+	tpHandTransform: {
+		translation: { x: -0.6, y: -0.1, z: -0.5 },
+		rotation: { x: 0, y: 0, z: -90 },
+		scale: 0.8
+	}
+}

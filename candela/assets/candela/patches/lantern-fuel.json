@@ -1,10 +1,10 @@
 [
 	{
-		op: "replace", path: "/class", value: "CandelaLantern",
+		op: "replace", side: "Server", path: "/class", value: "CandelaLantern",
 		file: "game:blocktypes/metal/lantern.json"
 	},
 	{
-		op: "add", path: "/entityBehaviors", value: [ { name: "CandelaLanternFuel" } ],
+		op: "add", side: "Server", path: "/entityBehaviors", value: [ { name: "CandelaLanternFuel" } ],
 		file: "game:blocktypes/metal/lantern.json"
 	}
 ]

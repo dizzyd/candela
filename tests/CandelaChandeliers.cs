@@ -149,9 +149,10 @@ namespace Candela.Tests
         [VsTest(TimeoutMs = 60000)]
         public async Task ABunchThatLosesItsFootingDropsStubs()
         {
-            // With a client attached chunks load around the player, and an entity spawned
-            // in a plot this far from them is unloaded the moment it appears.
-            if (Player.Me != null) Skip("dropped items in a plot far from the player are unloaded at once; runs headless");
+            // With a client attached the dropped items are gone by the time they are
+            // counted - picked up by the player the harness stands in the plot, or
+            // unloaded; which has not been pinned down. Headless they stay put.
+            if (Player.Me != null) Skip("dropped items vanish in a client run before they can be counted; runs headless");
 
             var bunch = P(8, 3, 8);
             var support = P(8, 2, 8);

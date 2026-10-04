@@ -1,0 +1,155 @@
+{
+	"textureWidth": 16,
+	"textureHeight": 16,
+	"textures": {
+		"candle": "game:block/candle"
+	},
+	"elements": [
+		{
+			"name": "candle",
+			"from": [
+				7,
+				0,
+				7
+			],
+			"to": [
+				9,
+				2.0,
+				9
+			],
+			"faces": {
+				"north": {
+					"texture": "#candle",
+					"uv": [
+						0,
+						14.0,
+						2,
+						16.0
+					]
+				},
+				"south": {
+					"texture": "#candle",
+					"uv": [
+						0,
+						14.0,
+						2,
+						16.0
+					]
+				},
+				"east": {
+					"texture": "#candle",
+					"uv": [
+						0,
+						14.0,
+						2,
+						16.0
+					]
+				},
+				"west": {
+					"texture": "#candle",
+					"uv": [
+						0,
+						14.0,
+						2,
+						16.0
+					]
+				},
+				"up": {
+					"texture": "#candle",
+					"uv": [
+						0,
+						14.0,
+						2,
+						16.0
+					]
+				},
+				"down": {
+					"texture": "#candle",
+					"uv": [
+						0,
+						14.0,
+						2,
+						16.0
+					]
+				}
+			},
+			"children": [
+				{
+					"name": "top",
+					"from": [
+						0.8,
+						2.0,
+						0.8
+					],
+					"to": [
+						1.2,
+						2.5,
+						1.2
+					],
+					"faces": {
+						"north": {
+							"texture": "#candle",
+							"uv": [
+								0,
+								0,
+								0.4,
+								0.5
+							],
+							"glow": 196
+						},
+						"south": {
+							"texture": "#candle",
+							"uv": [
+								0,
+								0,
+								0.4,
+								0.5
+							],
+							"glow": 196
+						},
+						"east": {
+							"texture": "#candle",
+							"uv": [
+								0,
+								0,
+								0.4,
+								0.5
+							],
+							"glow": 196
+						},
+						"west": {
+							"texture": "#candle",
+							"uv": [
+								0,
+								0,
+								0.4,
+								0.5
+							],
+							"glow": 196
+						},
+						"up": {
+							"texture": "#candle",
+							"uv": [
+								0,
+								0,
+								0.4,
+								0.4
+							],
+							"glow": 196
+						},
+						"down": {
+							"texture": "#candle",
+							"uv": [
+								0,
+								0,
+								0.4,
+								0.4
+							],
+							"glow": 196
+						}
+					}
+				}
+			]
+		}
+	]
+}

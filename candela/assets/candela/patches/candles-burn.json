@@ -1,36 +1,36 @@
 [
 	{
-		op: "replace", path: "/class", value: "CandelaCandles",
+		op: "replace", side: "Server", path: "/class", value: "CandelaCandles",
 		file: "game:blocktypes/wax/bunchocandles.json"
 	},
 	{
-		op: "add", path: "/entityClass", value: "CandelaCandles",
+		op: "add", side: "Server", path: "/entityClass", value: "CandelaCandles",
 		file: "game:blocktypes/wax/bunchocandles.json"
 	},
 	{
-		op: "add", path: "/attributes",
+		op: "add", side: "Server", path: "/attributes",
 		value: { candela: { wax: "beeswax", candle: "game:candle", stub: "candela:candlestub-beeswax-", lanternDim: 0 } },
 		file: "game:blocktypes/wax/bunchocandles.json"
 	},
 	{
-		op: "replace", path: "/class", value: "CandelaCandles",
+		op: "replace", side: "Server", path: "/class", value: "CandelaCandles",
 		file: "game:blocktypes/wax/candle.json"
 	},
 	{
-		op: "add", path: "/entityClass", value: "CandelaCandles",
+		op: "add", side: "Server", path: "/entityClass", value: "CandelaCandles",
 		file: "game:blocktypes/wax/candle.json"
 	},
 	{
-		op: "add", path: "/attributes",
+		op: "add", side: "Server", path: "/attributes",
 		value: { candela: { wax: "beeswax", candle: "game:candle", stub: "candela:candlestub-beeswax-", single: true } },
 		file: "game:blocktypes/wax/candle.json"
 	},
 	{
-		op: "replace", path: "/class", value: "CandelaCandle",
+		op: "replace", side: "Server", path: "/class", value: "CandelaCandle",
 		file: "game:itemtypes/resource/candle.json"
 	},
 	{
-		op: "add", path: "/attributes/candela",
+		op: "add", side: "Server", path: "/attributes/candela",
 		value: { wax: "beeswax", bunch: "game:bunchocandles", single: "game:candle" },
 		file: "game:itemtypes/resource/candle.json"
 	}

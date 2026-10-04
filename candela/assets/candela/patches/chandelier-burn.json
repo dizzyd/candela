@@ -1,14 +1,14 @@
 [
 	{
-		op: "replace", path: "/class", value: "CandelaChandelier",
+		op: "replace", side: "Server", path: "/class", value: "CandelaChandelier",
 		file: "game:blocktypes/metal/chandelier.json"
 	},
 	{
-		op: "add", path: "/entityClass", value: "CandelaCandles",
+		op: "add", side: "Server", path: "/entityClass", value: "CandelaCandles",
 		file: "game:blocktypes/metal/chandelier.json"
 	},
 	{
-		op: "add", path: "/attributes", value: { candela: { wax: "beeswax", bunch: "game:bunchocandles" } },
+		op: "add", side: "Server", path: "/attributes", value: { candela: { wax: "beeswax", bunch: "game:bunchocandles" } },
 		file: "game:blocktypes/metal/chandelier.json"
 	}
 ]

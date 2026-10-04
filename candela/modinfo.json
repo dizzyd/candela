@@ -1,0 +1,13 @@
+{
+    "type": "code",
+    "modid": "candela",
+    "name": "Candela",
+    "authors": [
+        "DizzyD"
+    ],
+    "description": "Candle-making beyond the cooking pot - tallow, wicks and dipping - and candles that burn down and need tending",
+    "version": "0.1.0",
+    "dependencies": {
+        "game": "1.22.0"
+    }
+}

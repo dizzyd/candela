@@ -52,24 +52,40 @@ WICKS_X = [3, 6.5, 10, 13.5]
 Z = 8               # everything is centred on the rod's line
 
 def taper(i, cx, coats):
-    """One wick and whatever wax it has gathered."""
+    """One wick and whatever wax it has gathered.
+
+    A dipped taper hangs from its wick, so the end at the rod is the candle's top.
+    Each dip runs down before it sets, so the wax is thinnest at the rod and widest
+    towards the bottom, finishing in a rounded drip rather than a flat foot - the
+    foot is only made later, when the drip is trimmed off.
+    """
     if coats == 0:
         # A bare wick, a little longer than a finished taper so it reads as cord.
         return [box(f"wick{i}", (cx - 0.15, ROD_Y - 9, Z - 0.15), (cx + 0.15, ROD_Y, Z + 0.15), "wick")]
 
-    width = 0.5 + coats * 0.25          # 0.75 .. 2.0: a finished taper is vanilla's 2px candle
+    widest = 0.5 + coats * 0.25         # 0.75 .. 2.0: a finished taper is vanilla's 2px candle
     length = 6 + coats * 0.5            # 6.5 .. 9
-    top = ROD_Y - 1                     # a sliver of wick shows between rod and wax
-    half = width / 2
-    parts = [
-        box(f"wick{i}", (cx - 0.15, top, Z - 0.15), (cx + 0.15, ROD_Y, Z + 0.15), "wick"),
-        box(f"wax{i}", (cx - half, top - length, Z - half), (cx + half, top, Z + half), "wax", uv_origin=(1 + i, 2)),
-    ]
+    top = ROD_Y - 0.4                   # only a sliver of wick between rod and wax
+    parts = [box(f"wick{i}", (cx - 0.15, top, Z - 0.15), (cx + 0.15, ROD_Y, Z + 0.15), "wick")]
+
+    # Stacked segments, narrow at the top and widening down; the first coat is
+    # still a straight thread of wax.
+    segments = 1 if coats == 1 else 4
+    narrowest = widest if coats == 1 else widest * 0.7
+    body = length - (0 if coats == 1 else 0.6)
+    y = top
+    for k in range(segments):
+        w = narrowest + (widest - narrowest) * (k / max(1, segments - 1))
+        h = body / segments
+        # One continuous strip of texture down the taper, so the steps between
+        # segments read as a taper rather than as bands.
+        parts.append(box(f"wax{i}-{k}", (cx - w / 2, y - h, Z - w / 2), (cx + w / 2, y, Z + w / 2), "wax", uv_origin=(1 + 2 * i, 2 + (top - y))))
+        y -= h
+
     if coats >= 2:
-        # Dipping leaves the bottom fattest: each coat drips and sets there.
-        drip = half + 0.12 * (coats - 1)
-        bottom = top - length
-        parts.append(box(f"drip{i}", (cx - drip, bottom - 0.25, Z - drip), (cx + drip, bottom + 0.75, Z + drip), "wax", uv_origin=(8, 8)))
+        # The drip: what runs off the bottom of each coat and sets there.
+        tip = widest * 0.55
+        parts.append(box(f"drip{i}", (cx - tip / 2, y - 0.6, Z - tip / 2), (cx + tip / 2, y, Z + tip / 2), "wax", uv_origin=(1 + 2 * i, 2 + (top - y))))
     return parts
 
 for coats in range(7):

@@ -53,6 +53,13 @@ namespace Candela.Tests
             await Frames.Wait(90);
             Log("shot: " + await Shot.Take("results/looks-ground.png"));
 
+            // Close up on the finished rod, which a hotbar icon is too small to judge.
+            var finished = P(7, 1, 9);
+            await Player.Teleport(new Vec3d(finished.X + 0.5, finished.Y, finished.Z - 1.2));
+            await Interact.LookAt(finished);
+            await Frames.Wait(30);
+            Log("shot: " + await Shot.Take("results/looks-rod-close.png"));
+
             // The rod in hand, looking down a little as a player dipping would.
             await Interact.LookAt(P(7, 0, 8));
             await Frames.Wait(30);

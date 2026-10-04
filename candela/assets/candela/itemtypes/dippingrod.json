@@ -10,8 +10,10 @@
 	},
 	creativeinventory: { "general": ["*"], "items": ["*"] },
 	maxstacksize: 1,
+	// Turned over as vanilla's candle is (x -180): icons are drawn the other way up,
+	// and without it the rod sat at the bottom with the tapers standing up from it.
 	guiTransform: {
-		rotation: { x: -15, y: 25, z: 0 },
+		rotation: { x: -165, y: 25, z: 0 },
 		origin: { x: 0.5, y: 0.5, z: 0.5 },
 		scale: 1.6
 	},

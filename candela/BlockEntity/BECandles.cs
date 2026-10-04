@@ -21,32 +21,27 @@ namespace candela;
 /// the block entity. Vanilla's SetBlock would throw the pool away on every candle
 /// added or taken - see <see cref="ItemCandelaCandle"/> and
 /// <see cref="BlockCandelaCandles"/>, which replace those paths.
+///
+/// The burning itself is a <see cref="Flame"/>, shared with the lantern.
 /// </summary>
 public class BECandles : BlockEntity, IIgnitable
 {
+    private readonly Flame flame = new();
+
     /// <summary>Burn hours left across every candle in the bunch.</summary>
-    public double Fuel { get; private set; }
+    public double Fuel => flame.Fuel;
 
-    /// <summary>Put out by a player, as opposed to burned down.</summary>
-    public bool Snuffed { get; private set; }
+    public bool Snuffed => flame.Snuffed;
 
-    /// <summary>
-    /// The server's burnout mode, carried to the client with the rest of the state
-    /// so that the client lights and draws a spent candle the way the server judges it.
-    /// </summary>
-    public BurnoutMode Mode { get; private set; } = BurnoutMode.Dim;
+    public BurnoutMode Mode => flame.Mode;
 
-    private double lastUpdateHours;
-    private bool hasState;
+    public bool Spent => flame.Spent;
+
+    public bool Flaming => flame.Flaming;
 
     public int Quantity => (Block as BlockCandelaCandles)?.Quantity ?? 1;
 
     public double FullHours => (Block as BlockCandelaCandles)?.BurnHours ?? 48;
-
-    public bool Spent => Fuel <= 0 && Mode != BurnoutMode.None;
-
-    /// <summary>Whether there is a flame: not snuffed, and not burned down into the dark.</summary>
-    public bool Flaming => !Snuffed && !(Spent && Mode == BurnoutMode.Dark);
 
     /// <summary>
     /// How tall the candles stand, as a fraction of new: quarters while there is fuel,
@@ -71,79 +66,33 @@ public class BECandles : BlockEntity, IIgnitable
         base.Initialize(api);
         if (api.Side != EnumAppSide.Server) return;
 
-        CandelaConfig config = CandelaConfig.Current;
-        Mode = config.BurnoutMode;
-        double now = api.World.Calendar.TotalHours;
-
-        if (!hasState)
-        {
-            // Placed just now, or a vanilla candle from before Candela was installed
-            // getting its block entity at last: either way, new candles.
-            Fuel = Quantity * FullHours;
-            lastUpdateHours = now;
-            hasState = true;
-        }
-        else
-        {
-            // Loaded from a saved chunk. How much of the time it spent unloaded it burns
-            // through is the UnattendedMode setting - by default none of it.
-            lastUpdateHours = config.UnattendedMode switch
-            {
-                UnattendedMode.LoadedOnly => now,
-                UnattendedMode.CappedCatchUp => Math.Max(lastUpdateHours, now - config.CatchUpCapHours),
-                _ => lastUpdateHours,
-            };
-        }
-
+        // New, or a vanilla bunch from before Candela was installed getting its
+        // block entity at last: either way, new candles.
+        flame.Initialize(api, Quantity * FullHours);
         RegisterGameTickListener(OnBurnTick, 4000, api.World.Rand.Next(4000));
     }
 
     private void OnBurnTick(float dt)
     {
-        double now = Api.World.Calendar.TotalHours;
-        double elapsed = now - lastUpdateHours;
-        lastUpdateHours = now;
-
-        if (Snuffed || Mode == BurnoutMode.None || Fuel <= 0 || elapsed <= 0) return;
-
         float heightBefore = HeightFactor;
-        Fuel = Math.Max(0, Fuel - elapsed * Quantity);
 
-        if (Fuel <= 0) Changed(lightChanged: true);
+        if (flame.Burn(Api.World.Calendar.TotalHours, Quantity)) Changed(lightChanged: true);
         else if (HeightFactor != heightBefore) Changed(lightChanged: false);
         else Api.World.BlockAccessor.GetChunkAtBlockPos(Pos)?.MarkModified();
     }
 
-    /// <summary>
-    /// The light this bunch gives, given what the block would give new and lit.
-    /// </summary>
-    public byte[] LightHsv(byte[] full)
-    {
-        if (!Flaming) return Dark;
-        if (!Spent) return full;
-
-        // Guttering: the dim floor that makes upkeep a matter of brightness rather
-        // than of light at all.
-        return [full[0], full[1], (byte)Math.Max(2, full[2] / 3)];
-    }
-
-    private static readonly byte[] Dark = [0, 0, 0];
+    /// <summary>The light this bunch gives, given what the block would give new and lit.</summary>
+    public byte[] LightHsv(byte[] full) => flame.LightHsv(full);
 
     public void Snuff()
     {
-        if (Snuffed) return;
-        Snuffed = true;
-        Changed(lightChanged: true);
+        if (flame.Snuff()) Changed(lightChanged: true);
     }
 
     /// <summary>Lights the bunch, if it has anything left to light.</summary>
     public bool TryIgnite()
     {
-        if (Flaming) return false;
-        if (Spent && Mode == BurnoutMode.Dark) return false;
-
-        Snuffed = false;
-        lastUpdateHours = Api.World.Calendar.TotalHours;
+        if (!flame.TryIgnite(Api.World.Calendar.TotalHours)) return false;
         Changed(lightChanged: true);
         return true;
     }
@@ -154,23 +103,17 @@ public class BECandles : BlockEntity, IIgnitable
     /// </summary>
     public void AddFuel(double hours)
     {
-        Fuel += hours;
+        flame.AddFuel(hours);
         Api.World.BlockAccessor.GetChunkAtBlockPos(Pos)?.MarkModified();
     }
 
     /// <summary>Takes one candle's share of the pool, and returns it.</summary>
-    public double TakeShare()
-    {
-        double share = Fuel / Math.Max(1, Quantity);
-        Fuel -= share;
-        return share;
-    }
+    public double TakeShare() => flame.TakeFuel(Fuel / Math.Max(1, Quantity));
 
     /// <summary>Sets the pool outright - for a block just placed from a part-burned candle.</summary>
     public void SetFuel(double hours)
     {
-        Fuel = hours;
-        hasState = true;
+        flame.SetFuel(hours);
         Changed(lightChanged: true);
     }
 
@@ -207,23 +150,13 @@ public class BECandles : BlockEntity, IIgnitable
     public override void GetBlockInfo(IPlayer forPlayer, StringBuilder dsc)
     {
         base.GetBlockInfo(forPlayer, dsc);
-        if (Mode == BurnoutMode.None) return;
-
-        if (Spent) dsc.AppendLine(Lang.Get(Mode == BurnoutMode.Dark ? "candela:candles-out" : "candela:candles-guttering"));
-        else
-        {
-            double hours = Fuel / Math.Max(1, Quantity);
-            dsc.AppendLine(Lang.Get(Snuffed ? "candela:candles-snuffed" : "candela:candles-burning", Math.Max(1, (int)Math.Round(hours))));
-        }
+        CandleInfo.Append(dsc, flame, Fuel / Math.Max(1, Quantity));
     }
 
     public override void ToTreeAttributes(ITreeAttribute tree)
     {
         base.ToTreeAttributes(tree);
-        tree.SetDouble("candela:fuel", Fuel);
-        tree.SetBool("candela:snuffed", Snuffed);
-        tree.SetDouble("candela:lastUpdateHours", lastUpdateHours);
-        tree.SetInt("candela:mode", (int)Mode);
+        flame.ToTreeAttributes(tree);
     }
 
     public override void FromTreeAttributes(ITreeAttribute tree, IWorldAccessor worldAccessForResolve)
@@ -232,11 +165,7 @@ public class BECandles : BlockEntity, IIgnitable
         float heightBefore = HeightFactor;
         bool flamingBefore = Flaming;
 
-        hasState = tree.HasAttribute("candela:fuel");
-        Fuel = tree.GetDouble("candela:fuel");
-        Snuffed = tree.GetBool("candela:snuffed");
-        lastUpdateHours = tree.GetDouble("candela:lastUpdateHours");
-        Mode = (BurnoutMode)tree.GetInt("candela:mode", (int)BurnoutMode.Dim);
+        flame.FromTreeAttributes(tree);
 
         if (Api is ICoreClientAPI && (HeightFactor != heightBefore || Flaming != flamingBefore))
         {
@@ -244,23 +173,24 @@ public class BECandles : BlockEntity, IIgnitable
         }
     }
 
-    // ----- IIgnitable: firestarters relight a bunch, and a lit one lights a torch -----
-
-    public EnumIgniteState OnTryIgniteBlock(EntityAgent byEntity, BlockPos pos, float secondsIgniting)
-    {
-        if (Flaming) return EnumIgniteState.NotIgnitablePreventDefault;
-        if (Spent && Mode == BurnoutMode.Dark) return EnumIgniteState.NotIgnitable;
-        return secondsIgniting > 2 ? EnumIgniteState.IgniteNow : EnumIgniteState.Ignitable;
-    }
+    public EnumIgniteState OnTryIgniteBlock(EntityAgent byEntity, BlockPos pos, float secondsIgniting) => flame.OnTryIgniteBlock(secondsIgniting);
 
     public void OnTryIgniteBlockOver(EntityAgent byEntity, BlockPos pos, float secondsIgniting, ref EnumHandling handling)
     {
         if (TryIgnite()) handling = EnumHandling.PreventDefault;
     }
 
-    public EnumIgniteState OnTryIgniteStack(EntityAgent byEntity, BlockPos pos, ItemSlot slot, float secondsIgniting)
+    public EnumIgniteState OnTryIgniteStack(EntityAgent byEntity, BlockPos pos, ItemSlot slot, float secondsIgniting) => flame.OnTryIgniteStack(secondsIgniting);
+}
+
+/// <summary>The block info line every candle flame shows.</summary>
+public static class CandleInfo
+{
+    public static void Append(StringBuilder dsc, Flame flame, double hoursPerCandle)
     {
-        if (!Flaming) return EnumIgniteState.NotIgnitable;
-        return secondsIgniting > 1 ? EnumIgniteState.IgniteNow : EnumIgniteState.Ignitable;
+        if (flame.Mode == BurnoutMode.None) return;
+
+        if (flame.Spent) dsc.AppendLine(Lang.Get(flame.Mode == BurnoutMode.Dark ? "candela:candles-out" : "candela:candles-guttering"));
+        else dsc.AppendLine(Lang.Get(flame.Snuffed ? "candela:candles-snuffed" : "candela:candles-burning", Math.Max(1, (int)Math.Round(hoursPerCandle))));
     }
 }

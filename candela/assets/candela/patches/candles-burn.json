@@ -9,7 +9,7 @@
 	},
 	{
 		op: "add", path: "/attributes",
-		value: { candela: { burnHours: 48, candle: "game:candle", stub: "candela:candlestub-beeswax-" } },
+		value: { candela: { burnHours: 48, candle: "game:candle", stub: "candela:candlestub-beeswax-", lanternDim: 0 } },
 		file: "game:blocktypes/wax/bunchocandles.json"
 	},
 	{

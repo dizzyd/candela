@@ -28,6 +28,17 @@ public class BlockCandelaCandles : BlockBunchOCandles
 
     public int Quantity { get; private set; }
 
+    /// <summary>Light levels a lantern loses burning this kind of candle - tallow sooting the glass.</summary>
+    public int LanternDim { get; private set; }
+
+    /// <summary>
+    /// The block standing for a kind of candle, by the bunch code its items carry
+    /// (<c>game:bunchocandles</c>, <c>candela:tallowcandles</c>): what it burns for,
+    /// and what a part-burned one comes back as.
+    /// </summary>
+    public static BlockCandelaCandles KindOf(IWorldAccessor world, string bunchCode) =>
+        bunchCode == null ? null : world.GetBlock(new AssetLocation(bunchCode + "-1")) as BlockCandelaCandles;
+
     private string candleCode;
     private string stubPrefix;
     private Vec3f[][] wicksByRotation;
@@ -50,6 +61,7 @@ public class BlockCandelaCandles : BlockBunchOCandles
         BurnHours = attrs?["burnHours"].AsDouble(48) ?? 48;
         candleCode = attrs?["candle"].AsString("game:candle");
         stubPrefix = attrs?["stub"].AsString();
+        LanternDim = attrs?["lanternDim"].AsInt(0) ?? 0;
 
         bool single = attrs?["single"].AsBool(false) ?? false;
         Quantity = single ? 1 : Variant["quantity"].ToInt(1);

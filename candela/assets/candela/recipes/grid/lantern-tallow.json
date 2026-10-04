@@ -1,0 +1,197 @@
+[
+	{
+		// Vanilla's eight lantern recipes (game:recipes/grid/lantern.json, 1.22.7)
+		// with the beeswax candle swapped for a tallow one. The candle a lantern is
+		// made with is the candle it starts out burning - see BlockCandelaLantern.
+		//
+		// Comments only inside a recipe, never between them: the loader may treat a
+		// comment between array elements as a recipe of its own.
+		ingredientPattern: "QCQ,NPN",
+		ingredients: {
+			"P": { type: "item", code: "game:metalplate-{metal}" },
+			"N": { type: "item", code: "game:metalnailsandstrips-{metal}", quantity: 4 },
+			"Q": { type: "item", code: "game:clearquartz", quantity: 2 },
+			"C": { type: "item", code: "candela:candle-tallow" }
+		},
+		allowedVariants: {
+			metal: ["copper", "brass", "blackbronze", "bismuth", "tinbronze", "bismuthbronze", "iron", "molybdochalkos", "silver", "gold", "meteoriciron", "steel", "electrum" ]
+		},
+		width: 3,
+		height: 2,
+		output: { 
+			type: "block", 
+			code: "game:lantern-large-up",
+			attributes: {
+				material: "{metal}",
+				lining: "plain",
+				glass: "quartz"
+			}
+		}
+	},
+	{
+		ingredientPattern: "QCQ,NPN,_L_",
+		ingredients: {
+			"P": { type: "item", code: "game:metalplate-{metal}" },
+			"N": { type: "item", code: "game:metalnailsandstrips-{metal}", quantity: 4 },
+			"L": { type: "item", code: "game:metalplate-{lining}" },
+			"Q": { type: "item", code: "game:clearquartz", quantity: 2 },
+			"C": { type: "item", code: "candela:candle-tallow" }
+		},
+		allowedVariants: {
+			metal: ["copper", "brass", "blackbronze", "bismuth", "tinbronze", "bismuthbronze", "iron", "molybdochalkos", "silver", "gold", "meteoriciron", "steel", "electrum" ],
+			lining: ["silver", "gold", "electrum" ]
+		},
+		width: 3,
+		height: 3,
+		output: { 
+			type: "block", 
+			code: "game:lantern-large-up",
+			attributes: {
+				material: "{metal}",
+				lining: "{lining}",
+				glass: "quartz"
+			}
+		}
+	},
+	{
+		ingredientPattern: "QCQ,NPN",
+		ingredients: {
+			"P": { type: "item", code: "game:metalplate-{metal}" },
+			"N": { type: "item", code: "game:metalnailsandstrips-{metal}", quantity: 4 },
+			"Q": { type: "block", code: "game:glassslab-plain-down-free", quantity: 2 },
+			"C": { type: "item", code: "candela:candle-tallow" }
+		},
+		allowedVariants: {
+			metal: ["copper", "brass", "blackbronze", "bismuth", "tinbronze", "bismuthbronze", "iron", "molybdochalkos", "silver", "gold", "meteoriciron", "steel", "electrum" ]
+		},
+		width: 3,
+		height: 2,
+		output: { 
+			type: "block", 
+			code: "game:lantern-large-up",
+			attributes: {
+				material: "{metal}",
+				lining: "plain",
+				glass: "plain"
+			}
+		}
+	},
+	{
+		ingredientPattern: "QCQ,NPN,_L_",
+		ingredients: {
+			"P": { type: "item", code: "game:metalplate-{metal}" },
+			"N": { type: "item", code: "game:metalnailsandstrips-{metal}", quantity: 4 },
+			"L": { type: "item", code: "game:metalplate-{lining}" },
+			"Q": { type: "block", code: "game:glassslab-plain-down-free", quantity: 2 },
+			"C": { type: "item", code: "candela:candle-tallow" }
+		},
+		allowedVariants: {
+			metal: ["copper", "brass", "blackbronze", "bismuth", "tinbronze", "bismuthbronze", "iron", "molybdochalkos", "silver", "gold", "meteoriciron", "steel", "electrum" ],
+			lining: ["silver", "gold", "electrum" ]
+		},
+		width: 3,
+		height: 3,
+		output: { 
+			type: "block", 
+			code: "game:lantern-large-up",
+			attributes: {
+				material: "{metal}",
+				lining: "{lining}",
+				glass: "plain"
+			}
+		}
+	},
+
+	{
+		ingredientPattern: "QCQ,_P_",
+		ingredients: {
+			"P": { type: "item", code: "game:metalplate-{metal}" },
+			"Q": { type: "item", code: "game:clearquartz" },
+			"C": { type: "item", code: "candela:candle-tallow" }
+		},
+		allowedVariants: {
+			metal: ["copper", "brass", "blackbronze", "bismuth", "tinbronze", "bismuthbronze", "iron", "molybdochalkos", "silver", "gold", "meteoriciron", "steel", "electrum" ]
+		},
+		width: 3,
+		height: 2,
+		output: { 
+			type: "block", 
+			code: "game:lantern-small-up",
+			attributes: {
+				material: "{metal}",
+				lining: "plain",
+				glass: "quartz"
+			}
+		}
+	},
+	{
+		ingredientPattern: "QCQ,_P_,_L_",
+		ingredients: {
+			"P": { type: "item", code: "game:metalplate-{metal}" },
+			"L": { type: "item", code: "game:metalplate-{lining}" },
+			"Q": { type: "item", code: "game:clearquartz" },
+			"C": { type: "item", code: "candela:candle-tallow" }
+		},
+		allowedVariants: {
+			metal: ["copper", "brass", "blackbronze", "bismuth", "tinbronze", "bismuthbronze", "iron", "molybdochalkos", "silver", "gold", "meteoriciron", "steel", "electrum" ],
+			lining: ["silver", "gold", "electrum" ]
+		},
+		width: 3,
+		height: 3,
+		output: { 
+			type: "block", 
+			code: "game:lantern-small-up",
+			attributes: {
+				material: "{metal}",
+				lining: "{lining}",
+				glass: "quartz"
+			}
+		}
+	},
+	{
+		ingredientPattern: "QCQ,_P_",
+		ingredients: {
+			"P": { type: "item", code: "game:metalplate-{metal}" },
+			"Q": { type: "block", code: "game:glassslab-plain-down-free" },
+			"C": { type: "item", code: "candela:candle-tallow" }
+		},
+		allowedVariants: {
+			metal: ["copper", "brass", "blackbronze", "bismuth", "tinbronze", "bismuthbronze", "iron", "molybdochalkos", "silver", "gold", "meteoriciron", "steel", "electrum" ]
+		},
+		width: 3,
+		height: 2,
+		output: { 
+			type: "block", 
+			code: "game:lantern-small-up",
+			attributes: {
+				material: "{metal}",
+				lining: "plain",
+				glass: "plain"
+			}
+		}
+	},
+	{
+		ingredientPattern: "QCQ,_P_,_L_",
+		ingredients: {
+			"P": { type: "item", code: "game:metalplate-{metal}" },
+			"L": { type: "item", code: "game:metalplate-{lining}" },
+			"Q": { type: "block", code: "game:glassslab-plain-down-free" },
+			"C": { type: "item", code: "candela:candle-tallow" }
+		},
+		allowedVariants: {
+			metal: ["copper", "brass", "blackbronze", "bismuth", "tinbronze", "bismuthbronze", "iron", "molybdochalkos", "silver", "gold", "meteoriciron", "steel", "electrum" ],
+			lining: ["silver", "gold", "electrum" ]
+		},
+		width: 3,
+		height: 3,
+		output: { 
+			type: "block", 
+			code: "game:lantern-small-up",
+			attributes: {
+				material: "{metal}",
+				lining: "{lining}",
+				glass: "plain"
+			}
+		}
+	}
+]

@@ -14,11 +14,18 @@ burns forever. Candela adds the candles people actually made and gives light a c
   stub carrying the hours it has left (rounded down)
 - **Snuffing** - shift-right-click a bunch with a free hand to put it out and save
   it; light it again with a lit torch or a firestarter. A lit candle can light a torch
-- Candles placed before Candela was installed carry on as vanilla until first
-  touched, when they start out new
+- **Tallow candles** - dipped tallow candles place and burn like beeswax ones:
+  paler, smokier, a little dimmer, and 24 hours a candle
+- **Lanterns burn a candle** - a lantern starts with the candle it was crafted
+  with (beeswax or tallow; there is a tallow version of every lantern recipe).
+  Right-click it with a candle or stub to swap in a fresh one, and what was left of
+  the old one comes back. Tallow soots the glass: two light levels less. Picking a
+  lantern up keeps what is left of its candle. Shift-click snuffs it, a torch or
+  firestarter relights it, and lanterns still hang from ceilings
+- Candles and lanterns placed before Candela was installed carry on as vanilla
+  until first touched (candles) or loaded (lanterns), when they start out new
 
-Planned: tallow candles that can be placed, lanterns that burn a candle, clay
-candle molds, chandeliers.
+Planned: clay candle molds, chandeliers.
 
 Oil lamps are left to [Immersive Lighting](https://mods.vintagestory.at/techyimmersivelighting),
 and torches to vanilla.

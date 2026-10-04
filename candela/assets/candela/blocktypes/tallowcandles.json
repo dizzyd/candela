@@ -10,7 +10,8 @@
 	],
 	behaviors: [ { name: "Unstable" } ],
 	attributes: {
-		candela: { burnHours: 24, candle: "candela:candle-tallow", stub: "candela:candlestub-tallow-" }
+		// lanternDim: light levels a lantern loses burning this - soot on the glass.
+		candela: { burnHours: 24, candle: "candela:candle-tallow", stub: "candela:candlestub-tallow-", lanternDim: 2 }
 	},
 	shapeByType: {
 		"*-1": {

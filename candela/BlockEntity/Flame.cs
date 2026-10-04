@@ -81,6 +81,9 @@ public class Flame
     /// <summary>The light given, from what it would give new and lit.</summary>
     public byte[] LightHsv(byte[] full)
     {
+        // Nothing to light - a chandelier with no candles in it - stays as it is,
+        // rather than gaining the dim floor.
+        if (full[2] == 0) return full;
         if (!Flaming) return Dark;
         if (!Spent) return full;
 

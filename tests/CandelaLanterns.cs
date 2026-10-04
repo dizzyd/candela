@@ -60,6 +60,7 @@ namespace Candela.Tests
 
             Assert.True(fuel.Flame.Spent);
             Assert.Equal(VanillaLight / 3, Light()[2]);
+            Assert.Equal(VanillaLight / 3, await EngineLight.Settled(Lantern, VanillaLight / 3), "the world is still lit as by a new candle");
         }
 
         [VsTest]
@@ -71,6 +72,7 @@ namespace Candela.Tests
             await Burn(BeeswaxHours + 1);
 
             Assert.Equal(0, Light()[2]);
+            Assert.Equal(0, await EngineLight.Settled(Lantern, 0), "the world is still lit by a dark lantern");
         }
 
         [VsTest]
@@ -81,6 +83,7 @@ namespace Candela.Tests
             Assert.Equal("candela:tallowcandles", fuel.Candle);
             Assert.Equal(TallowHours, fuel.Flame.Fuel);
             Assert.Equal(VanillaLight - 2, Light()[2]);
+            Assert.Equal(VanillaLight - 2, await EngineLight.Settled(Lantern, VanillaLight - 2), "placing a tallow lantern lit the world as beeswax");
 
             await Burn(TallowHours + 1);
             Assert.Equal((VanillaLight - 2) / 3, Light()[2]);
@@ -94,10 +97,12 @@ namespace Candela.Tests
             fuel.Snuff();
             await Burn(10);
             Assert.Equal(0, Light()[2]);
+            Assert.Equal(0, await EngineLight.Settled(Lantern, 0), "the world is still lit by a snuffed lantern");
             Assert.Equal(BeeswaxHours, fuel.Flame.Fuel);
 
             Assert.True(fuel.TryIgnite());
             Assert.Equal(VanillaLight, Light()[2]);
+            Assert.Equal(VanillaLight, await EngineLight.Settled(Lantern, VanillaLight), "relighting did not light the world");
         }
 
         /// <summary>Breaking and replacing a lantern must not refill it.</summary>
@@ -185,7 +190,7 @@ namespace Candela.Tests
         public async Task LanternsStillHangFromCeilings()
         {
             var ceiling = P(8, 4, 8);
-            World.SetBlock("game:rock-granite", ceiling);
+            World.SetBlock("game:planks-oak-ud", ceiling);
             World.SetBlock("game:air", P(8, 3, 8));
             await Player.Teleport(new Vec3d(P(8, 1, 6).X + 0.5, P(8, 1, 6).Y, P(8, 1, 6).Z + 0.5));
             // A lantern as crafted, with vanilla's material, lining and glass: one

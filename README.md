@@ -22,10 +22,13 @@ burns forever. Candela adds the candles people actually made and gives light a c
   the old one comes back. Tallow soots the glass: two light levels less. Picking a
   lantern up keeps what is left of its candle. Shift-click snuffs it, a torch or
   firestarter relights it, and lanterns still hang from ceilings
+- **Chandeliers burn too** - their candles are one pool like a bunch's, beeswax
+  whole or stub as in vanilla, and can now be taken out again, which is how spent
+  ones are cleared. One that falls lands with the candles it had
 - Candles and lanterns placed before Candela was installed carry on as vanilla
   until first touched (candles) or loaded (lanterns), when they start out new
 
-Planned: clay candle molds, chandeliers.
+Planned: clay candle molds.
 
 Oil lamps are left to [Immersive Lighting](https://mods.vintagestory.at/techyimmersivelighting),
 and torches to vanilla.

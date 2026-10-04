@@ -39,9 +39,9 @@ public class BECandles : BlockEntity, IIgnitable
 
     public bool Flaming => flame.Flaming;
 
-    public int Quantity => (Block as BlockCandelaCandles)?.Quantity ?? 1;
+    public int Quantity => (Block as ICandleHolder)?.Quantity ?? 1;
 
-    public double FullHours => (Block as BlockCandelaCandles)?.BurnHours ?? 48;
+    public double FullHours => (Block as ICandleHolder)?.BurnHours ?? 48;
 
     /// <summary>
     /// How tall the candles stand, as a fraction of new: quarters while there is fuel,
@@ -75,9 +75,13 @@ public class BECandles : BlockEntity, IIgnitable
     private void OnBurnTick(float dt)
     {
         float heightBefore = HeightFactor;
+        bool spentBefore = Spent;
+        byte[] light = Relight.Capture(this);
 
-        if (flame.Burn(Api.World.Calendar.TotalHours, Quantity)) Changed(lightChanged: true);
-        else if (HeightFactor != heightBefore) Changed(lightChanged: false);
+        flame.Burn(Api.World.Calendar.TotalHours, Quantity);
+
+        if (Spent != spentBefore) Changed(light);
+        else if (HeightFactor != heightBefore) MarkDirty(true);
         else Api.World.BlockAccessor.GetChunkAtBlockPos(Pos)?.MarkModified();
     }
 
@@ -86,14 +90,16 @@ public class BECandles : BlockEntity, IIgnitable
 
     public void Snuff()
     {
-        if (flame.Snuff()) Changed(lightChanged: true);
+        byte[] light = Relight.Capture(this);
+        if (flame.Snuff()) Changed(light);
     }
 
     /// <summary>Lights the bunch, if it has anything left to light.</summary>
     public bool TryIgnite()
     {
+        byte[] light = Relight.Capture(this);
         if (!flame.TryIgnite(Api.World.Calendar.TotalHours)) return false;
-        Changed(lightChanged: true);
+        Changed(light);
         return true;
     }
 
@@ -107,14 +113,15 @@ public class BECandles : BlockEntity, IIgnitable
         Api.World.BlockAccessor.GetChunkAtBlockPos(Pos)?.MarkModified();
     }
 
-    /// <summary>Takes one candle's share of the pool, and returns it.</summary>
+    /// <summary>Takes one candle's share of the pool, and returns it. Call before exchanging for one candle fewer.</summary>
     public double TakeShare() => flame.TakeFuel(Fuel / Math.Max(1, Quantity));
 
     /// <summary>Sets the pool outright - for a block just placed from a part-burned candle.</summary>
     public void SetFuel(double hours)
     {
+        byte[] light = Relight.Capture(this);
         flame.SetFuel(hours);
-        Changed(lightChanged: true);
+        Changed(light);
     }
 
     public override void OnExchanged(Block block)
@@ -123,13 +130,11 @@ public class BECandles : BlockEntity, IIgnitable
         if (Api?.Side == EnumAppSide.Server) MarkDirty(true);
     }
 
-    private void Changed(bool lightChanged)
+    /// <summary>State that affects the light has changed; <paramref name="lightBefore"/> is what it was.</summary>
+    private void Changed(byte[] lightBefore)
     {
         MarkDirty(true);
-
-        // Re-placing the same block is what makes the engine ask GetLightHsv again -
-        // the lantern does the same when its glass changes.
-        if (lightChanged) Api.World.BlockAccessor.ExchangeBlock(Block.Id, Pos);
+        Relight.After(this, lightBefore);
     }
 
     public override bool OnTesselation(ITerrainMeshPool mesher, ITesselatorAPI tessThreadTesselator)
@@ -164,12 +169,24 @@ public class BECandles : BlockEntity, IIgnitable
         base.FromTreeAttributes(tree, worldAccessForResolve);
         float heightBefore = HeightFactor;
         bool flamingBefore = Flaming;
+        bool spentBefore = Spent;
+        byte[] lightBefore = Api?.Side == EnumAppSide.Server && Block != null ? Relight.Capture(this) : null;
 
         flame.FromTreeAttributes(tree);
 
         if (Api is ICoreClientAPI && (HeightFactor != heightBefore || Flaming != flamingBefore))
         {
             MarkDirty(true);
+        }
+
+        // State restored onto a block entity already running: a block that fell and
+        // landed, or a schematic pasted. The block was lit for whatever state it was
+        // placed with - new candles - so a spent or snuffed one would keep shining at
+        // full until something else changed. Deferred a tick rather than exchanging
+        // the block from inside its own deserialisation.
+        if (lightBefore != null && (Flaming != flamingBefore || Spent != spentBefore))
+        {
+            RegisterDelayedCallback(_ => Changed(lightBefore), 0);
         }
     }
 

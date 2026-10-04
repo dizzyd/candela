@@ -49,14 +49,16 @@ public class BEBehaviorLanternFuel : BlockEntityBehavior, IIgnitable
         base.OnBlockPlaced(byItemStack);
         if (Api?.Side != EnumAppSide.Server || !LanternStack.HasFuel(byItemStack)) return;
 
+        byte[] light = Relight.Capture(Blockentity);
         Candle = LanternStack.Candle(byItemStack);
         flame.SetFuel(LanternStack.Fuel(byItemStack), LanternStack.Snuffed(byItemStack));
-        Changed();
+        Changed(light);
     }
 
     private void OnBurnTick(float dt)
     {
-        if (flame.Burn(Api.World.Calendar.TotalHours, 1)) Changed();
+        byte[] light = Relight.Capture(Blockentity);
+        if (flame.Burn(Api.World.Calendar.TotalHours, 1)) Changed(light);
         else Api.World.BlockAccessor.GetChunkAtBlockPos(Pos)?.MarkModified();
     }
 
@@ -73,6 +75,7 @@ public class BEBehaviorLanternFuel : BlockEntityBehavior, IIgnitable
         if (CandleWax.HoursOf(held) is not double hours) return false;
         string candle = CandleWax.BunchOf(held);
 
+        byte[] light = Relight.Capture(Blockentity);
         ItemStack old = BlockCandelaCandles.KindOf(Api.World, Candle)?.CandleForHours(Api.World, flame.Fuel);
         if (old != null && !byPlayer.InventoryManager.TryGiveItemstack(old, slotNotifyEffect: true))
         {
@@ -86,31 +89,32 @@ public class BEBehaviorLanternFuel : BlockEntityBehavior, IIgnitable
         if (byPlayer.WorldData.CurrentGameMode != EnumGameMode.Creative) slot.TakeOut(1);
         slot.MarkDirty();
 
-        Changed();
+        Changed(light);
         return true;
     }
 
     public void Snuff()
     {
-        if (flame.Snuff()) Changed();
+        byte[] light = Relight.Capture(Blockentity);
+        if (flame.Snuff()) Changed(light);
     }
 
     public bool TryIgnite()
     {
+        byte[] light = Relight.Capture(Blockentity);
         if (!flame.TryIgnite(Api.World.Calendar.TotalHours)) return false;
-        Changed();
+        Changed(light);
         return true;
     }
 
     /// <summary>Writes the candle into a lantern item, so that picking it up keeps what was left.</summary>
     public void WriteTo(ItemStack stack) => LanternStack.Write(stack, flame.Fuel, Candle, flame.Snuffed);
 
-    private void Changed()
+    /// <summary>State that affects the light has changed; <paramref name="lightBefore"/> is what it was.</summary>
+    private void Changed(byte[] lightBefore)
     {
         Blockentity.MarkDirty(true);
-        // Re-placing the same block is what makes the engine ask GetLightHsv again;
-        // vanilla does the same when a lantern's glass changes.
-        Api.World.BlockAccessor.ExchangeBlock(Blockentity.Block.Id, Pos);
+        Relight.After(Blockentity, lightBefore);
     }
 
     private double KindHours(string candle) => BlockCandelaCandles.KindOf(Api.World, candle)?.BurnHours ?? 48;
@@ -131,8 +135,18 @@ public class BEBehaviorLanternFuel : BlockEntityBehavior, IIgnitable
     public override void FromTreeAttributes(ITreeAttribute tree, IWorldAccessor worldAccessForResolve)
     {
         base.FromTreeAttributes(tree, worldAccessForResolve);
+        bool flamingBefore = flame.Flaming, spentBefore = flame.Spent;
+        byte[] lightBefore = Api?.Side == EnumAppSide.Server && Blockentity.Block != null ? Relight.Capture(Blockentity) : null;
+
         flame.FromTreeAttributes(tree);
         Candle = tree.GetString("candela:candle", DefaultCandle);
+
+        // State restored onto a running block entity - a schematic pasted - needs the
+        // light recomputed; see BECandles.FromTreeAttributes.
+        if (lightBefore != null && (flame.Flaming != flamingBefore || flame.Spent != spentBefore))
+        {
+            Blockentity.RegisterDelayedCallback(_ => Changed(lightBefore), 0);
+        }
     }
 
     public EnumIgniteState OnTryIgniteBlock(EntityAgent byEntity, BlockPos pos, float secondsIgniting) => flame.OnTryIgniteBlock(secondsIgniting);

@@ -21,7 +21,7 @@ namespace candela;
 /// Its wick positions are its own copy of vanilla's, which are internal: the flames
 /// have to move with the mesh as it shrinks.
 /// </summary>
-public class BlockCandelaCandles : BlockBunchOCandles
+public class BlockCandelaCandles : BlockBunchOCandles, ICandleHolder
 {
     /// <summary>Hours one new candle of this kind burns for, from the config.</summary>
     public double BurnHours => CandelaConfig.Current.HoursFor(Wax) ?? 48;
@@ -231,14 +231,7 @@ public class BlockCandelaCandles : BlockBunchOCandles
     /// The bunch's block entity, created if it has none - as a bunch placed before
     /// Candela was installed does not.
     /// </summary>
-    public BECandles EnsureBlockEntity(IWorldAccessor world, BlockPos pos)
-    {
-        if (world.BlockAccessor.GetBlockEntity(pos) is BECandles be) return be;
-        if (world.Side != EnumAppSide.Server || EntityClass == null) return null;
-
-        world.BlockAccessor.SpawnBlockEntity(EntityClass, pos);
-        return world.BlockAccessor.GetBlockEntity(pos) as BECandles;
-    }
+    public BECandles EnsureBlockEntity(IWorldAccessor world, BlockPos pos) => CandleHolders.EnsureBlockEntity(world, pos, EntityClass);
 
     public override WorldInteraction[] GetPlacedBlockInteractionHelp(IWorldAccessor world, BlockSelection selection, IPlayer forPlayer)
     {

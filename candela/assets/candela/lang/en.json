@@ -25,6 +25,7 @@
 
 	"blockhelp-snuff": "Snuff out",
 	"blockhelp-refuel": "Put in a fresh candle",
+	"blockhelp-takecandle": "Take a candle out",
 	"lantern-candle": "{0}: about {1} hours left",
 	"lantern-candle-spent": "{0}: burned down",
 	"blockhelp-light": "Light",

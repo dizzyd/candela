@@ -121,9 +121,11 @@ namespace Candela.Tests
 
             Assert.Equal(2 * BeeswaxHours, be.Fuel);
             Assert.Equal(0, Light()[2]);
+            Assert.Equal(0, await EngineLight.Settled(Bunch, 0), "the world is still lit by a snuffed bunch");
 
             Assert.True(be.TryIgnite(), "a snuffed bunch with fuel should light");
             Assert.Equal(8, Light()[2]);
+            Assert.Equal(8, await EngineLight.Settled(Bunch, 8), "relighting did not light the world");
         }
 
         [VsTest]
@@ -136,6 +138,7 @@ namespace Candela.Tests
             Assert.True(be.Spent);
             Assert.True(be.Flaming, "Dim mode keeps a guttering flame");
             Assert.Equal(3, Light()[2], "a third of vanilla's 9");
+            Assert.Equal(3, await EngineLight.Settled(Bunch, 3), "the world is still lit as by new candles");
             Assert.Equal(BECandles.SpentHeight, be.HeightFactor);
         }
 
@@ -149,6 +152,7 @@ namespace Candela.Tests
 
             Assert.False(be.Flaming);
             Assert.Equal(0, Light()[2]);
+            Assert.Equal(0, await EngineLight.Settled(Bunch, 0), "the world is still lit by a dark bunch");
             Assert.False(be.TryIgnite(), "nothing is left to light");
         }
 

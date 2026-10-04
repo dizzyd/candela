@@ -26,6 +26,7 @@ public class CandelaModSystem : ModSystem
         api.RegisterItemClass("CandelaCandle", typeof(ItemCandelaCandle));
         api.RegisterItemClass("CandelaPlaceableCandle", typeof(ItemPlaceableCandle));
 
+        api.RegisterBlockClass("CandelaChandelier", typeof(BlockCandelaChandelier));
         api.RegisterBlockClass("CandelaLantern", typeof(BlockCandelaLantern));
         api.RegisterBlockEntityBehaviorClass("CandelaLanternFuel", typeof(BEBehaviorLanternFuel));
 

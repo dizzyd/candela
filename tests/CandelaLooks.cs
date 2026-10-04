@@ -101,5 +101,28 @@ namespace Candela.Tests
             await Input.Press(GlKeys.F5);
             await OnServer();
         }
+
+        /// <summary>
+        /// The scene the mod icon is cut from: beeswax and tallow candles lit at night,
+        /// close and low, with the HUD hidden. tools/icon.py crops and scales the shot.
+        /// </summary>
+        [VsTest(TimeoutMs = 90000), RequiresClient]
+        public async Task ModIconScene()
+        {
+            // Dusk: dark enough for the flames to glow, light enough to see the wax.
+            await World.SetCalendarTo(500 * 24 + 19.6);
+            World.SetBlock("game:bunchocandles-9", P(8, 1, 8));
+            World.SetBlock("candela:tallowcandles-5", P(9, 1, 8));
+            await Ticks(10);
+
+            var at = P(8, 1, 8);
+            await Player.Teleport(new Vec3d(at.X + 0.9, at.Y - 1.0, at.Z - 0.55));
+            await Interact.LookAt(at);
+
+            await Input.Hotkey("togglehud");   // F4: hide the HUD
+            await Frames.Wait(90);
+            Log("shot: " + await Shot.Take("results/icon-scene.png"));
+            await Input.Hotkey("togglehud");
+        }
     }
 }

@@ -1,17 +1,20 @@
 {
 	code: "candle",
+	class: "CandelaPlaceableCandle",
 	variantgroups: [
 		{ code: "material", states: ["tallow"] }
 	],
-	// Placeholder: held and stored only, until candles get placeable blocks with
-	// burn-down. Shares the vanilla candle's look for now.
+	attributes: {
+		candela: { burnHours: 24, bunch: "candela:tallowcandles", single: "candela:tallowcandle" }
+	},
 	shape: { base: "game:block/wax/candle3" },
-	textures: { "candle": { base: "game:block/candle" } },
+	textures: { "candle": { base: "candela:block/candle-tallow" } },
 	creativeinventory: { "general": ["*"], "items": ["*"] },
 	maxstacksize: 32,
-	lightHsv: [7, 7, 5],
+	lightHsv: [6, 7, 5],
 	combustibleProps: {
-		burnTemperature: 600,
-		burnDuration: 8
-	}
+		burnTemperature: 500,
+		burnDuration: 6
+	},
+	guiTransform: { origin: { x: 0.5, y: 0.2, z: 0.5 }, scale: 3 }
 }

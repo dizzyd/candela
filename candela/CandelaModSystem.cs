@@ -15,7 +15,7 @@ public class CandelaModSystem : ModSystem
         api.RegisterBlockClass("CandelaCandles", typeof(BlockCandelaCandles));
         api.RegisterBlockEntityClass("CandelaCandles", typeof(BECandles));
         api.RegisterItemClass("CandelaCandle", typeof(ItemCandelaCandle));
-        api.RegisterItemClass("CandelaCandleStub", typeof(ItemCandleStub));
+        api.RegisterItemClass("CandelaPlaceableCandle", typeof(ItemPlaceableCandle));
 
         // Burn-down is decided on the server. The client gets the burnout mode with
         // each bunch's state, so it has no use for the config file.

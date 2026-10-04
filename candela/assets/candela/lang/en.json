@@ -18,7 +18,10 @@
 	"ingameerror-coatsetting": "Let the last coat set first",
 
 	"item-candlestub-beeswax-*": "Beeswax candle stub",
-	"candlestub-hours": "Burns for about {0} more hours",
+	"item-candlestub-tallow-*": "Tallow candle stub",
+	"block-tallowcandles-*": "Tallow candles",
+	"block-tallowcandle": "Tallow candle",
+	"candle-hours": "Burns for about {0} hours",
 
 	"blockhelp-snuff": "Snuff out",
 	"blockhelp-light": "Light",

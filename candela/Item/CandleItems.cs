@@ -22,13 +22,15 @@ public class ItemCandelaCandle : ItemCandle
 }
 
 /// <summary>
-/// A part-burned candle, taken off a bunch. Places like a candle, carrying only the
-/// hours it has left.
+/// A candle that is not vanilla's: a tallow candle, or a part-burned stub of either
+/// kind taken off a bunch. Places like a candle, carrying the hours its attributes
+/// give it.
 ///
-/// Deliberately not an ItemCandle: a chandelier or a lantern recipe asking for a
-/// candle means a whole one.
+/// Deliberately not an ItemCandle. A chandelier takes any ItemCandle and drops
+/// vanilla beeswax candles when broken, and a lantern recipe asking for a candle
+/// means a whole beeswax one.
 /// </summary>
-public class ItemCandleStub : Item
+public class ItemPlaceableCandle : Item
 {
     public override void OnHeldInteractStart(ItemSlot slot, EntityAgent byEntity, BlockSelection blockSel, EntitySelection entitySel, bool firstEvent, ref EnumHandHandling handHandling)
     {
@@ -43,7 +45,7 @@ public class ItemCandleStub : Item
     public override void GetHeldItemInfo(ItemSlot inSlot, StringBuilder dsc, IWorldAccessor world, bool withDebugInfo)
     {
         base.GetHeldItemInfo(inSlot, dsc, world, withDebugInfo);
-        dsc.AppendLine(Lang.Get("candela:candlestub-hours", Attributes["candela"]["burnHours"].AsInt()));
+        dsc.AppendLine(Lang.Get("candela:candle-hours", Attributes["candela"]["burnHours"].AsInt()));
     }
 }
 

@@ -130,7 +130,10 @@ public class BlockCandelaCandles : BlockBunchOCandles
 
         bool light = held?.Block is BlockTorch && held.Block.Variant["state"] == "lit";
         bool snuff = held == null && shift;
-        bool take = !light && !snuff && (held == null || held.Collectible is ItemCandle || held.Collectible is ItemCandleStub);
+        // Shift-click with a candle means "add". When the candle could not be added -
+        // a full bunch, or tallow on beeswax - the click falls through to here, and
+        // must not take one off instead.
+        bool take = !light && !shift && (held == null || held.Collectible is ItemCandle || held.Collectible is ItemPlaceableCandle);
 
         if (!light && !snuff && !take) return base.OnBlockInteractStart(world, byPlayer, blockSel);
 

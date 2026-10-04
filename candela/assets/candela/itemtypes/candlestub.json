@@ -1,24 +1,24 @@
 {
 	code: "candlestub",
-	class: "CandelaCandleStub",
+	class: "CandelaPlaceableCandle",
 	variantgroups: [
-		{ code: "material", states: ["beeswax"] },
+		{ code: "material", states: ["beeswax", "tallow"] },
 		{ code: "left", states: ["75", "50", "25"] }
 	],
-	attributes: {
-		candela: {
-			bunch: "game:bunchocandles",
-			single: "game:candle",
-			burnHoursByType: {
-				"*-75": 36,
-				"*-50": 24,
-				"*-25": 12
-			}
-		}
+	attributesByType: {
+		"*-beeswax-75": { candela: { burnHours: 36, bunch: "game:bunchocandles", single: "game:candle" } },
+		"*-beeswax-50": { candela: { burnHours: 24, bunch: "game:bunchocandles", single: "game:candle" } },
+		"*-beeswax-25": { candela: { burnHours: 12, bunch: "game:bunchocandles", single: "game:candle" } },
+		"*-tallow-75":  { candela: { burnHours: 18, bunch: "candela:tallowcandles", single: "candela:tallowcandle" } },
+		"*-tallow-50":  { candela: { burnHours: 12, bunch: "candela:tallowcandles", single: "candela:tallowcandle" } },
+		"*-tallow-25":  { candela: { burnHours: 6,  bunch: "candela:tallowcandles", single: "candela:tallowcandle" } }
 	},
-	// Placeholder: the vanilla candle, drawn smaller the less is left.
+	// Placeholder: the whole candle, drawn smaller the less is left.
 	shape: { base: "game:block/wax/candle3" },
-	textures: { "candle": { base: "game:block/candle" } },
+	texturesByType: {
+		"*-beeswax-*": { "candle": { base: "game:block/candle" } },
+		"*-tallow-*": { "candle": { base: "candela:block/candle-tallow" } }
+	},
 	creativeinventory: { "general": ["*"], "items": ["*"] },
 	maxstacksize: 32,
 	combustibleProps: {

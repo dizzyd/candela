@@ -1,0 +1,59 @@
+{
+	// A single tallow candle, as placed on a fence.
+	code: "tallowcandle",
+	class: "CandelaCandles",
+	entityClass: "CandelaCandles",
+	maxstacksize: 1,
+	behaviors: [ { name: "Unstable" } ],
+	attributes: {
+		candela: { burnHours: 24, candle: "candela:candle-tallow", stub: "candela:candlestub-tallow-", single: true }
+	},
+	shape: { base: "game:block/wax/candle3" },
+	textures: { "candle": { base: "candela:block/candle-tallow" } },
+	creativeinventory: { },
+	blockmaterial: "Other",
+	replaceable: 900,
+	lightAbsorption: 0,
+	resistance: 1.25,
+	sideopaque: { all: false },
+	sidesolid: { all: false },
+	sounds: {
+		place: "block/planks",
+		break: "block/planks",
+		hit: "block/planks"
+	},
+	materialDensity: 300,
+	combustibleProps: {
+		burnTemperature: 500,
+		burnDuration: 6
+	},
+	lightHsv: [6, 7, 6],
+	particleProperties: [
+		{
+			hsvaColor: [{ avg: 20, var: 20 }, { avg: 255, var: 50 }, { avg: 255, var: 50 },  { avg: 255, var: 0 }],
+			opacityEvolve: { transform: "quadratic", factor: -16 },
+			gravityEffect: { avg: 0, var: 0 },
+			velocity: [ { avg: 0, var: 0.0125 }, { avg: 0.03, var: 0.01 }, { avg: 0, var: 0.0125 }],
+			quantity: { avg: 0.1 },
+			size: { avg: 0.05, var: 0.025 },
+			lifeLength: { avg: 0.25 },
+			sizeEvolve: { transform: "linear", factor: 0.1 },
+			particleModel: "Quad",
+			vertexFlags: 255,
+			windAffectednes: 0.05
+		},
+		{
+			// Tallow smokes: four times the smoke of vanilla's beeswax.
+			hsvaColor: [{ avg: 0, var: 0 }, { avg: 0, var: 0 }, { avg: 30, var: 15 },  { avg: 220, var: 50 }],
+			opacityEvolve: { transform: "quadratic", factor: -16 },
+			gravityEffect: { avg: 0, var: 0 },
+			velocity: [ { avg: 0, var: 0.025 }, { avg: 0.1, var: 0.025 }, { avg: 0, var: 0.025 }],
+			quantity: { avg: 0.04 },
+			size: { avg: 0.1, var: 0.05 },
+			sizeEvolve: { transform: "linear", factor: 0.25 },
+			particleModel: "Quad"
+		}
+	],
+	drops: [ { type: "item", code: "candela:candle-tallow", quantity: { avg: 1 } } ],
+	collisionSelectionBox: { x1: 0.42, y1: 0, z1: 0.42, x2: 0.58, y2: 0.32, z2: 0.58 }
+}

@@ -23,8 +23,11 @@ namespace candela;
 /// </summary>
 public class BlockCandelaCandles : BlockBunchOCandles
 {
-    /// <summary>Hours one new candle of this kind burns for.</summary>
-    public double BurnHours { get; private set; }
+    /// <summary>Hours one new candle of this kind burns for, from the config.</summary>
+    public double BurnHours => CandelaConfig.Current.HoursFor(Wax) ?? 48;
+
+    /// <summary>The kind of candle, as the config names it: beeswax, tallow.</summary>
+    public string Wax { get; private set; }
 
     public int Quantity { get; private set; }
 
@@ -58,7 +61,7 @@ public class BlockCandelaCandles : BlockBunchOCandles
         base.OnLoaded(api);
 
         JsonObject attrs = Attributes?["candela"];
-        BurnHours = attrs?["burnHours"].AsDouble(48) ?? 48;
+        Wax = attrs?["wax"].AsString("beeswax");
         candleCode = attrs?["candle"].AsString("game:candle");
         stubPrefix = attrs?["stub"].AsString();
         LanternDim = attrs?["lanternDim"].AsInt(0) ?? 0;

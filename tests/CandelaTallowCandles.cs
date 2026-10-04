@@ -17,10 +17,12 @@ namespace Candela.Tests
     {
         static BlockPos Bunch => P(8, 1, 8);
 
-        const double TallowHours = 24;
+        const double TallowHours = 48;
 
+        // Assigned into rather than replaced: ConfigKit, when it is installed, holds
+        // this object and would otherwise go on editing one nobody reads.
         [BeforeEach, AfterEach]
-        public void DefaultConfig() => CandelaConfig.Current = new CandelaConfig();
+        public void DefaultConfig() => CandelaConfig.Current.AssignFrom(new CandelaConfig());
 
         [VsTest]
         public void TallowBlocksAndItemsLoad()
@@ -36,10 +38,10 @@ namespace Candela.Tests
             Assert.IsType<BlockCandelaCandles>(Sapi.World.GetBlock(new AssetLocation("candela:tallowcandle")));
             Assert.IsType<ItemPlaceableCandle>(Sapi.World.GetItem(new AssetLocation("candela:candle-tallow")));
 
-            foreach (var (left, hours) in new[] { (75, 18), (50, 12), (25, 6) })
+            foreach (var (left, hours) in new[] { (75, 36.0), (50, 24.0), (25, 12.0) })
             {
                 Item stub = Sapi.World.GetItem(new AssetLocation("candela:candlestub-tallow-" + left));
-                Assert.Equal(hours, stub.Attributes["candela"]["burnHours"].AsInt(-1), "candlestub-tallow-" + left);
+                Assert.Equal(hours, CandleWax.HoursOf(stub), "candlestub-tallow-" + left);
                 Assert.Equal("candela:tallowcandles", stub.Attributes["candela"]["bunch"].AsString());
             }
         }
@@ -100,7 +102,7 @@ namespace Candela.Tests
             await ShiftUse(Bunch);
 
             Assert.Equal("game:bunchocandles-2", World.BlockCode(Bunch));
-            Assert.Close(2 * 48.0, World.BE<BECandles>(Bunch).Fuel, 0.01);
+            Assert.Close(2 * 96.0, World.BE<BECandles>(Bunch).Fuel, 0.01);
         }
 
         /// <summary>Not an assertion: tallow beside beeswax, to judge the colour by eye.</summary>

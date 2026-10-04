@@ -9,7 +9,7 @@
 	},
 	{
 		op: "add", path: "/attributes",
-		value: { candela: { burnHours: 48, candle: "game:candle", stub: "candela:candlestub-beeswax-", lanternDim: 0 } },
+		value: { candela: { wax: "beeswax", candle: "game:candle", stub: "candela:candlestub-beeswax-", lanternDim: 0 } },
 		file: "game:blocktypes/wax/bunchocandles.json"
 	},
 	{
@@ -22,7 +22,7 @@
 	},
 	{
 		op: "add", path: "/attributes",
-		value: { candela: { burnHours: 48, candle: "game:candle", stub: "candela:candlestub-beeswax-", single: true } },
+		value: { candela: { wax: "beeswax", candle: "game:candle", stub: "candela:candlestub-beeswax-", single: true } },
 		file: "game:blocktypes/wax/candle.json"
 	},
 	{
@@ -31,7 +31,7 @@
 	},
 	{
 		op: "add", path: "/attributes/candela",
-		value: { burnHours: 48, bunch: "game:bunchocandles", single: "game:candle" },
+		value: { wax: "beeswax", bunch: "game:bunchocandles", single: "game:candle" },
 		file: "game:itemtypes/resource/candle.json"
 	}
 ]

@@ -1,6 +1,7 @@
 {
 	// Tallow counterpart of vanilla's bunchocandles: the same shapes and the same
-	// class, a paler texture, a little less light, more smoke, and half the burn.
+	// class, a paler texture, a little less light and more smoke. How long it burns is
+	// TallowBurnHours in the config.
 	code: "tallowcandles",
 	class: "CandelaCandles",
 	entityClass: "CandelaCandles",
@@ -11,7 +12,7 @@
 	behaviors: [ { name: "Unstable" } ],
 	attributes: {
 		// lanternDim: light levels a lantern loses burning this - soot on the glass.
-		candela: { burnHours: 24, candle: "candela:candle-tallow", stub: "candela:candlestub-tallow-", lanternDim: 2 }
+		candela: { wax: "tallow", candle: "candela:candle-tallow", stub: "candela:candlestub-tallow-", lanternDim: 2 }
 	},
 	shapeByType: {
 		"*-1": {

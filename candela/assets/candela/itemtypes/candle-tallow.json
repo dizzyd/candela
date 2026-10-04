@@ -5,7 +5,7 @@
 		{ code: "material", states: ["tallow"] }
 	],
 	attributes: {
-		candela: { burnHours: 24, bunch: "candela:tallowcandles", single: "candela:tallowcandle" }
+		candela: { wax: "tallow", bunch: "candela:tallowcandles", single: "candela:tallowcandle" }
 	},
 	shape: { base: "game:block/wax/candle3" },
 	textures: { "candle": { base: "candela:block/candle-tallow" } },

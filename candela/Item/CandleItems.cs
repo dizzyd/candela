@@ -1,3 +1,4 @@
+using System;
 using System.Text;
 using Vintagestory.API.Config;
 using Vintagestory.API.Common;
@@ -45,7 +46,7 @@ public class ItemPlaceableCandle : Item
     public override void GetHeldItemInfo(ItemSlot inSlot, StringBuilder dsc, IWorldAccessor world, bool withDebugInfo)
     {
         base.GetHeldItemInfo(inSlot, dsc, world, withDebugInfo);
-        dsc.AppendLine(Lang.Get("candela:candle-hours", Attributes["candela"]["burnHours"].AsInt()));
+        if (CandleWax.HoursOf(this) is double hours) dsc.AppendLine(Lang.Get("candela:candle-hours", (int)Math.Round(hours)));
     }
 }
 
@@ -56,9 +57,8 @@ public class ItemPlaceableCandle : Item
 /// ExchangeBlock, which keeps the bunch's <see cref="BECandles"/> and its fuel,
 /// where vanilla's SetBlock would replace it with a fresh one.
 ///
-/// Reads from the item's <c>candela</c> attributes: <c>burnHours</c> it carries,
-/// <c>bunch</c> the bunch block's code without its quantity, <c>single</c> the
-/// candle-on-a-fence block.
+/// Reads from the item's <c>candela</c> attributes - see <see cref="CandleWax"/> for
+/// its kind and hours - and <c>single</c>, the candle-on-a-fence block.
 /// </summary>
 public static class CandlePlacement
 {
@@ -70,12 +70,10 @@ public static class CandlePlacement
 
         IWorldAccessor world = byEntity.World;
         CollectibleObject candle = slot.Itemstack.Collectible;
-        JsonObject attrs = candle.Attributes?["candela"];
-        string bunchCode = attrs?["bunch"].AsString();
-        if (bunchCode == null) return false;
+        if (CandleWax.HoursOf(candle) is not double hours) return false;
 
-        double hours = attrs["burnHours"].AsDouble(48);
-        var bunch = new AssetLocation(bunchCode);
+        JsonObject attrs = candle.Attributes["candela"];
+        var bunch = new AssetLocation(CandleWax.BunchOf(candle));
 
         IPlayer player = (byEntity as EntityPlayer)?.Player;
         if (!world.Claims.TryAccess(player, blockSel.Position, EnumBlockAccessFlags.BuildOrBreak))

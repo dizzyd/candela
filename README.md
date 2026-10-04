@@ -9,13 +9,13 @@ burns forever. Candela adds the candles people actually made and gives light a c
 
 - **Dipping** - melt rendered fat into tallow in a cooking pot, keep it molten on a
   burning firepit, and build tapers up on a dipping rod one coat at a time
-- **Burn-down** - vanilla's beeswax candles burn for 48 game hours each, shrinking
+- **Burn-down** - vanilla's beeswax candles burn for 96 game hours each, shrinking
   in quarters as they go. A part-burned candle taken off a bunch comes back as a
   stub carrying the hours it has left (rounded down)
 - **Snuffing** - shift-right-click a bunch with a free hand to put it out and save
   it; light it again with a lit torch or a firestarter. A lit candle can light a torch
 - **Tallow candles** - dipped tallow candles place and burn like beeswax ones:
-  paler, smokier, a little dimmer, and 24 hours a candle
+  paler, smokier, a little dimmer, and 48 hours a candle
 - **Lanterns burn a candle** - a lantern starts with the candle it was crafted
   with (beeswax or tallow; there is a tallow version of every lantern recipe).
   Right-click it with a candle or stub to swap in a fresh one, and what was left of
@@ -32,13 +32,20 @@ and torches to vanilla.
 
 ## Configuration
 
-`ModConfig/candela.json`, server side:
+`ModConfig/candela.json`. With [ConfigKit](https://github.com/dizzyd/configkit)
+installed these are also in its in-game settings screen, and a server's values are
+synced to its players; without it, each side reads its own file.
 
-| setting | default | options |
+| setting | default | |
 |---|---|---|
+| `BeeswaxBurnHours` | `96` | game hours a new beeswax candle burns; stubs burn their share |
+| `TallowBurnHours` | `48` | the same for tallow |
 | `BurnoutMode` | `Dim` | `Dim` - a spent light gutters to a dim glow; `Dark` - it goes out; `None` - lights never burn down |
 | `UnattendedMode` | `LoadedOnly` | `LoadedOnly` - burns only while its chunk is loaded; `CappedCatchUp` - catches up unloaded time, up to `CatchUpCapHours`; `Always` - catches up all of it |
 | `CatchUpCapHours` | `24` | in-game hours |
+
+A changed burn time applies to candles placed and lanterns crafted after the
+change; a candle already burning keeps the hours it was given.
 
 ## Building
 

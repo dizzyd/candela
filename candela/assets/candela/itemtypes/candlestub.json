@@ -5,13 +5,15 @@
 		{ code: "material", states: ["beeswax", "tallow"] },
 		{ code: "left", states: ["75", "50", "25"] }
 	],
+	// What is left of a new candle; the hours are that share of the wax's burn hours
+	// in the config, so stubs follow it.
 	attributesByType: {
-		"*-beeswax-75": { candela: { burnHours: 36, bunch: "game:bunchocandles", single: "game:candle" } },
-		"*-beeswax-50": { candela: { burnHours: 24, bunch: "game:bunchocandles", single: "game:candle" } },
-		"*-beeswax-25": { candela: { burnHours: 12, bunch: "game:bunchocandles", single: "game:candle" } },
-		"*-tallow-75":  { candela: { burnHours: 18, bunch: "candela:tallowcandles", single: "candela:tallowcandle" } },
-		"*-tallow-50":  { candela: { burnHours: 12, bunch: "candela:tallowcandles", single: "candela:tallowcandle" } },
-		"*-tallow-25":  { candela: { burnHours: 6,  bunch: "candela:tallowcandles", single: "candela:tallowcandle" } }
+		"*-beeswax-75": { candela: { wax: "beeswax", fraction: 0.75, bunch: "game:bunchocandles", single: "game:candle" } },
+		"*-beeswax-50": { candela: { wax: "beeswax", fraction: 0.5,  bunch: "game:bunchocandles", single: "game:candle" } },
+		"*-beeswax-25": { candela: { wax: "beeswax", fraction: 0.25, bunch: "game:bunchocandles", single: "game:candle" } },
+		"*-tallow-75":  { candela: { wax: "tallow",  fraction: 0.75, bunch: "candela:tallowcandles", single: "candela:tallowcandle" } },
+		"*-tallow-50":  { candela: { wax: "tallow",  fraction: 0.5,  bunch: "candela:tallowcandles", single: "candela:tallowcandle" } },
+		"*-tallow-25":  { candela: { wax: "tallow",  fraction: 0.25, bunch: "candela:tallowcandles", single: "candela:tallowcandle" } }
 	},
 	// Placeholder: the whole candle, drawn smaller the less is left.
 	shape: { base: "game:block/wax/candle3" },

@@ -25,10 +25,12 @@ namespace Candela.Tests
         static BlockPos Bunch => P(8, 1, 8);
 
         // Written out rather than read from the mod, so a changed duration fails here.
-        const double BeeswaxHours = 48;
+        const double BeeswaxHours = 96;
 
+        // Assigned into rather than replaced: ConfigKit, when it is installed, holds
+        // this object and would otherwise go on editing one nobody reads.
         [BeforeEach, AfterEach]
-        public void DefaultConfig() => CandelaConfig.Current = new CandelaConfig();
+        public void DefaultConfig() => CandelaConfig.Current.AssignFrom(new CandelaConfig());
 
         [VsTest]
         public void VanillaCandlesArePatched()
@@ -51,12 +53,28 @@ namespace Candela.Tests
         [VsTest]
         public void StubsCarryTheirShareOfHours()
         {
-            foreach (var (left, hours) in new[] { (75, 36), (50, 24), (25, 12) })
+            foreach (var (left, hours) in new[] { (75, 72.0), (50, 48.0), (25, 24.0) })
             {
                 Item stub = Sapi.World.GetItem(new AssetLocation("candela:candlestub-beeswax-" + left));
                 Assert.NotNull(stub, "candlestub-beeswax-" + left);
-                Assert.Equal(hours, stub.Attributes["candela"]["burnHours"].AsInt(-1), "candlestub-beeswax-" + left);
+                Assert.Equal(hours, CandleWax.HoursOf(stub), "candlestub-beeswax-" + left);
             }
+        }
+
+        /// <summary>
+        /// Burn hours come from the config when they are needed, so a change applies to
+        /// the next candle placed, and stubs keep their share of whatever it is now.
+        /// </summary>
+        [VsTest]
+        public async Task BurnHoursFollowTheConfig()
+        {
+            CandelaConfig.Current.BeeswaxBurnHours = 10;
+
+            var be = await PlaceBunch(2);
+
+            Assert.Equal(20.0, be.Fuel);
+            Assert.Equal(10.0, CandleWax.HoursOf(Sapi.World.GetItem(new AssetLocation("game:candle"))));
+            Assert.Equal(5.0, CandleWax.HoursOf(Sapi.World.GetItem(new AssetLocation("candela:candlestub-beeswax-50"))));
         }
 
         [VsTest]

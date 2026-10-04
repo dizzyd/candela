@@ -6,7 +6,7 @@
 	maxstacksize: 1,
 	behaviors: [ { name: "Unstable" } ],
 	attributes: {
-		candela: { burnHours: 24, candle: "candela:candle-tallow", stub: "candela:candlestub-tallow-", single: true }
+		candela: { wax: "tallow", candle: "candela:candle-tallow", stub: "candela:candlestub-tallow-", single: true }
 	},
 	shape: { base: "game:block/wax/candle3" },
 	textures: { "candle": { base: "candela:block/candle-tallow" } },

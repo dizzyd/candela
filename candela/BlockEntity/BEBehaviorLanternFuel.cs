@@ -69,9 +69,9 @@ public class BEBehaviorLanternFuel : BlockEntityBehavior, IIgnitable
     /// </summary>
     public bool TryRefuel(IPlayer byPlayer, ItemSlot slot)
     {
-        JsonObject attrs = slot.Itemstack?.Collectible.Attributes?["candela"];
-        string candle = attrs?["bunch"].AsString();
-        if (candle == null || !attrs["burnHours"].Exists) return false;
+        CollectibleObject held = slot.Itemstack?.Collectible;
+        if (CandleWax.HoursOf(held) is not double hours) return false;
+        string candle = CandleWax.BunchOf(held);
 
         ItemStack old = BlockCandelaCandles.KindOf(Api.World, Candle)?.CandleForHours(Api.World, flame.Fuel);
         if (old != null && !byPlayer.InventoryManager.TryGiveItemstack(old, slotNotifyEffect: true))
@@ -80,7 +80,7 @@ public class BEBehaviorLanternFuel : BlockEntityBehavior, IIgnitable
         }
 
         Candle = candle;
-        flame.SetFuel(attrs["burnHours"].AsDouble());
+        flame.SetFuel(hours);
         flame.TryIgnite(Api.World.Calendar.TotalHours);
 
         if (byPlayer.WorldData.CurrentGameMode != EnumGameMode.Creative) slot.TakeOut(1);

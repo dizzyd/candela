@@ -29,9 +29,7 @@ public class BlockCandelaLantern : BlockLantern
 
         extraInteractions = ObjectCacheUtil.GetOrCreate(api, "candelaLanternInteractions", () =>
         {
-            ItemStack[] candles = api.World.Collectibles
-                .Where(c => c.Attributes?["candela"]["bunch"].Exists == true && c.Attributes["candela"]["burnHours"].Exists)
-                .Select(c => new ItemStack(c)).ToArray();
+            ItemStack[] candles = api.World.Collectibles.Where(CandleWax.IsCandle).Select(c => new ItemStack(c)).ToArray();
             ItemStack[] torches = api.World.SearchBlocks(new AssetLocation("game:torch-*-lit-*")).Select(b => new ItemStack(b)).ToArray();
 
             return new WorldInteraction[]
@@ -77,10 +75,10 @@ public class BlockCandelaLantern : BlockLantern
         // The candle it was made with is the candle it starts out burning.
         foreach (ItemSlot slot in allInputSlots)
         {
-            JsonObject attrs = slot.Itemstack?.Collectible.Attributes?["candela"];
-            if (attrs?["bunch"].Exists != true || !attrs["burnHours"].Exists) continue;
+            CollectibleObject candle = slot.Itemstack?.Collectible;
+            if (CandleWax.HoursOf(candle) is not double hours) continue;
 
-            LanternStack.Write(outputSlot.Itemstack, attrs["burnHours"].AsDouble(), attrs["bunch"].AsString(), snuffed: false);
+            LanternStack.Write(outputSlot.Itemstack, hours, CandleWax.BunchOf(candle), snuffed: false);
             return;
         }
     }
@@ -92,7 +90,7 @@ public class BlockCandelaLantern : BlockLantern
 
         bool snuff = held == null && shift;
         bool light = held?.Block is BlockTorch && held.Block.Variant["state"] == "lit";
-        bool refuel = !shift && held?.Collectible.Attributes?["candela"]["bunch"].Exists == true && held.Collectible.Attributes["candela"]["burnHours"].Exists;
+        bool refuel = !shift && CandleWax.HoursOf(held?.Collectible) != null;
 
         if (!snuff && !light && !refuel) return base.OnBlockInteractStart(world, byPlayer, blockSel);
         if (!world.Claims.TryAccess(byPlayer, blockSel.Position, EnumBlockAccessFlags.Use)) return false;

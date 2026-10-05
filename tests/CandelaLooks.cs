@@ -147,21 +147,19 @@ namespace Candela.Tests
         [VsTest(TimeoutMs = 120000), RequiresClient]
         public async Task DipPosesOnAStandIn()
         {
-            await OnClient();
-            int poses = Capi.World.Player.Entity.Properties.Client.AnimationsByMetaCode.Keys.Count(k => k.StartsWith("candela-probe-"));
-            await OnServer();
-            if (poses == 0)
+            string[] poses = await ProbePoses("candela-probe-");
+            if (poses.Length == 0)
             {
                 Log("no probe poses - generate the patch with tools/dipanim.py --probe");
                 return;
             }
 
             var (_, bot) = await StandInAtThePot();
-            for (int i = 0; i < poses; i++)
+            foreach (string pose in poses)
             {
-                await Play(bot, "candela-probe-" + i);
+                await Play(bot, pose);
                 await Frames.Wait(60);
-                Log("shot: " + await Shot.Take($"results/dip-pose-{i}.png"));
+                Log("shot: " + await Shot.Take($"results/dip-pose-{pose.Substring("candela-probe-".Length)}.png"));
             }
         }
 
@@ -172,10 +170,8 @@ namespace Candela.Tests
         [VsTest(TimeoutMs = 120000), RequiresClient]
         public async Task DipPosesFirstPerson()
         {
-            await OnClient();
-            int poses = Capi.World.Player.Entity.Properties.Client.AnimationsByMetaCode.Keys.Count(k => k.StartsWith("candela-probe-fp-"));
-            await OnServer();
-            if (poses == 0)
+            string[] poses = await ProbePoses("candela-probe-fp-");
+            if (poses.Length == 0)
             {
                 Log("no first-person probe poses - generate the patch with tools/dipanim.py --probe");
                 return;
@@ -187,11 +183,11 @@ namespace Candela.Tests
             await Player.Hold("candela:dippingrod-2");
             await Interact.Aim(firepit.Pos);
 
-            for (int i = 0; i < poses; i++)
+            foreach (string pose in poses)
             {
-                await Play(Player.Me.Entity, "candela-probe-fp-" + i);
+                await Play(Player.Me.Entity, pose);
                 await Frames.Wait(60);
-                Log("shot: " + await Shot.Take($"results/dip-pose-fp-{i}.png"));
+                Log("shot: " + await Shot.Take($"results/dip-pose-fp-{pose.Substring("candela-probe-fp-".Length)}.png"));
             }
         }
 
@@ -217,6 +213,24 @@ namespace Candela.Tests
             await Player.Teleport(new Vec3d(bot.Pos.X + 0.6, bot.Pos.Y + 0.1, bot.Pos.Z + 1.9));
             await Interact.LookAt(new Vec3d(bot.Pos.X + 0.3, bot.Pos.Y + 0.8, bot.Pos.Z));
             return (firepit, bot);
+        }
+
+        /// <summary>
+        /// The probe poses tools/dipanim.py --probe added as <paramref name="prefix"/>N,
+        /// in order. Only a number after the prefix: the first-person poses,
+        /// <c>candela-probe-fp-N</c>, also start <c>candela-probe-</c>.
+        /// </summary>
+        static async Task<string[]> ProbePoses(string prefix)
+        {
+            await OnClient();
+            string[] poses = Capi.World.Player.Entity.Properties.Client.AnimationsByMetaCode.Keys
+                .Select(k => (code: k, n: k.StartsWith(prefix) && int.TryParse(k.Substring(prefix.Length), out int n) ? n : -1))
+                .Where(p => p.n >= 0)
+                .OrderBy(p => p.n)
+                .Select(p => p.code)
+                .ToArray();
+            await OnServer();
+            return poses;
         }
 
         /// <summary>Plays one of the player's animations, alone, on the client's copy of an entity.</summary>

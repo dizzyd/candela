@@ -5,6 +5,7 @@ using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
 using VsTestkit.Testing;
 using static VsTestkit.Testing.Vs;
+using static Candela.Tests.Hands;
 
 namespace Candela.Tests
 {
@@ -22,7 +23,13 @@ namespace Candela.Tests
         // Assigned into rather than replaced: ConfigKit, when it is installed, holds
         // this object and would otherwise go on editing one nobody reads.
         [BeforeEach, AfterEach]
-        public void DefaultConfig() => CandelaConfig.Current.AssignFrom(new CandelaConfig());
+        public void DefaultConfig()
+        {
+            CandelaConfig.Current.AssignFrom(new CandelaConfig());
+            // No test can set the wind, and a gust over an open plot snuffs a flame
+            // mid-test: it then burns nothing. CandelaWeather turns this back on.
+            CandelaConfig.Current.WeatherPutsOut = false;
+        }
 
         [VsTest]
         public void TallowBlocksAndItemsLoad()
@@ -102,7 +109,7 @@ namespace Candela.Tests
             await ShiftUse(Bunch);
 
             Assert.Equal("game:bunchocandles-2", World.BlockCode(Bunch));
-            Assert.Close(2 * 432.0, World.BE<BECandles>(Bunch).Fuel, 0.01);
+            Assert.Close(World.BE<BECandles>(Bunch).Fuel, 2 * 432.0, 0.01);
         }
 
         /// <summary>Not an assertion: tallow beside beeswax, to judge the colour by eye.</summary>
@@ -120,19 +127,5 @@ namespace Candela.Tests
         }
 
         static byte[] Light() => World.GetBlock(Bunch).GetLightHsv(Sapi.World.BlockAccessor, Bunch);
-
-        static async Task ShiftUse(BlockPos pos)
-        {
-            await Input.KeyDown(GlKeys.ShiftLeft, shift: true);
-            try
-            {
-                await Interact.UseBlock(pos);
-            }
-            finally
-            {
-                await Input.KeyUp(GlKeys.ShiftLeft);
-            }
-            await Ticks(4);
-        }
     }
 }

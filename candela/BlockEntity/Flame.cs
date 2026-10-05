@@ -12,6 +12,12 @@ namespace candela;
 /// Burning is driven from outside - <see cref="Burn"/> with the game time and how
 /// many hours of fuel each game hour costs - so a bunch of five candles and a lantern
 /// with one both use this, at rates of five and one.
+///
+/// Time burns at the rate in force while it passed, so the owner burns up to now
+/// before changing anything the rate or the bill depends on - snuffing, adding a
+/// candle, taking one. Otherwise a candle added would be billed for hours before it
+/// was there, and one snuffed before the first tick after loading would never pay for
+/// the time it was unloaded.
 /// </summary>
 public class Flame
 {
@@ -76,6 +82,18 @@ public class Flame
 
         Fuel = Math.Max(0, Fuel - elapsed * rate);
         return Fuel <= 0;
+    }
+
+    /// <summary>
+    /// The fuel there will be at <paramref name="now"/> if it goes on burning at
+    /// <paramref name="rate"/>, without burning it. For the client's block info: the
+    /// server burns every few seconds but sends the state only when the light or the
+    /// candles' height changes.
+    /// </summary>
+    public double FuelAt(double now, double rate)
+    {
+        if (Snuffed || Mode == BurnoutMode.None || Fuel <= 0) return Fuel;
+        return Math.Max(0, Fuel - Math.Max(0, now - lastUpdateHours) * rate);
     }
 
     /// <summary>The light given, from what it would give new and lit.</summary>

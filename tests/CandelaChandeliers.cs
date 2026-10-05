@@ -4,8 +4,10 @@ using candela;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
+using Vintagestory.GameContent;
 using VsTestkit.Testing;
 using static VsTestkit.Testing.Vs;
+using static Candela.Tests.Hands;
 
 namespace Candela.Tests
 {
@@ -22,7 +24,13 @@ namespace Candela.Tests
         const double BeeswaxHours = 432;
 
         [BeforeEach, AfterEach]
-        public void DefaultConfig() => CandelaConfig.Current.AssignFrom(new CandelaConfig());
+        public void DefaultConfig()
+        {
+            CandelaConfig.Current.AssignFrom(new CandelaConfig());
+            // No test can set the wind, and a gust over an open plot snuffs a flame
+            // mid-test: it then burns nothing. CandelaWeather turns this back on.
+            CandelaConfig.Current.WeatherPutsOut = false;
+        }
 
         [VsTest]
         public void ChandeliersArePatched()
@@ -59,7 +67,7 @@ namespace Candela.Tests
             var be = await Place(8);
 
             await Burn(10);
-            Assert.Close(8 * BeeswaxHours - 8 * 10, be.Fuel, 1);
+            Assert.Close(be.Fuel, 8 * BeeswaxHours - 8 * 10, 1);
 
             await Burn(BeeswaxHours);
             Assert.True(be.Spent);
@@ -189,13 +197,13 @@ namespace Candela.Tests
             await Ticks(4);
             Assert.Equal("game:chandelier-candle3", World.BlockCode(Chandelier));
             Assert.True(ReferenceEquals(be, World.BE<BECandles>(Chandelier)), "adding a candle replaced the block entity");
-            Assert.Close(before + BeeswaxHours, be.Fuel, 0.5);
+            Assert.Close(be.Fuel, before + BeeswaxHours, 0.5);
 
             await Player.Hold("candela:candlestub-beeswax-50");
             await Interact.UseBlock(Chandelier);
             await Ticks(4);
             Assert.Equal("game:chandelier-candle4", World.BlockCode(Chandelier));
-            Assert.Close(before + BeeswaxHours * 1.5, be.Fuel, 0.5);
+            Assert.Close(be.Fuel, before + BeeswaxHours * 1.5, 0.5);
 
             await Player.Hold("candela:candle-tallow");
             await Interact.UseBlock(Chandelier);
@@ -214,7 +222,7 @@ namespace Candela.Tests
             await Ticks(4);
 
             Assert.Equal("game:chandelier-candle1", World.BlockCode(Chandelier));
-            Assert.Close(BeeswaxHours * 0.6, be.Fuel, 0.5);
+            Assert.Close(be.Fuel, BeeswaxHours * 0.6, 0.5);
             Assert.True(PlayerHas("candela:candlestub-beeswax-50"), "no half-burned stub came back");
         }
 
@@ -236,6 +244,32 @@ namespace Candela.Tests
             Assert.False(be.Snuffed, "a lit torch should relight it");
         }
 
+        /// <summary>
+        /// An empty chandelier has never been snuffed, so its flame stands "lit" - but
+        /// there is no candle in it to light a torch from, or for a firestarter to light.
+        /// </summary>
+        [VsTest]
+        public async Task AnEmptyChandelierLightsNothing()
+        {
+            var be = await Place(0);
+
+            Assert.Equal(EnumIgniteState.NotIgnitable, be.OnTryIgniteStack(null, Chandelier, null, 2));
+            Assert.Equal(EnumIgniteState.NotIgnitable, be.OnTryIgniteBlock(null, Chandelier, 3));
+            be.Snuff();
+            Assert.False(be.TryIgnite(), "an empty chandelier was lit");
+        }
+
+        /// <summary>A spent candle gutters on, and a torch still lights from it.</summary>
+        [VsTest]
+        public async Task ASpentCandleStillLightsATorch()
+        {
+            var be = await Place(1);
+            await Burn(BeeswaxHours + 1);
+
+            Assert.True(be.Spent);
+            Assert.Equal(EnumIgniteState.IgniteNow, be.OnTryIgniteStack(null, Chandelier, null, 2));
+        }
+
         // ----- helpers -----
 
         static async Task<BECandles> Place(int candles)
@@ -255,30 +289,5 @@ namespace Candela.Tests
             await Hours(hours);
             await World.TickNow(Chandelier);
         }
-
-        static async Task EmptyHand()
-        {
-            var slot = Player.Me.InventoryManager.ActiveHotbarSlot;
-            slot.Itemstack = null;
-            slot.MarkDirty();
-            await Ticks(2);
-        }
-
-        static async Task ShiftUse(BlockPos pos)
-        {
-            await Input.KeyDown(GlKeys.ShiftLeft, shift: true);
-            try
-            {
-                await Interact.UseBlock(pos);
-            }
-            finally
-            {
-                await Input.KeyUp(GlKeys.ShiftLeft);
-            }
-            await Ticks(4);
-        }
-
-        static bool PlayerHas(string code) =>
-            Player.Me.InventoryManager.Inventories.Values.Any(inv => inv.Any(s => s.Itemstack?.Collectible.Code.ToString() == code));
     }
 }

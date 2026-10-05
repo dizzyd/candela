@@ -96,14 +96,14 @@ public class ItemCandleMould : Item, IWaxWorker
     public static ItemStack Candles(IWorldAccessor world, string wax) =>
         new(world.GetItem(new AssetLocation(wax == "beeswax" ? "game:candle" : "candela:candle-tallow")), CandlesPerFill);
 
-    /// <summary>Right-click with a full, set mould: knock the candles out.</summary>
+    /// <summary>
+    /// Right-click with a full, set mould: knock the candles out. Its behaviors go
+    /// first, so shift-right-click still sets it down on the ground, full or not.
+    /// </summary>
     public override void OnHeldInteractStart(ItemSlot slot, EntityAgent byEntity, BlockSelection blockSel, EntitySelection entitySel, bool firstEvent, ref EnumHandHandling handling)
     {
-        if (!IsFilled || !firstEvent)
-        {
-            base.OnHeldInteractStart(slot, byEntity, blockSel, entitySel, firstEvent, ref handling);
-            return;
-        }
+        base.OnHeldInteractStart(slot, byEntity, blockSel, entitySel, firstEvent, ref handling);
+        if (!IsFilled || !firstEvent || handling != EnumHandHandling.NotHandled) return;
 
         handling = EnumHandHandling.PreventDefault;
         IWorldAccessor world = byEntity.World;

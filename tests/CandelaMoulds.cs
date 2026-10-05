@@ -6,6 +6,7 @@ using Vintagestory.API.MathTools;
 using Vintagestory.GameContent;
 using VsTestkit.Testing;
 using static VsTestkit.Testing.Vs;
+using static Candela.Tests.Hands;
 
 namespace Candela.Tests
 {
@@ -126,6 +127,25 @@ namespace Candela.Tests
 
             Assert.True(hand.Empty, "a mould on its last use should crack");
             Assert.Equal(before + 4, CountOf("candela:candle-tallow"));
+        }
+
+        /// <summary>
+        /// Shift-right-click on the ground sets a full mould down, as it does an empty
+        /// one, rather than knocking its candles out.
+        /// </summary>
+        [VsTest(TimeoutMs = 60000), RequiresClient]
+        public async Task AFullMouldSetsDownOnTheGround()
+        {
+            World.SetBlock("game:air", P(8, 1, 8));
+            await HoldFilled("tallow", hoursAgo: ItemCandleMould.SetHours * 2);
+            int before = CountOf("candela:candle-tallow");
+
+            await ShiftUse(P(8, 0, 8));
+
+            Assert.Equal("game:groundstorage", World.BlockCode(P(8, 1, 8)), "the mould was not set down");
+            var stored = World.BE<BlockEntityGroundStorage>(P(8, 1, 8)).Inventory.FirstNonEmptySlot?.Itemstack;
+            Assert.Equal("candela:candlemould-blue-tallow", stored?.Collectible.Code.ToString());
+            Assert.Equal(before, CountOf("candela:candle-tallow"), "setting it down knocked the candles out");
         }
 
         static async Task<BlockEntityFirepit> PotOf(string molten, int portions)

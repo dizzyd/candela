@@ -55,7 +55,7 @@ public class BlockCandelaLantern : BlockLantern
         // The burnout mode lives on the server, so a spent one is shown guttering.
         if (stack != null && LanternStack.HasFuel(stack) && api != null)
         {
-            return LanternStack.Adjust(api.World, full, LanternStack.Candle(stack), !LanternStack.Snuffed(stack), LanternStack.Fuel(stack) <= 0);
+            return LanternStack.Adjust(api.World, full, LanternStack.BunchCode(stack), !LanternStack.Snuffed(stack), LanternStack.Fuel(stack) <= 0);
         }
         return full;
     }
@@ -119,13 +119,30 @@ public class BlockCandelaLantern : BlockLantern
         ItemStack stack = inSlot.Itemstack;
         if (!LanternStack.HasFuel(stack)) return;
 
-        BlockCandelaCandles kind = BlockCandelaCandles.KindOf(world, LanternStack.Candle(stack));
+        BlockCandelaCandles kind = BlockCandelaCandles.KindOf(world, LanternStack.BunchCode(stack));
         string candleName = kind == null ? "?" : kind.CandleForHours(world, kind.BurnHours)?.GetName() ?? "?";
         double hours = LanternStack.Fuel(stack);
 
         dsc.AppendLine(hours > 0
             ? Lang.Get("candela:lantern-candle", candleName, System.Math.Max(1, (int)System.Math.Round(hours)))
             : Lang.Get("candela:lantern-candle-spent", candleName));
+    }
+
+    /// <summary>
+    /// Vanilla's info, then the candle's. Added here rather than by the block entity
+    /// behavior, which never gets asked: BELantern.GetBlockInfo writes the materials
+    /// and does not call base, where behaviors would run.
+    /// </summary>
+    public override string GetPlacedBlockInfo(IWorldAccessor world, BlockPos pos, IPlayer forPlayer)
+    {
+        string info = base.GetPlacedBlockInfo(world, pos, forPlayer);
+        var fuel = world.BlockAccessor.GetBlockEntity(pos)?.GetBehavior<BEBehaviorLanternFuel>();
+        if (fuel == null) return info;
+
+        var dsc = new StringBuilder(info);
+        if (dsc.Length > 0) dsc.AppendLine();
+        fuel.AppendInfo(dsc);
+        return dsc.ToString().TrimEnd();
     }
 
     public override WorldInteraction[] GetPlacedBlockInteractionHelp(IWorldAccessor world, BlockSelection selection, IPlayer forPlayer)

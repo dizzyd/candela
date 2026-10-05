@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using candela;
 using Vintagestory.API.Common;
@@ -20,6 +21,7 @@ namespace Candela.Tests
         const string EmptyPot = "game:claypot-blue-fired";
         const string MoltenTallow = "candela:tallow-molten";
         const string MoltenBeeswax = "candela:beeswax-molten";
+        const string RenderedFat = "game:fat-rendered";
 
         [VsTest]
         public void BeeswaxMeltsAPortionALump()
@@ -67,6 +69,60 @@ namespace Candela.Tests
             Assert.Equal(4, slot.StackSize);
         }
 
+        /// <summary>
+        /// The whole way round: lumps melted through vanilla's DoSmelt, then left to set.
+        /// Tallow melts two portions a lump, so it must set back two to one - at one to
+        /// one, six lumps of fat came back as twelve, and every melt doubled them.
+        /// </summary>
+        [VsTest]
+        public async Task MeltingAndSettingGivesBackTheLumps()
+        {
+            foreach (var (lump, molten) in new[] { (RenderedFat, MoltenTallow), ("game:beeswax", MoltenBeeswax) })
+            {
+                for (int lumps = 1; lumps <= 6; lumps++)
+                {
+                    int portions = Melt(molten, World.Stack(lump, lumps));
+                    ItemStack set = await SetOffTheFire(World.Stack(molten, portions));
+                    Assert.Equal(lump, set.Collectible.Code.ToString());
+                    Assert.Equal(lumps, set.StackSize, $"{lumps} {lump} melted to {portions} and set");
+                }
+            }
+        }
+
+        /// <summary>
+        /// An odd portion of tallow left over - a dip takes one at a time - is half a
+        /// lump, and is lost rather than coming back whole: the engine's own rounding is
+        /// at random, and half the time would make fat.
+        /// </summary>
+        [VsTest]
+        public async Task AnOddPortionOfTallowRoundsDown()
+        {
+            for (int i = 0; i < 8; i++)
+            {
+                Assert.Equal(1, (await SetOffTheFire(World.Stack(MoltenTallow, 3))).StackSize);
+            }
+            Assert.Null(await SetOffTheFire(World.Stack(MoltenTallow, 1)));
+        }
+
+        /// <summary>
+        /// The recipes carry their own copy of how the wax sets, used for the freshness
+        /// a cook carries over; it must agree with the item's.
+        /// </summary>
+        [VsTest]
+        public void RecipesSetAsTheItemDoes()
+        {
+            var recipes = Sapi.ModLoader.GetModSystem<RecipeRegistrySystem>().CookingRecipes;
+            foreach (string molten in new[] { MoltenTallow, MoltenBeeswax })
+            {
+                var item = Sapi.World.GetItem(new AssetLocation(molten));
+                float ratio = item.TransitionableProps.Single(p => p.Type == EnumTransitionType.Harden).TransitionRatio;
+                foreach (var recipe in recipes.Where(r => r.CooksInto?.ResolvedItemstack?.Collectible == item))
+                {
+                    Assert.Equal(ratio, recipe.PerishableProps.TransitionRatio, recipe.Code);
+                }
+            }
+        }
+
         [VsTest]
         public async Task ThePotSaysItHoldsBeeswax()
         {
@@ -101,6 +157,22 @@ namespace Candela.Tests
             Assert.NotNull(molten, "nothing molten came out");
             Assert.Equal(expect, molten.Itemstack.Collectible.Code.ToString());
             return molten.StackSize;
+        }
+
+        /// <summary>
+        /// <paramref name="molten"/> left to cool off the fire until it sets; what it set
+        /// into, or null if nothing was left.
+        /// </summary>
+        static async Task<ItemStack> SetOffTheFire(ItemStack molten)
+        {
+            var slot = new DummySlot(molten);
+            molten.Collectible.SetTemperature(Sapi.World, molten, 20f);
+
+            // The transition counts from the first time it is asked about.
+            molten.Collectible.UpdateAndGetTransitionStates(Sapi.World, slot);
+            await Hours(0.5);
+            slot.Itemstack?.Collectible.UpdateAndGetTransitionStates(Sapi.World, slot);
+            return slot.Itemstack;
         }
 
         static async Task<BlockEntityFirepit> PotOf(string molten, int portions, float temperature)

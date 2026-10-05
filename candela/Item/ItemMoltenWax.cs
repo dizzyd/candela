@@ -63,6 +63,19 @@ public class ItemMoltenWax : Item
         return Temperature(world, inSlot) >= SetsBelow ? 0f : mul;
     }
 
+    /// <summary>
+    /// What it sets into: the engine rounds the transition ratio at random, so an odd
+    /// portion of tallow, at two to the lump, would come back a whole lump half the
+    /// time - and melting it down again would make fat. Rounded down instead, as a
+    /// part-burned candle comes back as the stub below it.
+    /// </summary>
+    public override ItemStack OnTransitionNow(ItemSlot slot, TransitionableProperties props)
+    {
+        ItemStack set = base.OnTransitionNow(slot, props);
+        if (props.Type == EnumTransitionType.Harden) set.StackSize = (int)(slot.Itemstack.StackSize * props.TransitionRatio);
+        return set;
+    }
+
     /// <summary>Whether the wax in <paramref name="slot"/> is hot enough to work.</summary>
     public bool IsWorkable(IWorldAccessor world, ItemSlot slot) => Temperature(world, slot) >= SetsBelow;
 

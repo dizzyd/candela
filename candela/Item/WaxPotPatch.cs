@@ -7,21 +7,14 @@ using Vintagestory.GameContent;
 namespace candela;
 
 /// <summary>
-/// Corrections to the vanilla cooking pot for a pot of molten wax, which it was never
-/// written to hold once cooked. Found with tallow, the first; beeswax has them too.
+/// The cooking pot and firepit taught to hold a pot of molten wax once it is cooked:
+/// keep the heat it was melted at, say what it holds, stand open with the wax showing
+/// (<see cref="WaxPotRenderer"/>), and stay hot while the fire burns.
 ///
-/// DoSmelt means to give the pot the ingredients' temperature, but on the cooksInto
-/// path it has already swapped the ingredients for the output - a fresh clone with no
-/// temperature - before it reads them, so tallow cooked from fat at 170°C came out at
-/// 20°C, pot and all: "Cold" in the firepit dialog, and already setting. And
-/// GetOutputText asks what the pot's contents would cook into, which for tallow is
-/// nothing: "No matching recipe found", under a pot that had just finished. On the
-/// fire it drew the pot shut and empty - see <see cref="WaxPotRenderer"/>. And the
-/// firepit stopped heating it at all - see <see cref="CanHeatInput"/>.
-///
-/// Harmony rather than a behavior because neither has a hook: BlockCookingContainer is
-/// vanilla's own block class. Patched on both sides - the output text is composed on
-/// the client - and once per process, since singleplayer's two sides share it.
+/// Harmony because none of these has a hook: BlockCookingContainer and
+/// BlockEntityFirepit are vanilla's own classes. Patched on both sides - the output
+/// text and the renderer are the client's - and once per process, since
+/// singleplayer's two sides share it.
 /// </summary>
 [HarmonyPatch(typeof(BlockCookingContainer))]
 public static class WaxPotPatch
@@ -46,7 +39,11 @@ public static class WaxPotPatch
     // Parameter names match the vanilla signatures; Harmony binds by name and throws at
     // patch time if they drift.
 
-    /// <summary>The fat's temperature, read the way DoSmelt means to before it loses it.</summary>
+    /// <summary>
+    /// The ingredients' temperature, read before DoSmelt loses it: on the cooksInto
+    /// path it swaps them for a fresh clone of the output before reading them, so the
+    /// wax would come out at 20°C.
+    /// </summary>
     [HarmonyPrefix, HarmonyPatch(nameof(BlockCookingContainer.DoSmelt))]
     private static void DoSmeltPrefix(BlockCookingContainer __instance, IWorldAccessor world, ISlotProvider cookingSlotsProvider, out float __state)
     {
@@ -71,6 +68,10 @@ public static class WaxPotPatch
         }
     }
 
+    /// <summary>
+    /// What the pot holds. Vanilla asks what its contents would cook into, which for
+    /// wax already cooked is nothing: "No matching recipe found".
+    /// </summary>
     [HarmonyPostfix, HarmonyPatch(nameof(BlockCookingContainer.GetOutputText))]
     private static void GetOutputText(IWorldAccessor world, ISlotProvider cookingSlotsProvider, ref string __result)
     {
@@ -87,9 +88,8 @@ public static class WaxPotPatch
 
     /// <summary>
     /// Every cooking pot on the fire, not only one already holding wax: the firepit asks
-    /// once, when the pot changes, and with its dialog open the client hears of each
-    /// slot on its own - the pot's change came before the tallow's, and the lid stayed
-    /// on. The renderer looks for wax every frame instead.
+    /// once, when the pot changes, and the client can hear of the pot before the wax in
+    /// it. The renderer looks for wax every frame instead.
     /// </summary>
     [HarmonyPostfix, HarmonyPatch(nameof(BlockCookingContainer.GetRendererWhenInFirepit))]
     private static void GetRendererWhenInFirepit(ItemStack stack, BlockEntityFirepit firepit, bool forOutputSlot, ref IInFirepitRenderer __result)
@@ -100,10 +100,8 @@ public static class WaxPotPatch
 
     /// <summary>
     /// The firepit heats its input only while there is something to cook, and for a
-    /// pot that means a matching recipe - which molten wax is not. So the heat stopped
-    /// with the cook: the tallow cooled on a fire still burning, and the fire, with
-    /// nothing to do, let itself go out at the end of the log. A pot of molten wax is
-    /// heated, and keeps the fire fed, as a pot that is cooking is.
+    /// pot that means a matching recipe - which molten wax is not. A pot of molten wax
+    /// is heated, and keeps the fire fed, as a pot that is cooking is.
     /// </summary>
     [HarmonyPostfix, HarmonyPatch(typeof(BlockEntityFirepit), nameof(BlockEntityFirepit.canHeatInput))]
     private static void CanHeatInput(BlockEntityFirepit __instance, ref bool __result)

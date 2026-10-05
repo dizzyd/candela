@@ -2,7 +2,8 @@
 	{
 		// Four recipes rather than one, as vanilla does for rendering fat: each is
 		// matched on how many pot slots hold rendered fat. Two portions a lump, so a
-		// tallow candle costs less fat than a beeswax one costs wax.
+		// tallow candle costs less fat than a beeswax one costs wax - and two portions
+		// set back into one lump, here and on the item, or melting would make fat.
 		//
 		// No comments between the recipes: the loader hands every element of this
 		// array to the recipe parser, a comment included, and the null that comes
@@ -13,7 +14,7 @@
 			type: "Harden",
 			freshHours: { avg: 0.1 },
 			transitionHours: { avg: 0.05 },
-			transitionRatio: 1,
+			transitionRatio: 0.5,
 			transitionedStack: { type: "item", code: "game:fat-rendered" }
 		},
 		shape: { base: "game:block/food/meal/liquid" },
@@ -35,7 +36,7 @@
 			type: "Harden",
 			freshHours: { avg: 0.1 },
 			transitionHours: { avg: 0.05 },
-			transitionRatio: 1,
+			transitionRatio: 0.5,
 			transitionedStack: { type: "item", code: "game:fat-rendered" }
 		},
 		shape: { base: "game:block/food/meal/liquid" },
@@ -57,7 +58,7 @@
 			type: "Harden",
 			freshHours: { avg: 0.1 },
 			transitionHours: { avg: 0.05 },
-			transitionRatio: 1,
+			transitionRatio: 0.5,
 			transitionedStack: { type: "item", code: "game:fat-rendered" }
 		},
 		shape: { base: "game:block/food/meal/liquid" },
@@ -79,7 +80,7 @@
 			type: "Harden",
 			freshHours: { avg: 0.1 },
 			transitionHours: { avg: 0.05 },
-			transitionRatio: 1,
+			transitionRatio: 0.5,
 			transitionedStack: { type: "item", code: "game:fat-rendered" }
 		},
 		shape: { base: "game:block/food/meal/liquid" },

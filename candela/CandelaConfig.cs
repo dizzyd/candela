@@ -100,11 +100,10 @@ public class CandelaConfig
 
     /// <summary>
     /// What the rest of the mod reads. Starts as the defaults, so anything running
-    /// before <see cref="Load"/> gets those rather than a null. Loading assigns into
-    /// it rather than replacing it - see <see cref="AssignFrom"/>. Settable so the
-    /// in-game suite can swap in a config of its own.
+    /// before <see cref="Load"/> gets those rather than a null. Never replaced, only
+    /// assigned into - see <see cref="AssignFrom"/>.
     /// </summary>
-    public static CandelaConfig Current { get; set; } = new CandelaConfig();
+    public static CandelaConfig Current { get; } = new CandelaConfig();
 
     /// <summary>
     /// Hours one new candle of <paramref name="wax"/> burns for, or null for a wax

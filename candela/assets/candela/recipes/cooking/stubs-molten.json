@@ -13,7 +13,7 @@
 			"transitionHours": {
 				"avg": 0.05
 			},
-			"transitionRatio": 1,
+			"transitionRatio": 0.5,
 			"transitionedStack": {
 				"type": "item",
 				"code": "game:fat-rendered"
@@ -53,7 +53,7 @@
 			"transitionHours": {
 				"avg": 0.05
 			},
-			"transitionRatio": 1,
+			"transitionRatio": 0.5,
 			"transitionedStack": {
 				"type": "item",
 				"code": "game:fat-rendered"
@@ -93,7 +93,7 @@
 			"transitionHours": {
 				"avg": 0.05
 			},
-			"transitionRatio": 1,
+			"transitionRatio": 0.5,
 			"transitionedStack": {
 				"type": "item",
 				"code": "game:fat-rendered"
@@ -133,7 +133,7 @@
 			"transitionHours": {
 				"avg": 0.05
 			},
-			"transitionRatio": 1,
+			"transitionRatio": 0.5,
 			"transitionedStack": {
 				"type": "item",
 				"code": "game:fat-rendered"

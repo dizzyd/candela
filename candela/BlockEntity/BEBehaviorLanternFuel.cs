@@ -22,10 +22,13 @@ public class BEBehaviorLanternFuel : BlockEntityBehavior, IIgnitable
 {
     private readonly Flame flame = new();
 
-    /// <summary>The bunch code of the candle inside, which stands for its kind.</summary>
-    public string Candle { get; private set; } = DefaultCandle;
+    /// <summary>
+    /// The kind of candle inside, as the code of the bunch block that stands for it
+    /// (<see cref="BlockCandelaCandles.KindOf"/>) - not the candle item's code.
+    /// </summary>
+    public string BunchCode { get; private set; } = DefaultBunchCode;
 
-    public const string DefaultCandle = "game:bunchocandles";
+    public const string DefaultBunchCode = "game:bunchocandles";
 
     public Flame Flame => flame;
 
@@ -40,8 +43,11 @@ public class BEBehaviorLanternFuel : BlockEntityBehavior, IIgnitable
 
         // A lantern from before Candela was installed, or one from the creative
         // inventory, has a new beeswax candle in it.
-        flame.Initialize(api, KindHours(Candle));
+        flame.Initialize(api, KindHours(BunchCode));
         Blockentity.RegisterGameTickListener(OnBurnTick, 4000, api.World.Rand.Next(4000));
+
+        // The time it was unloaded burned at once, rather than up to four seconds on.
+        Blockentity.RegisterDelayedCallback(_ => Settle(), 0);
     }
 
     public override void OnBlockPlaced(ItemStack byItemStack = null)
@@ -50,20 +56,33 @@ public class BEBehaviorLanternFuel : BlockEntityBehavior, IIgnitable
         if (Api?.Side != EnumAppSide.Server || !LanternStack.HasFuel(byItemStack)) return;
 
         byte[] light = Relight.Capture(Blockentity);
-        Candle = LanternStack.Candle(byItemStack);
+        BunchCode = LanternStack.BunchCode(byItemStack);
         flame.SetFuel(LanternStack.Fuel(byItemStack), LanternStack.Snuffed(byItemStack));
         Changed(light);
     }
 
     private void OnBurnTick(float dt)
     {
+        if (!Settle()) Api.World.BlockAccessor.GetChunkAtBlockPos(Pos)?.MarkModified();
+    }
+
+    /// <summary>
+    /// Burns the time since the last burn. Server side. Everything that changes or
+    /// reads out the candle calls this first - see <see cref="Flame"/>. Returns true
+    /// if the light changed.
+    /// </summary>
+    public bool Settle()
+    {
+        if (Api?.Side != EnumAppSide.Server) return false;
+
         byte[] light = Relight.Capture(Blockentity);
-        if (flame.Burn(Api.World.Calendar.TotalHours, 1)) Changed(light);
-        else Api.World.BlockAccessor.GetChunkAtBlockPos(Pos)?.MarkModified();
+        if (!flame.Burn(Api.World.Calendar.TotalHours, 1)) return false;
+        Changed(light);
+        return true;
     }
 
     /// <summary>The light the lantern gives, from what vanilla says it would.</summary>
-    public byte[] LightHsv(byte[] full) => LanternStack.Adjust(Api.World, full, Candle, flame.Flaming, flame.Spent);
+    public byte[] LightHsv(byte[] full) => LanternStack.Adjust(Api.World, full, BunchCode, flame.Flaming, flame.Spent);
 
     /// <summary>
     /// Puts <paramref name="slot"/>'s candle in, handing back what is left of the old
@@ -73,16 +92,17 @@ public class BEBehaviorLanternFuel : BlockEntityBehavior, IIgnitable
     {
         CollectibleObject held = slot.Itemstack?.Collectible;
         if (CandleWax.HoursOf(held) is not double hours) return false;
-        string candle = CandleWax.BunchOf(held);
+        string bunchCode = CandleWax.BunchOf(held);
 
+        Settle();
         byte[] light = Relight.Capture(Blockentity);
-        ItemStack old = BlockCandelaCandles.KindOf(Api.World, Candle)?.CandleForHours(Api.World, flame.Fuel);
+        ItemStack old = BlockCandelaCandles.KindOf(Api.World, BunchCode)?.CandleForHours(Api.World, flame.Fuel);
         if (old != null && !byPlayer.InventoryManager.TryGiveItemstack(old, slotNotifyEffect: true))
         {
             Api.World.SpawnItemEntity(old, Pos);
         }
 
-        Candle = candle;
+        BunchCode = bunchCode;
         flame.SetFuel(hours);
         flame.TryIgnite(Api.World.Calendar.TotalHours);
 
@@ -95,12 +115,14 @@ public class BEBehaviorLanternFuel : BlockEntityBehavior, IIgnitable
 
     public void Snuff()
     {
+        Settle();
         byte[] light = Relight.Capture(Blockentity);
         if (flame.Snuff()) Changed(light);
     }
 
     public bool TryIgnite()
     {
+        Settle();
         byte[] light = Relight.Capture(Blockentity);
         if (!flame.TryIgnite(Api.World.Calendar.TotalHours)) return false;
         Changed(light);
@@ -108,7 +130,11 @@ public class BEBehaviorLanternFuel : BlockEntityBehavior, IIgnitable
     }
 
     /// <summary>Writes the candle into a lantern item, so that picking it up keeps what was left.</summary>
-    public void WriteTo(ItemStack stack) => LanternStack.Write(stack, flame.Fuel, Candle, flame.Snuffed);
+    public void WriteTo(ItemStack stack)
+    {
+        Settle();
+        LanternStack.Write(stack, flame.Fuel, BunchCode, flame.Snuffed);
+    }
 
     /// <summary>State that affects the light has changed; <paramref name="lightBefore"/> is what it was.</summary>
     private void Changed(byte[] lightBefore)
@@ -117,19 +143,20 @@ public class BEBehaviorLanternFuel : BlockEntityBehavior, IIgnitable
         Relight.After(Blockentity, lightBefore);
     }
 
-    private double KindHours(string candle) => BlockCandelaCandles.KindOf(Api.World, candle)?.BurnHours ?? 48;
+    private double KindHours(string bunchCode) => BlockCandelaCandles.KindOf(Api.World, bunchCode)?.BurnHours ?? 48;
 
-    public override void GetBlockInfo(IPlayer forPlayer, StringBuilder dsc)
-    {
-        base.GetBlockInfo(forPlayer, dsc);
-        CandleInfo.Append(dsc, flame, flame.Fuel);
-    }
+    /// <summary>
+    /// The candle's line of block info. Not a GetBlockInfo override: vanilla's
+    /// BELantern.GetBlockInfo does not call base, so behaviors' never run - see
+    /// BlockCandelaLantern.GetPlacedBlockInfo.
+    /// </summary>
+    public void AppendInfo(StringBuilder dsc) => CandleInfo.Append(dsc, flame, flame.FuelAt(Api.World.Calendar.TotalHours, 1));
 
     public override void ToTreeAttributes(ITreeAttribute tree)
     {
         base.ToTreeAttributes(tree);
         flame.ToTreeAttributes(tree);
-        tree.SetString("candela:candle", Candle);
+        tree.SetString("candela:candle", BunchCode);
     }
 
     public override void FromTreeAttributes(ITreeAttribute tree, IWorldAccessor worldAccessForResolve)
@@ -139,7 +166,7 @@ public class BEBehaviorLanternFuel : BlockEntityBehavior, IIgnitable
         byte[] lightBefore = Api != null && Blockentity.Block != null ? Relight.Capture(Blockentity) : null;
 
         flame.FromTreeAttributes(tree);
-        Candle = tree.GetString("candela:candle", DefaultCandle);
+        BunchCode = tree.GetString("candela:candle", DefaultBunchCode);
 
         if (Api?.Side == EnumAppSide.Client)
         {
@@ -173,21 +200,22 @@ public class BEBehaviorLanternFuel : BlockEntityBehavior, IIgnitable
 public static class LanternStack
 {
     private const string FuelKey = "candela:fuel";
-    private const string CandleKey = "candela:candle";
+    // Named before the field held a bunch code; kept for the stacks already saved.
+    private const string BunchCodeKey = "candela:candle";
     private const string SnuffedKey = "candela:snuffed";
 
     public static bool HasFuel(ItemStack stack) => stack?.Attributes.HasAttribute(FuelKey) == true;
 
     public static double Fuel(ItemStack stack) => stack.Attributes.GetDouble(FuelKey);
 
-    public static string Candle(ItemStack stack) => stack.Attributes.GetString(CandleKey, BEBehaviorLanternFuel.DefaultCandle);
+    public static string BunchCode(ItemStack stack) => stack.Attributes.GetString(BunchCodeKey, BEBehaviorLanternFuel.DefaultBunchCode);
 
     public static bool Snuffed(ItemStack stack) => stack.Attributes.GetBool(SnuffedKey);
 
-    public static void Write(ItemStack stack, double fuel, string candle, bool snuffed)
+    public static void Write(ItemStack stack, double fuel, string bunchCode, bool snuffed)
     {
         stack.Attributes.SetDouble(FuelKey, fuel);
-        stack.Attributes.SetString(CandleKey, candle);
+        stack.Attributes.SetString(BunchCodeKey, bunchCode);
         stack.Attributes.SetBool(SnuffedKey, snuffed);
     }
 
@@ -196,11 +224,11 @@ public static class LanternStack
     /// dim floor once spent, none when out. A copy - vanilla hands out the block
     /// entity's own array.
     /// </summary>
-    public static byte[] Adjust(IWorldAccessor world, byte[] full, string candle, bool flaming, bool spent)
+    public static byte[] Adjust(IWorldAccessor world, byte[] full, string bunchCode, bool flaming, bool spent)
     {
         if (!flaming) return [0, 0, 0];
 
-        int dim = BlockCandelaCandles.KindOf(world, candle)?.LanternDim ?? 0;
+        int dim = BlockCandelaCandles.KindOf(world, bunchCode)?.LanternDim ?? 0;
         byte[] light = [full[0], full[1], (byte)Math.Max(1, full[2] - dim)];
         if (spent) light[2] = (byte)Math.Max(2, light[2] / 3);
         return light;

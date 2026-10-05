@@ -124,6 +124,7 @@ public class BlockCandelaChandelier : Block, ICandleHolder
     public override ItemStack[] GetDrops(IWorldAccessor world, BlockPos pos, IPlayer byPlayer, float dropQuantityMultiplier = 1)
     {
         if (world.BlockAccessor.GetBlockEntity(pos) is not BECandles be) return base.GetDrops(world, pos, byPlayer, dropQuantityMultiplier);
+        be.Settle();
 
         var drops = new List<ItemStack> { new(WithCandles(world, 0)) };
         if (Quantity > 0 && CandleForHours(world, be.Fuel / Quantity) is ItemStack candle)

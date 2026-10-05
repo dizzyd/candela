@@ -3,10 +3,12 @@ using System.Threading.Tasks;
 using candela;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
+using Vintagestory.API.Config;
 using Vintagestory.API.MathTools;
 using Vintagestory.GameContent;
 using VsTestkit.Testing;
 using static VsTestkit.Testing.Vs;
+using static Candela.Tests.Hands;
 
 namespace Candela.Tests
 {
@@ -46,7 +48,7 @@ namespace Candela.Tests
         {
             var fuel = await PlaceLantern();
 
-            Assert.Equal(BEBehaviorLanternFuel.DefaultCandle, fuel.Candle);
+            Assert.Equal(BEBehaviorLanternFuel.DefaultBunchCode, fuel.BunchCode);
             Assert.Equal(BeeswaxHours, fuel.Flame.Fuel);
             Assert.Equal(VanillaLight, Light()[2]);
         }
@@ -80,7 +82,7 @@ namespace Candela.Tests
         {
             var fuel = await PlaceLantern(LanternWith("candela:tallowcandles", TallowHours));
 
-            Assert.Equal("candela:tallowcandles", fuel.Candle);
+            Assert.Equal("candela:tallowcandles", fuel.BunchCode);
             Assert.Equal(TallowHours, fuel.Flame.Fuel);
             Assert.Equal(VanillaLight - 2, Light()[2]);
             Assert.Equal(VanillaLight - 2, await EngineLight.Settled(Lantern, VanillaLight - 2), "placing a tallow lantern lit the world as beeswax");
@@ -113,13 +115,45 @@ namespace Candela.Tests
             await Burn(10);
 
             ItemStack picked = World.GetBlock(Lantern).OnPickBlock(Sapi.World, Lantern);
-            Assert.Close(TallowHours - 10, LanternStack.Fuel(picked), 0.2);
-            Assert.Equal("candela:tallowcandles", LanternStack.Candle(picked));
+            Assert.Close(LanternStack.Fuel(picked), TallowHours - 10, 0.2);
+            Assert.Equal("candela:tallowcandles", LanternStack.BunchCode(picked));
             // Vanilla's own attributes ride along untouched.
             Assert.Equal("quartz", picked.Attributes.GetString("glass"));
 
             var fuel = await PlaceLantern(picked);
-            Assert.Close(TallowHours - 10, fuel.Flame.Fuel, 0.2);
+            Assert.Close(fuel.Flame.Fuel, TallowHours - 10, 0.2);
+        }
+
+        /// <summary>Picked up between two ticks, it is billed up to the moment it was taken.</summary>
+        [VsTest]
+        public async Task PickingUpBillsTheTimeSinceTheLastTick()
+        {
+            await PlaceLantern();
+            await World.TickNow(Lantern);
+            await Hours(10);
+
+            ItemStack picked = World.GetBlock(Lantern).OnPickBlock(Sapi.World, Lantern);
+            Assert.Close(LanternStack.Fuel(picked), BeeswaxHours - 10, 0.2);
+        }
+
+        /// <summary>
+        /// The old candle comes out as burned as it is now, and the new one is not billed
+        /// for the hours the old one burned.
+        /// </summary>
+        [VsTest]
+        public async Task RefuellingBillsTheOldCandleNotTheNew()
+        {
+            var fuel = await PlaceLantern();
+            await World.TickNow(Lantern);
+            await Hours(BeeswaxHours * 0.6);
+
+            ItemSlot hand = Player.Me.InventoryManager.ActiveHotbarSlot;
+            hand.Itemstack = World.Stack("candela:candle-tallow", 1);
+            Assert.True(fuel.TryRefuel(Player.Me, hand));
+            await World.TickNow(Lantern);
+
+            Assert.Close(fuel.Flame.Fuel, TallowHours, 0.2);
+            Assert.True(PlayerHas("candela:candlestub-beeswax-25"), "the old candle did not come back burned down");
         }
 
         [VsTest]
@@ -135,7 +169,7 @@ namespace Candela.Tests
                 lantern.OnCreatedByCrafting(inputs, output, null);
 
                 Assert.Equal(hours, LanternStack.Fuel(output.Itemstack), candle);
-                Assert.Equal(bunch, LanternStack.Candle(output.Itemstack), candle);
+                Assert.Equal(bunch, LanternStack.BunchCode(output.Itemstack), candle);
             }
         }
 
@@ -163,7 +197,7 @@ namespace Candela.Tests
             await Interact.UseBlock(Lantern);
             await Ticks(4);
 
-            Assert.Equal("candela:tallowcandles", fuel.Candle);
+            Assert.Equal("candela:tallowcandles", fuel.BunchCode);
             Assert.Equal(TallowHours, fuel.Flame.Fuel);
             Assert.Equal(1, Player.Held?.StackSize ?? 0, "the candle was not used");
             Assert.True(PlayerHas("candela:candlestub-beeswax-25"), "the old candle did not come back as a stub");
@@ -183,6 +217,36 @@ namespace Candela.Tests
             await Interact.UseBlock(Lantern);
             await Ticks(4);
             Assert.False(fuel.Flame.Snuffed, "a lit torch should relight it");
+        }
+
+        /// <summary>
+        /// The candle's line under vanilla's in the block info, as the client shows it.
+        /// The server sends the fuel only when the light changes, so the client counts
+        /// the hours down itself.
+        /// </summary>
+        [VsTest(TimeoutMs = 60000), RequiresClient]
+        public async Task ThePlacedLanternSaysHowLongItsCandleHasLeft()
+        {
+            await PlaceLantern(LanternWith("game:bunchocandles", BeeswaxHours));
+            await World.TickNow(Lantern);
+            await Ticks(10);
+            await Hours(10);
+            await World.TickNow(Lantern);
+
+            // The client hears of the jump in time with its next calendar packet.
+            string want = Lang.Get("candela:candles-burning", (int)BeeswaxHours - 10);
+            string info = null;
+            for (int i = 0; i < 200 && info?.Contains(want) != true; i++)
+            {
+                await Ticks(1);
+                await OnClient();
+                info = Capi.World.BlockAccessor.GetBlock(Lantern).GetPlacedBlockInfo(Capi.World, Lantern, Capi.World.Player);
+                await OnServer();
+            }
+
+            Log(info);
+            Assert.True(info.Contains(Lang.Get("lantern-materialwithpanels", Lang.Get("material-copper"), Lang.Get("block-glass-quartz"))), "vanilla's line is gone");
+            Assert.True(info.Contains(want), "no candle line, or the wrong hours");
         }
 
         /// <summary>CandleStory replaced the lantern's class and lost this.</summary>
@@ -244,30 +308,5 @@ namespace Candela.Tests
             await Hours(hours);
             await World.TickNow(Lantern);
         }
-
-        static async Task EmptyHand()
-        {
-            var slot = Player.Me.InventoryManager.ActiveHotbarSlot;
-            slot.Itemstack = null;
-            slot.MarkDirty();
-            await Ticks(2);
-        }
-
-        static async Task ShiftUse(BlockPos pos)
-        {
-            await Input.KeyDown(GlKeys.ShiftLeft, shift: true);
-            try
-            {
-                await Interact.UseBlock(pos);
-            }
-            finally
-            {
-                await Input.KeyUp(GlKeys.ShiftLeft);
-            }
-            await Ticks(4);
-        }
-
-        static bool PlayerHas(string code) =>
-            Player.Me.InventoryManager.Inventories.Values.Any(inv => inv.Any(s => s.Itemstack?.Collectible.Code.ToString() == code));
     }
 }

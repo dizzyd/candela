@@ -7,6 +7,7 @@ using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
 using VsTestkit.Testing;
 using static VsTestkit.Testing.Vs;
+using static Candela.Tests.Hands;
 
 namespace Candela.Tests
 {
@@ -30,7 +31,13 @@ namespace Candela.Tests
         // Assigned into rather than replaced: ConfigKit, when it is installed, holds
         // this object and would otherwise go on editing one nobody reads.
         [BeforeEach, AfterEach]
-        public void DefaultConfig() => CandelaConfig.Current.AssignFrom(new CandelaConfig());
+        public void DefaultConfig()
+        {
+            CandelaConfig.Current.AssignFrom(new CandelaConfig());
+            // No test can set the wind, and a gust over an open plot snuffs a flame
+            // mid-test: it then burns nothing. CandelaWeather turns this back on.
+            CandelaConfig.Current.WeatherPutsOut = false;
+        }
 
         [VsTest]
         public void VanillaCandlesArePatched()
@@ -95,7 +102,7 @@ namespace Candela.Tests
 
             await Burn(10);
 
-            Assert.Close(3 * BeeswaxHours - 3 * 10, be.Fuel, 0.5);
+            Assert.Close(be.Fuel, 3 * BeeswaxHours - 3 * 10, 0.5);
         }
 
         [VsTest]
@@ -173,7 +180,7 @@ namespace Candela.Tests
         {
             var be = await PlaceBunch(1);
             await Reload(be, hoursAway: 20);
-            Assert.Close(BeeswaxHours, be.Fuel, 0.1);
+            Assert.Close(be.Fuel, BeeswaxHours, 0.1);
         }
 
         [VsTest]
@@ -185,7 +192,7 @@ namespace Candela.Tests
 
             await Reload(be, hoursAway: 20);
 
-            Assert.Close(2 * BeeswaxHours - 2 * 5, be.Fuel, 0.2);
+            Assert.Close(be.Fuel, 2 * BeeswaxHours - 2 * 5, 0.2);
         }
 
         [VsTest]
@@ -196,7 +203,64 @@ namespace Candela.Tests
 
             await Reload(be, hoursAway: 20);
 
-            Assert.Close(2 * BeeswaxHours - 2 * 20, be.Fuel, 0.2);
+            Assert.Close(be.Fuel, 2 * BeeswaxHours - 2 * 20, 0.2);
+        }
+
+        // Time burns at the count of candles there were while it passed: anything that
+        // changes the pool settles up first. Each of these acts with time owed and no
+        // tick in between, as a player's click can land between two.
+
+        /// <summary>Snuffed before the first tick after loading, it still pays for the time away.</summary>
+        [VsTest]
+        public async Task SnuffingRightAfterLoadingStillCatchesUp()
+        {
+            CandelaConfig.Current.UnattendedMode = UnattendedMode.Always;
+            var be = await PlaceBunch(1);
+
+            await Load(be, hoursAway: 20);
+            be.Snuff();
+
+            Assert.Close(be.Fuel, BeeswaxHours - 20, 0.2);
+        }
+
+        /// <summary>A candle added is not billed for the hours before it was there.</summary>
+        [VsTest]
+        public async Task ACandleAddedIsNotBilledForTheTimeBeforeIt()
+        {
+            var be = await PlaceBunch(1);
+            await World.TickNow(Bunch);
+            await Hours(100);
+
+            be.AddFuel(BeeswaxHours);
+            Sapi.World.BlockAccessor.ExchangeBlock(Sapi.World.GetBlock(new AssetLocation("game:bunchocandles-2")).BlockId, Bunch);
+            await World.TickNow(Bunch);
+
+            Assert.Close(be.Fuel, BeeswaxHours - 100 + BeeswaxHours, 0.2);
+        }
+
+        /// <summary>A candle taken off has burned along with the rest, and the one left goes on alone.</summary>
+        [VsTest]
+        public async Task ACandleTakenOffHasBurnedWithTheRest()
+        {
+            var be = await PlaceBunch(2);
+            await World.TickNow(Bunch);
+            await Hours(BeeswaxHours * 0.6);
+
+            Assert.Close(be.TakeShare(), BeeswaxHours * 0.4, 0.2);
+            Sapi.World.BlockAccessor.ExchangeBlock(Sapi.World.GetBlock(new AssetLocation("game:bunchocandles-1")).BlockId, Bunch);
+            await World.TickNow(Bunch);
+            Assert.Close(be.Fuel, BeeswaxHours * 0.4, 0.2);
+        }
+
+        [VsTest]
+        public async Task BreakingABunchDropsWhatIsLeftNow()
+        {
+            await PlaceBunch(3);
+            await World.TickNow(Bunch);
+            await Hours(BeeswaxHours * 0.6);
+
+            ItemStack[] drops = World.GetBlock(Bunch).GetDrops(Sapi.World, Bunch, null);
+            Assert.Equal("candela:candlestub-beeswax-25", drops.Single().Collectible.Code.ToString());
         }
 
         [VsTest]
@@ -255,7 +319,7 @@ namespace Candela.Tests
 
             Assert.Equal("game:bunchocandles-2", World.BlockCode(Bunch));
             Assert.True(ReferenceEquals(be, World.BE<BECandles>(Bunch)), "adding a candle replaced the block entity");
-            Assert.Close(2 * BeeswaxHours - 10, be.Fuel, 0.5);
+            Assert.Close(be.Fuel, 2 * BeeswaxHours - 10, 0.5);
         }
 
         [VsTest(TimeoutMs = 60000), RequiresClient]
@@ -271,7 +335,7 @@ namespace Candela.Tests
 
             Assert.Equal("game:bunchocandles-1", World.BlockCode(Bunch));
             Assert.True(ReferenceEquals(be, World.BE<BECandles>(Bunch)), "the block entity was replaced");
-            Assert.Close(BeeswaxHours * 0.6, be.Fuel, 0.5);
+            Assert.Close(be.Fuel, BeeswaxHours * 0.6, 0.5);
             Assert.True(PlayerHas("candela:candlestub-beeswax-50"), "no half-burned stub came back");
         }
 
@@ -371,6 +435,13 @@ namespace Candela.Tests
         /// </summary>
         static async Task Reload(BECandles be, double hoursAway)
         {
+            await Load(be, hoursAway);
+            await World.TickNow(Bunch);
+        }
+
+        /// <summary><see cref="Reload"/> up to the moment it is loaded: no tick since.</summary>
+        static async Task Load(BECandles be, double hoursAway)
+        {
             await World.TickNow(Bunch);
             var tree = new TreeAttribute();
             be.ToTreeAttributes(tree);
@@ -378,33 +449,6 @@ namespace Candela.Tests
 
             be.FromTreeAttributes(tree, Sapi.World);
             be.Initialize(Sapi);
-            await World.TickNow(Bunch);
-        }
-
-        /// <summary>
-        /// Player.Hold with air leaves an air stack in the hand, which is not a free
-        /// hand to anything that checks for one.
-        /// </summary>
-        static async Task EmptyHand()
-        {
-            var slot = Player.Me.InventoryManager.ActiveHotbarSlot;
-            slot.Itemstack = null;
-            slot.MarkDirty();
-            await Ticks(2);
-        }
-
-        static async Task ShiftUse(BlockPos pos)
-        {
-            await Input.KeyDown(GlKeys.ShiftLeft, shift: true);
-            try
-            {
-                await Interact.UseBlock(pos);
-            }
-            finally
-            {
-                await Input.KeyUp(GlKeys.ShiftLeft);
-            }
-            await Ticks(4);
         }
 
         static void ClearInventoryExceptHand()
@@ -419,18 +463,6 @@ namespace Candela.Tests
                     slot.MarkDirty();
                 }
             }
-        }
-
-        static bool PlayerHas(string code)
-        {
-            foreach (var inv in Player.Me.InventoryManager.Inventories.Values)
-            {
-                foreach (var slot in inv)
-                {
-                    if (slot.Itemstack?.Collectible.Code.ToString() == code) return true;
-                }
-            }
-            return false;
         }
     }
 }

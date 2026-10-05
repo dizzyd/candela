@@ -9,6 +9,7 @@ using Vintagestory.API.MathTools;
 using Vintagestory.GameContent;
 using VsTestkit.Testing;
 using static VsTestkit.Testing.Vs;
+using static Candela.Tests.Hands;
 
 namespace Candela.Tests
 {
@@ -215,7 +216,8 @@ namespace Candela.Tests
             await Hours(0.45);
             slot.Itemstack.Collectible.UpdateAndGetTransitionStates(Sapi.World, slot);
             Assert.Equal(RenderedFat, slot.Itemstack.Collectible.Code.ToString(), "still molten half an hour off the fire");
-            Assert.Equal(6, slot.Itemstack.StackSize);
+            // Six portions, three lumps: it melted two to the lump.
+            Assert.Equal(3, slot.Itemstack.StackSize);
         }
 
         /// <summary>
@@ -338,14 +340,6 @@ namespace Candela.Tests
             const BindingFlags Any = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
             object renderer = typeof(BlockEntityFirepit).GetField("renderer", Any)?.GetValue(firepit);
             return renderer?.GetType().GetField("contentStackRenderer", Any)?.GetValue(renderer);
-        }
-
-        static async Task EmptyHand()
-        {
-            ItemSlot hand = Player.Me.InventoryManager.ActiveHotbarSlot;
-            hand.Itemstack = null;
-            hand.MarkDirty();
-            await Ticks(4);
         }
 
         [VsTest(TimeoutMs = 60000), RequiresClient]

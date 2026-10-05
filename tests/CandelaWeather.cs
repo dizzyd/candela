@@ -50,7 +50,7 @@ namespace Candela.Tests
             await World.TickNow(Light);
 
             Assert.True(be.Snuffed, "rain on an open bunch should put it out");
-            Assert.Close(fuel, be.Fuel, 0.5, "putting out should keep the fuel");
+            Assert.Close(be.Fuel, fuel, 0.5, "putting out should keep the fuel");
         }
 
         [VsTest]

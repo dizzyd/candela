@@ -70,15 +70,14 @@ public class BECandles : BlockEntity, IIgnitable
         // block entity at last: either way, new candles.
         flame.Initialize(api, Quantity * FullHours);
         RegisterGameTickListener(OnBurnTick, 4000, api.World.Rand.Next(4000));
+
+        // The time it was unloaded burned at once, rather than up to four seconds on.
+        RegisterDelayedCallback(_ => Settle(), 0);
     }
 
     private void OnBurnTick(float dt)
     {
-        float heightBefore = HeightFactor;
-        bool spentBefore = Spent;
-        byte[] light = Relight.Capture(this);
-
-        flame.Burn(Api.World.Calendar.TotalHours, Quantity);
+        bool changed = Settle();
 
         if (Flaming && Weather.PutsOutAt(Api, Pos))
         {
@@ -86,9 +85,28 @@ public class BECandles : BlockEntity, IIgnitable
             return;
         }
 
+        if (!changed) Api.World.BlockAccessor.GetChunkAtBlockPos(Pos)?.MarkModified();
+    }
+
+    /// <summary>
+    /// Burns the time since the last burn, at the number of candles there were over it.
+    /// Server side. Everything that changes the pool or the count calls this first -
+    /// see <see cref="Flame"/>. Returns true if anything shown changed.
+    /// </summary>
+    public bool Settle()
+    {
+        if (Api?.Side != EnumAppSide.Server) return false;
+
+        float heightBefore = HeightFactor;
+        bool spentBefore = Spent;
+        byte[] light = Relight.Capture(this);
+
+        flame.Burn(Api.World.Calendar.TotalHours, Quantity);
+
         if (Spent != spentBefore) Changed(light);
         else if (HeightFactor != heightBefore) MarkDirty(true);
-        else Api.World.BlockAccessor.GetChunkAtBlockPos(Pos)?.MarkModified();
+        else return false;
+        return true;
     }
 
     /// <summary>The light this bunch gives, given what the block would give new and lit.</summary>
@@ -96,6 +114,7 @@ public class BECandles : BlockEntity, IIgnitable
 
     public void Snuff()
     {
+        Settle();
         byte[] light = Relight.Capture(this);
         if (flame.Snuff()) Changed(light);
     }
@@ -103,6 +122,9 @@ public class BECandles : BlockEntity, IIgnitable
     /// <summary>Lights the bunch, if it has anything left to light.</summary>
     public bool TryIgnite()
     {
+        // An empty chandelier has nothing to light.
+        if (Quantity <= 0) return false;
+        Settle();
         byte[] light = Relight.Capture(this);
         if (!flame.TryIgnite(Api.World.Calendar.TotalHours)) return false;
         Changed(light);
@@ -115,16 +137,22 @@ public class BECandles : BlockEntity, IIgnitable
     /// </summary>
     public void AddFuel(double hours)
     {
+        Settle();
         flame.AddFuel(hours);
         Api.World.BlockAccessor.GetChunkAtBlockPos(Pos)?.MarkModified();
     }
 
     /// <summary>Takes one candle's share of the pool, and returns it. Call before exchanging for one candle fewer.</summary>
-    public double TakeShare() => flame.TakeFuel(Fuel / Math.Max(1, Quantity));
+    public double TakeShare()
+    {
+        Settle();
+        return flame.TakeFuel(Fuel / Math.Max(1, Quantity));
+    }
 
     /// <summary>Sets the pool outright - for a block just placed from a part-burned candle.</summary>
     public void SetFuel(double hours)
     {
+        Settle();
         byte[] light = Relight.Capture(this);
         flame.SetFuel(hours);
         Changed(light);
@@ -161,7 +189,8 @@ public class BECandles : BlockEntity, IIgnitable
     public override void GetBlockInfo(IPlayer forPlayer, StringBuilder dsc)
     {
         base.GetBlockInfo(forPlayer, dsc);
-        CandleInfo.Append(dsc, flame, Fuel / Math.Max(1, Quantity));
+        int count = Math.Max(1, Quantity);
+        CandleInfo.Append(dsc, flame, flame.FuelAt(Api.World.Calendar.TotalHours, count) / count);
     }
 
     public override void ToTreeAttributes(ITreeAttribute tree)
@@ -198,14 +227,19 @@ public class BECandles : BlockEntity, IIgnitable
         }
     }
 
-    public EnumIgniteState OnTryIgniteBlock(EntityAgent byEntity, BlockPos pos, float secondsIgniting) => flame.OnTryIgniteBlock(secondsIgniting);
+    // An empty chandelier is "flaming" - nothing snuffed it - and must neither light a
+    // torch held to it nor take a firestarter. Only the holder knows it is empty: a
+    // spent candle with no fuel is meant to gutter on, and to light a torch.
+    public EnumIgniteState OnTryIgniteBlock(EntityAgent byEntity, BlockPos pos, float secondsIgniting) =>
+        Quantity > 0 ? flame.OnTryIgniteBlock(secondsIgniting) : EnumIgniteState.NotIgnitable;
 
     public void OnTryIgniteBlockOver(EntityAgent byEntity, BlockPos pos, float secondsIgniting, ref EnumHandling handling)
     {
         if (TryIgnite()) handling = EnumHandling.PreventDefault;
     }
 
-    public EnumIgniteState OnTryIgniteStack(EntityAgent byEntity, BlockPos pos, ItemSlot slot, float secondsIgniting) => flame.OnTryIgniteStack(secondsIgniting);
+    public EnumIgniteState OnTryIgniteStack(EntityAgent byEntity, BlockPos pos, ItemSlot slot, float secondsIgniting) =>
+        Quantity > 0 ? flame.OnTryIgniteStack(secondsIgniting) : EnumIgniteState.NotIgnitable;
 }
 
 /// <summary>The block info line every candle flame shows.</summary>

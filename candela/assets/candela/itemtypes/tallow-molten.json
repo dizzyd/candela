@@ -27,7 +27,9 @@
 		freshHours: { avg: 0.1 },
 		transitionHours: { avg: 0.05 },
 		transitionedStack: { type: "item", code: "game:fat-rendered" },
-		transitionRatio: 1
+		// Two portions to the lump they melted from; an odd one left over is lost
+		// rather than rounded up (ItemMoltenWax.OnTransitionNow).
+		transitionRatio: 0.5
 	}],
 	// Vanilla's glue portion's, which uses the same shape.
 	guiTransform: {

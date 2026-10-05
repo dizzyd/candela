@@ -1,0 +1,606 @@
+[
+	{
+		"op": "add",
+		"path": "/animations/-",
+		"value": {
+			"name": "candela-dip",
+			"code": "candela-dip",
+			"quantityframes": 31,
+			"onActivityStopped": "EaseOut",
+			"onAnimationEnd": "Repeat",
+			"keyframes": [
+				{
+					"frame": 0,
+					"elements": {
+						"LowerTorso": {
+							"rotationX": 0.0,
+							"rotationY": 0.0,
+							"rotationZ": 6.0
+						},
+						"UpperTorso": {
+							"rotationX": -5.0,
+							"rotationY": -5.0,
+							"rotationZ": 28.0
+						},
+						"Head": {
+							"rotationX": 3.0,
+							"rotationY": 0.0,
+							"rotationZ": -10.0
+						},
+						"UpperArmL": {
+							"rotationX": -6.0,
+							"rotationY": 3.0,
+							"rotationZ": -8.0
+						},
+						"LowerArmL": {
+							"rotationX": 0.0,
+							"rotationY": 0.0,
+							"rotationZ": -10.0
+						},
+						"UpperFootL": {
+							"rotationX": 0.0,
+							"rotationY": 0.0,
+							"rotationZ": -4.0
+						},
+						"UpperFootR": {
+							"rotationX": 0.0,
+							"rotationY": 0.0,
+							"rotationZ": -4.0
+						},
+						"UpperArmR": {
+							"rotationX": 8.0,
+							"rotationY": 10.0,
+							"rotationZ": -85.0
+						},
+						"LowerArmR": {
+							"rotationX": 0.0,
+							"rotationY": 0.0,
+							"rotationZ": -45.0
+						},
+						"ItemAnchor": {
+							"offsetX": 0.0,
+							"offsetY": -8.0,
+							"offsetZ": 0.0,
+							"rotationX": 0.0,
+							"rotationY": 0.0,
+							"rotationZ": 76.0
+						}
+					}
+				},
+				{
+					"frame": 5,
+					"elements": {
+						"LowerTorso": {
+							"rotationX": 0.0,
+							"rotationY": 0.0,
+							"rotationZ": 6.0
+						},
+						"UpperTorso": {
+							"rotationX": -5.0,
+							"rotationY": -5.0,
+							"rotationZ": 28.0
+						},
+						"Head": {
+							"rotationX": 3.0,
+							"rotationY": 0.0,
+							"rotationZ": -10.0
+						},
+						"UpperArmL": {
+							"rotationX": -6.0,
+							"rotationY": 3.0,
+							"rotationZ": -8.0
+						},
+						"LowerArmL": {
+							"rotationX": 0.0,
+							"rotationY": 0.0,
+							"rotationZ": -10.0
+						},
+						"UpperFootL": {
+							"rotationX": 0.0,
+							"rotationY": 0.0,
+							"rotationZ": -4.0
+						},
+						"UpperFootR": {
+							"rotationX": 0.0,
+							"rotationY": 0.0,
+							"rotationZ": -4.0
+						},
+						"UpperArmR": {
+							"rotationX": 8.0,
+							"rotationY": 10.0,
+							"rotationZ": -88.0
+						},
+						"LowerArmR": {
+							"rotationX": 0.0,
+							"rotationY": 0.0,
+							"rotationZ": -48.0
+						},
+						"ItemAnchor": {
+							"offsetX": 0.0,
+							"offsetY": -8.0,
+							"offsetZ": 0.0,
+							"rotationX": 0.0,
+							"rotationY": 0.0,
+							"rotationZ": 78.0
+						}
+					}
+				},
+				{
+					"frame": 12,
+					"elements": {
+						"LowerTorso": {
+							"rotationX": 0.0,
+							"rotationY": 0.0,
+							"rotationZ": 6.0
+						},
+						"UpperTorso": {
+							"rotationX": -5.0,
+							"rotationY": -5.0,
+							"rotationZ": 28.0
+						},
+						"Head": {
+							"rotationX": 3.0,
+							"rotationY": 0.0,
+							"rotationZ": -10.0
+						},
+						"UpperArmL": {
+							"rotationX": -6.0,
+							"rotationY": 3.0,
+							"rotationZ": -8.0
+						},
+						"LowerArmL": {
+							"rotationX": 0.0,
+							"rotationY": 0.0,
+							"rotationZ": -10.0
+						},
+						"UpperFootL": {
+							"rotationX": 0.0,
+							"rotationY": 0.0,
+							"rotationZ": -4.0
+						},
+						"UpperFootR": {
+							"rotationX": 0.0,
+							"rotationY": 0.0,
+							"rotationZ": -4.0
+						},
+						"UpperArmR": {
+							"rotationX": 8.0,
+							"rotationY": 10.0,
+							"rotationZ": -70.0
+						},
+						"LowerArmR": {
+							"rotationX": 0.0,
+							"rotationY": 0.0,
+							"rotationZ": -20.0
+						},
+						"ItemAnchor": {
+							"offsetX": 0.0,
+							"offsetY": -8.0,
+							"offsetZ": 0.0,
+							"rotationX": 0.0,
+							"rotationY": 0.0,
+							"rotationZ": 45.0
+						}
+					}
+				},
+				{
+					"frame": 19,
+					"elements": {
+						"LowerTorso": {
+							"rotationX": 0.0,
+							"rotationY": 0.0,
+							"rotationZ": 6.0
+						},
+						"UpperTorso": {
+							"rotationX": -5.0,
+							"rotationY": -5.0,
+							"rotationZ": 28.0
+						},
+						"Head": {
+							"rotationX": 3.0,
+							"rotationY": 0.0,
+							"rotationZ": -10.0
+						},
+						"UpperArmL": {
+							"rotationX": -6.0,
+							"rotationY": 3.0,
+							"rotationZ": -8.0
+						},
+						"LowerArmL": {
+							"rotationX": 0.0,
+							"rotationY": 0.0,
+							"rotationZ": -10.0
+						},
+						"UpperFootL": {
+							"rotationX": 0.0,
+							"rotationY": 0.0,
+							"rotationZ": -4.0
+						},
+						"UpperFootR": {
+							"rotationX": 0.0,
+							"rotationY": 0.0,
+							"rotationZ": -4.0
+						},
+						"UpperArmR": {
+							"rotationX": 8.0,
+							"rotationY": 10.0,
+							"rotationZ": -70.0
+						},
+						"LowerArmR": {
+							"rotationX": 0.0,
+							"rotationY": 0.0,
+							"rotationZ": -20.0
+						},
+						"ItemAnchor": {
+							"offsetX": 0.0,
+							"offsetY": -8.0,
+							"offsetZ": 0.0,
+							"rotationX": 0.0,
+							"rotationY": 0.0,
+							"rotationZ": 45.0
+						}
+					}
+				},
+				{
+					"frame": 24,
+					"elements": {
+						"LowerTorso": {
+							"rotationX": 0.0,
+							"rotationY": 0.0,
+							"rotationZ": 6.0
+						},
+						"UpperTorso": {
+							"rotationX": -5.0,
+							"rotationY": -5.0,
+							"rotationZ": 28.0
+						},
+						"Head": {
+							"rotationX": 3.0,
+							"rotationY": 0.0,
+							"rotationZ": -10.0
+						},
+						"UpperArmL": {
+							"rotationX": -6.0,
+							"rotationY": 3.0,
+							"rotationZ": -8.0
+						},
+						"LowerArmL": {
+							"rotationX": 0.0,
+							"rotationY": 0.0,
+							"rotationZ": -10.0
+						},
+						"UpperFootL": {
+							"rotationX": 0.0,
+							"rotationY": 0.0,
+							"rotationZ": -4.0
+						},
+						"UpperFootR": {
+							"rotationX": 0.0,
+							"rotationY": 0.0,
+							"rotationZ": -4.0
+						},
+						"UpperArmR": {
+							"rotationX": 8.0,
+							"rotationY": 10.0,
+							"rotationZ": -80.0
+						},
+						"LowerArmR": {
+							"rotationX": 0.0,
+							"rotationY": 0.0,
+							"rotationZ": -30.0
+						},
+						"ItemAnchor": {
+							"offsetX": 0.0,
+							"offsetY": -8.0,
+							"offsetZ": 0.0,
+							"rotationX": 0.0,
+							"rotationY": 0.0,
+							"rotationZ": 60.0
+						}
+					}
+				},
+				{
+					"frame": 30,
+					"elements": {
+						"LowerTorso": {
+							"rotationX": 0.0,
+							"rotationY": 0.0,
+							"rotationZ": 6.0
+						},
+						"UpperTorso": {
+							"rotationX": -5.0,
+							"rotationY": -5.0,
+							"rotationZ": 28.0
+						},
+						"Head": {
+							"rotationX": 3.0,
+							"rotationY": 0.0,
+							"rotationZ": -10.0
+						},
+						"UpperArmL": {
+							"rotationX": -6.0,
+							"rotationY": 3.0,
+							"rotationZ": -8.0
+						},
+						"LowerArmL": {
+							"rotationX": 0.0,
+							"rotationY": 0.0,
+							"rotationZ": -10.0
+						},
+						"UpperFootL": {
+							"rotationX": 0.0,
+							"rotationY": 0.0,
+							"rotationZ": -4.0
+						},
+						"UpperFootR": {
+							"rotationX": 0.0,
+							"rotationY": 0.0,
+							"rotationZ": -4.0
+						},
+						"UpperArmR": {
+							"rotationX": 8.0,
+							"rotationY": 10.0,
+							"rotationZ": -85.0
+						},
+						"LowerArmR": {
+							"rotationX": 0.0,
+							"rotationY": 0.0,
+							"rotationZ": -45.0
+						},
+						"ItemAnchor": {
+							"offsetX": 0.0,
+							"offsetY": -8.0,
+							"offsetZ": 0.0,
+							"rotationX": 0.0,
+							"rotationY": 0.0,
+							"rotationZ": 76.0
+						}
+					}
+				}
+			]
+		},
+		"file": "game:shapes/entity/humanoid/seraph-faceless.json"
+	},
+	{
+		"op": "add",
+		"path": "/client/animations/-",
+		"value": {
+			"code": "candela-dip",
+			"animation": "candela-dip",
+			"animationSpeed": 1,
+			"easeInSpeed": 10,
+			"easeOutSpeed": 6,
+			"blendMode": "Add",
+			"elementWeight": {
+				"UpperArmR": 20,
+				"LowerArmR": 20,
+				"UpperArmL": 20,
+				"LowerArmL": 20,
+				"ItemAnchor": 20
+			},
+			"elementBlendMode": {
+				"UpperArmR": "AddAverage",
+				"LowerArmR": "AddAverage",
+				"UpperArmL": "AddAverage",
+				"LowerArmL": "AddAverage",
+				"ItemAnchor": "AddAverage"
+			}
+		},
+		"file": "game:entities/humanoid/player.json"
+	},
+	{
+		"op": "add",
+		"path": "/animations/-",
+		"value": {
+			"name": "candela-dip-fp",
+			"code": "candela-dip-fp",
+			"quantityframes": 31,
+			"onActivityStopped": "EaseOut",
+			"onAnimationEnd": "Repeat",
+			"keyframes": [
+				{
+					"frame": 0,
+					"elements": {
+						"UpperArmR": {
+							"offsetX": 0.0,
+							"offsetY": 0.0,
+							"offsetZ": -3.0,
+							"rotationX": 8.0,
+							"rotationY": 10.0,
+							"rotationZ": -85.0
+						},
+						"LowerArmR": {
+							"offsetX": 0.0,
+							"offsetY": 1.0,
+							"offsetZ": 0.0,
+							"rotationX": 0.0,
+							"rotationY": 0.0,
+							"rotationZ": -45.0
+						},
+						"ItemAnchor": {
+							"offsetX": 0.0,
+							"offsetY": -8.0,
+							"offsetZ": 0.0,
+							"rotationX": 0.0,
+							"rotationY": 0.0,
+							"rotationZ": 76.0
+						}
+					}
+				},
+				{
+					"frame": 5,
+					"elements": {
+						"UpperArmR": {
+							"offsetX": 0.0,
+							"offsetY": 0.0,
+							"offsetZ": -3.0,
+							"rotationX": 8.0,
+							"rotationY": 10.0,
+							"rotationZ": -85.0
+						},
+						"LowerArmR": {
+							"offsetX": 0.0,
+							"offsetY": 1.0,
+							"offsetZ": 0.0,
+							"rotationX": 0.0,
+							"rotationY": 0.0,
+							"rotationZ": -45.0
+						},
+						"ItemAnchor": {
+							"offsetX": 0.0,
+							"offsetY": -7.0,
+							"offsetZ": 0.0,
+							"rotationX": 0.0,
+							"rotationY": 0.0,
+							"rotationZ": 76.0
+						}
+					}
+				},
+				{
+					"frame": 12,
+					"elements": {
+						"UpperArmR": {
+							"offsetX": 0.0,
+							"offsetY": 0.0,
+							"offsetZ": -3.0,
+							"rotationX": 8.0,
+							"rotationY": 10.0,
+							"rotationZ": -85.0
+						},
+						"LowerArmR": {
+							"offsetX": 0.0,
+							"offsetY": 1.0,
+							"offsetZ": 0.0,
+							"rotationX": 0.0,
+							"rotationY": 0.0,
+							"rotationZ": -45.0
+						},
+						"ItemAnchor": {
+							"offsetX": 0.0,
+							"offsetY": -12.0,
+							"offsetZ": 0.0,
+							"rotationX": 0.0,
+							"rotationY": 0.0,
+							"rotationZ": 76.0
+						}
+					}
+				},
+				{
+					"frame": 19,
+					"elements": {
+						"UpperArmR": {
+							"offsetX": 0.0,
+							"offsetY": 0.0,
+							"offsetZ": -3.0,
+							"rotationX": 8.0,
+							"rotationY": 10.0,
+							"rotationZ": -85.0
+						},
+						"LowerArmR": {
+							"offsetX": 0.0,
+							"offsetY": 1.0,
+							"offsetZ": 0.0,
+							"rotationX": 0.0,
+							"rotationY": 0.0,
+							"rotationZ": -45.0
+						},
+						"ItemAnchor": {
+							"offsetX": 0.0,
+							"offsetY": -12.5,
+							"offsetZ": 0.0,
+							"rotationX": 0.0,
+							"rotationY": 0.0,
+							"rotationZ": 76.0
+						}
+					}
+				},
+				{
+					"frame": 24,
+					"elements": {
+						"UpperArmR": {
+							"offsetX": 0.0,
+							"offsetY": 0.0,
+							"offsetZ": -3.0,
+							"rotationX": 8.0,
+							"rotationY": 10.0,
+							"rotationZ": -85.0
+						},
+						"LowerArmR": {
+							"offsetX": 0.0,
+							"offsetY": 1.0,
+							"offsetZ": 0.0,
+							"rotationX": 0.0,
+							"rotationY": 0.0,
+							"rotationZ": -45.0
+						},
+						"ItemAnchor": {
+							"offsetX": 0.0,
+							"offsetY": -10.0,
+							"offsetZ": 0.0,
+							"rotationX": 0.0,
+							"rotationY": 0.0,
+							"rotationZ": 76.0
+						}
+					}
+				},
+				{
+					"frame": 30,
+					"elements": {
+						"UpperArmR": {
+							"offsetX": 0.0,
+							"offsetY": 0.0,
+							"offsetZ": -3.0,
+							"rotationX": 8.0,
+							"rotationY": 10.0,
+							"rotationZ": -85.0
+						},
+						"LowerArmR": {
+							"offsetX": 0.0,
+							"offsetY": 1.0,
+							"offsetZ": 0.0,
+							"rotationX": 0.0,
+							"rotationY": 0.0,
+							"rotationZ": -45.0
+						},
+						"ItemAnchor": {
+							"offsetX": 0.0,
+							"offsetY": -8.0,
+							"offsetZ": 0.0,
+							"rotationX": 0.0,
+							"rotationY": 0.0,
+							"rotationZ": 76.0
+						}
+					}
+				}
+			]
+		},
+		"file": "game:shapes/entity/humanoid/seraph-faceless.json"
+	},
+	{
+		"op": "add",
+		"path": "/client/animations/-",
+		"value": {
+			"code": "candela-dip-fp",
+			"animation": "candela-dip-fp",
+			"animationSpeed": 1,
+			"easeInSpeed": 10,
+			"easeOutSpeed": 6,
+			"blendMode": "Add",
+			"elementWeight": {
+				"UpperArmR": 60,
+				"LowerArmR": 60,
+				"UpperArmL": 60,
+				"LowerArmL": 60,
+				"ItemAnchor": 60
+			},
+			"elementBlendMode": {
+				"UpperArmR": "AddAverage",
+				"LowerArmR": "AddAverage",
+				"UpperArmL": "AddAverage",
+				"LowerArmL": "AddAverage",
+				"ItemAnchor": "AddAverage"
+			}
+		},
+		"file": "game:entities/humanoid/player.json"
+	}
+]

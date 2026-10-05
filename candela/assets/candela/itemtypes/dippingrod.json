@@ -10,6 +10,8 @@
 	},
 	creativeinventory: { "general": ["*"], "items": ["*"] },
 	maxstacksize: 1,
+	// Patched onto the player by patches/player-dip.json, from tools/dipanim.py.
+	heldTpUseAnimation: "candela-dip",
 	// Turned over as vanilla's candle is (x -180): icons are drawn the other way up,
 	// and without it the rod sat at the bottom with the tapers standing up from it.
 	guiTransform: {

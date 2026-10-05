@@ -103,7 +103,7 @@ namespace Candela.Tests
             }
             finally
             {
-                hours.GetType().GetProperty("Value").SetValue(hours, new JsonObject(new JValue(96.0)));
+                hours.GetType().GetProperty("Value").SetValue(hours, new JsonObject(new JValue(432.0)));
                 mode.GetType().GetProperty("MappingKey").SetValue(mode, "Dim");
                 CandelaConfig.Current.AssignFrom(new CandelaConfig());
             }

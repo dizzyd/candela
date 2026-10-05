@@ -1,13 +1,19 @@
 {
 	code: "tallow",
-	class: "CandelaMoltenTallow",
+	class: "CandelaMoltenWax",
 	variantgroups: [
 		{ code: "state", states: ["molten"] }
 	],
-	shape: { base: "game:item/resource/fat-rendered" },
+	// A liquid to look at - vanilla's liquid item shape, and in the pot on the fire a
+	// liquid surface (WaxPotRenderer) - but an ordinary item: it lives in the pot on
+	// the fire, and off the fire it sets within the hour, so there is nothing to carry
+	// it in a bucket for.
+	shape: { base: "game:item/liquid" },
 	texture: { base: "game:block/food/dairy/curdledmilk" },
 	creativeinventory: { "general": ["*"], "items": ["*"] },
 	attributes: {
+		// Two portions a lump of rendered fat, so a full pot is 48.
+		candela: { wax: "tallow", setsBelow: 50, fullPot: 48 },
 		inContainerTexture: { base: "game:block/food/dairy/curdledmilk" },
 		handbook: {
 			extraSections: [ { title: "candela:handbook-tallow-title", text: "candela:handbook-tallow-text" } ]
@@ -15,21 +21,22 @@
 	},
 	maxstacksize: 64,
 	materialDensity: 620,
-	// Held at zero while the tallow is hot - see ItemMoltenTallow.
+	// Held at zero while the tallow is hot - see ItemMoltenWax.
 	transitionableProps: [{
 		type: "Harden",
-		freshHours: { avg: 0.5 },
-		transitionHours: { avg: 0.1 },
+		freshHours: { avg: 0.1 },
+		transitionHours: { avg: 0.05 },
 		transitionedStack: { type: "item", code: "game:fat-rendered" },
 		transitionRatio: 1
 	}],
+	// Vanilla's glue portion's, which uses the same shape.
 	guiTransform: {
-		rotation: { x: 154, y: 20, z: -5 },
-		origin: { x: 0.48, y: 0.06, z: 0.5 },
-		scale: 3.55
-	},
-	groundTransform: {
+		translation: { x: 0, y: 1, z: 0 },
+		rotation: { x: 123, y: -33, z: -13 },
 		origin: { x: 0.5, y: 0, z: 0.5 },
-		scale: 4
+		scale: 1.4
+	},
+	tpHandTransform: {
+		translation: { x: -1.5, y: -1, z: -1.4 }
 	}
 }

@@ -1,7 +1,11 @@
+using System.Linq;
 using System.Threading.Tasks;
+using candela;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
+using Vintagestory.API.Common.Entities;
 using Vintagestory.API.MathTools;
+using Vintagestory.GameContent;
 using VsTestkit.Testing;
 using static VsTestkit.Testing.Vs;
 
@@ -64,6 +68,166 @@ namespace Candela.Tests
             await Interact.LookAt(P(7, 0, 8));
             await Frames.Wait(30);
             Log("shot: " + await Shot.Take("results/looks-held.png"));
+        }
+
+        /// <summary>
+        /// Not an assertion: a pot of molten tallow on the fire, which should stand open
+        /// with the tallow showing, and a freshly dipped rod in the hotbar, whose bar
+        /// should fill as the coat sets and be gone once it has.
+        /// </summary>
+        [VsTest(TimeoutMs = 120000), RequiresClient]
+        public async Task TallowPotAndSettingRodForTheEye()
+        {
+            await World.SetCalendarTo(500 * 24 + 12);
+            await Ticks(10);
+
+            var firepit = await CandelaDipping.FirepitWithCookedTallow(fatPerSlot: 3, slots: 2);
+            // Close and high enough to see down into the pot.
+            await Player.Teleport(new Vec3d(firepit.Pos.X + 0.5, firepit.Pos.Y + 0.6, firepit.Pos.Z - 0.6));
+            await Interact.LookAt(firepit.Pos);
+            await Frames.Wait(60);
+            Log("shot: " + await Shot.Take("results/looks-tallow-pot.png"));
+
+            var hotbar = Player.Me.InventoryManager.GetHotbarInventory();
+            hotbar[0].Itemstack = ((ItemDippingRod)Sapi.World.GetItem(new AssetLocation("candela:dippingrod-0"))).WithAnotherLayer(Sapi.World);
+            hotbar[0].MarkDirty();
+            await OnClient();
+            Capi.World.Player.InventoryManager.ActiveHotbarSlotNumber = 0;
+            await OnServer();
+
+            await Frames.Wait(30);
+            Log("shot: " + await Shot.Take("results/looks-rod-just-dipped.png"));
+            await Hours(ItemDippingRod.SetHours * 0.6);
+            await Frames.Wait(30);
+            Log("shot: " + await Shot.Take("results/looks-rod-setting.png"));
+            await Hours(ItemDippingRod.SetHours);
+            await Frames.Wait(30);
+            Log("shot: " + await Shot.Take("results/looks-rod-set.png"));
+        }
+
+        /// <summary>
+        /// The dip as the player sees it, in first person over a pot of tallow. Asserts
+        /// only that the animation reached the player; the pictures are for the eye.
+        ///
+        /// The third-person side of it is pictured pose by pose on a stand-in, by
+        /// DipPosesOnAStandIn: shots of the running animation on one all came out on the
+        /// same frame, though the animation was cycling - watched live, it dips.
+        /// </summary>
+        [VsTest(TimeoutMs = 120000), RequiresClient]
+        public async Task DippingInFirstPerson()
+        {
+            await OnClient();
+            var anims = Capi.World.Player.Entity.Properties.Client.AnimationsByMetaCode;
+            bool tp = anims.ContainsKey("candela-dip"), fp = anims.ContainsKey("candela-dip-fp");
+            await OnServer();
+            Assert.True(tp, "the player has no candela-dip animation - the patch did not apply");
+            Assert.True(fp, "the player has no candela-dip-fp animation");
+
+            await World.SetCalendarTo(500 * 24 + 12);
+            var firepit = await CandelaDipping.FirepitWithCookedTallow(fatPerSlot: 3, slots: 2);
+            await Player.Teleport(new Vec3d(firepit.Pos.X - 0.4, firepit.Pos.Y, firepit.Pos.Z - 0.6));
+            await Player.Hold("candela:dippingrod-2");
+            await Interact.Aim(firepit.Pos);
+
+            // A fresh rod, so the first hold is a dip and not "the coat is setting".
+            await Input.MouseDown(EnumMouseButton.Right);
+            for (int i = 0; i < 3; i++)
+            {
+                await Frames.Wait(6);
+                Log("shot: " + await Shot.Take($"results/dip-firstperson-{i}.png"));
+            }
+            await Input.MouseUp(EnumMouseButton.Right);
+        }
+
+        /// <summary>
+        /// Each keyframe of the dip held still on the stand-in, to tune it by: run
+        /// tools/dipanim.py --probe first, which adds them as candela-probe-N. Without
+        /// that it has nothing to show and says so.
+        /// </summary>
+        [VsTest(TimeoutMs = 120000), RequiresClient]
+        public async Task DipPosesOnAStandIn()
+        {
+            await OnClient();
+            int poses = Capi.World.Player.Entity.Properties.Client.AnimationsByMetaCode.Keys.Count(k => k.StartsWith("candela-probe-"));
+            await OnServer();
+            if (poses == 0)
+            {
+                Log("no probe poses - generate the patch with tools/dipanim.py --probe");
+                return;
+            }
+
+            var (_, bot) = await StandInAtThePot();
+            for (int i = 0; i < poses; i++)
+            {
+                await Play(bot, "candela-probe-" + i);
+                await Frames.Wait(60);
+                Log("shot: " + await Shot.Take($"results/dip-pose-{i}.png"));
+            }
+        }
+
+        /// <summary>
+        /// The first-person dip poses, played on the player and seen through their own
+        /// eyes over the pot: tools/dipanim.py --probe adds them as candela-probe-fp-N.
+        /// </summary>
+        [VsTest(TimeoutMs = 120000), RequiresClient]
+        public async Task DipPosesFirstPerson()
+        {
+            await OnClient();
+            int poses = Capi.World.Player.Entity.Properties.Client.AnimationsByMetaCode.Keys.Count(k => k.StartsWith("candela-probe-fp-"));
+            await OnServer();
+            if (poses == 0)
+            {
+                Log("no first-person probe poses - generate the patch with tools/dipanim.py --probe");
+                return;
+            }
+
+            await World.SetCalendarTo(500 * 24 + 12);
+            var firepit = await CandelaDipping.FirepitWithCookedTallow(fatPerSlot: 3, slots: 2);
+            await Player.Teleport(new Vec3d(firepit.Pos.X - 0.4, firepit.Pos.Y, firepit.Pos.Z - 0.6));
+            await Player.Hold("candela:dippingrod-2");
+            await Interact.Aim(firepit.Pos);
+
+            for (int i = 0; i < poses; i++)
+            {
+                await Play(Player.Me.Entity, "candela-probe-fp-" + i);
+                await Frames.Wait(60);
+                Log("shot: " + await Shot.Take($"results/dip-pose-fp-{i}.png"));
+            }
+        }
+
+        /// <summary>
+        /// A pot of tallow on the fire, a playerbot with a rod standing at it facing
+        /// in, and the camera close beside them both, side on.
+        /// </summary>
+        static async Task<(BlockEntityFirepit, Entity)> StandInAtThePot()
+        {
+            await World.SetCalendarTo(500 * 24 + 12);
+            var firepit = await CandelaDipping.FirepitWithCookedTallow(fatPerSlot: 3, slots: 2);
+            BlockPos pot = firepit.Pos;
+
+            var bot = (EntityAgent)World.SpawnEntity("game:playerbot", pot.WestCopy());
+            bot.ServerPos.SetPos(pot.X - 0.35, pot.Y, pot.Z + 0.5);
+            bot.ServerPos.Yaw = GameMath.PIHALF;
+            bot.Pos.SetFrom(bot.ServerPos);
+            bot.BodyYaw = GameMath.PIHALF;
+            bot.RightHandItemSlot.Itemstack = World.Stack("candela:dippingrod-3", 1);
+            bot.RightHandItemSlot.MarkDirty();
+            await Ticks(20);
+
+            await Player.Teleport(new Vec3d(bot.Pos.X + 0.6, bot.Pos.Y + 0.1, bot.Pos.Z + 1.9));
+            await Interact.LookAt(new Vec3d(bot.Pos.X + 0.3, bot.Pos.Y + 0.8, bot.Pos.Z));
+            return (firepit, bot);
+        }
+
+        /// <summary>Plays one of the player's animations, alone, on the client's copy of an entity.</summary>
+        static async Task Play(Entity entity, string code)
+        {
+            long id = entity.EntityId;
+            await OnClient();
+            var shown = Capi.World.GetEntityById(id);
+            foreach (string running in shown.AnimManager.ActiveAnimationsByAnimCode.Keys.ToArray()) shown.AnimManager.StopAnimation(running);
+            shown.AnimManager.StartAnimation(Capi.World.Player.Entity.Properties.Client.AnimationsByMetaCode[code].Clone());
+            await OnServer();
         }
 
         /// <summary>

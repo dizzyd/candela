@@ -1,7 +1,7 @@
 [
 	{
 		op: "add", side: "Server",
-		path: "/behaviorsByType/*/-",
+		path: "/behaviorsByType/*/1",
 		value: { name: "CandelaDipVat" },
 		file: "game:blocktypes/wood/firepit.json"
 	}

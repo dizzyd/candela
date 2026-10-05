@@ -170,13 +170,15 @@ public class BECandles : BlockEntity, IIgnitable
         float heightBefore = HeightFactor;
         bool flamingBefore = Flaming;
         bool spentBefore = Spent;
-        byte[] lightBefore = Api?.Side == EnumAppSide.Server && Block != null ? Relight.Capture(this) : null;
+        byte[] lightBefore = Api != null && Block != null ? Relight.Capture(this) : null;
 
         flame.FromTreeAttributes(tree);
 
-        if (Api is ICoreClientAPI && (HeightFactor != heightBefore || Flaming != flamingBefore))
+        if (Api is ICoreClientAPI)
         {
-            MarkDirty(true);
+            if (HeightFactor != heightBefore || Flaming != flamingBefore) MarkDirty(true);
+            Relight.Synced(this, lightBefore);
+            return;
         }
 
         // State restored onto a block entity already running: a block that fell and

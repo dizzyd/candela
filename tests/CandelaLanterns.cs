@@ -23,8 +23,8 @@ namespace Candela.Tests
 
         // Vanilla's large lantern: [7, 3, 20] with quartz glass and a plain lining.
         const int VanillaLight = 20;
-        const double BeeswaxHours = 96;
-        const double TallowHours = 48;
+        const double BeeswaxHours = 432;
+        const double TallowHours = 216;
 
         // Assigned into rather than replaced: ConfigKit, when it is installed, holds
         // this object and would otherwise go on editing one nobody reads.

@@ -1,7 +1,8 @@
 [
 	{
 		// Four recipes rather than one, as vanilla does for rendering fat: each is
-		// matched on how many pot slots hold rendered fat.
+		// matched on how many pot slots hold rendered fat. Two portions a lump, so a
+		// tallow candle costs less fat than a beeswax one costs wax.
 		//
 		// No comments between the recipes: the loader hands every element of this
 		// array to the recipe parser, a comment included, and the null that comes
@@ -10,8 +11,8 @@
 		isFood: true,
 		perishableProps: {
 			type: "Harden",
-			freshHours: { avg: 0.5 },
-			transitionHours: { avg: 0.1 },
+			freshHours: { avg: 0.1 },
+			transitionHours: { avg: 0.05 },
 			transitionRatio: 1,
 			transitionedStack: { type: "item", code: "game:fat-rendered" }
 		},
@@ -25,15 +26,15 @@
 				portionSizeLitres: 0.5
 			}
 		],
-		cooksInto: { type: "item", code: "candela:tallow-molten", quantity: 1 }
+		cooksInto: { type: "item", code: "candela:tallow-molten", quantity: 2 }
 	},
 	{
 		code: "molten tallow2",
 		isFood: true,
 		perishableProps: {
 			type: "Harden",
-			freshHours: { avg: 0.5 },
-			transitionHours: { avg: 0.1 },
+			freshHours: { avg: 0.1 },
+			transitionHours: { avg: 0.05 },
 			transitionRatio: 1,
 			transitionedStack: { type: "item", code: "game:fat-rendered" }
 		},
@@ -47,15 +48,15 @@
 				portionSizeLitres: 0.5
 			}
 		],
-		cooksInto: { type: "item", code: "candela:tallow-molten", quantity: 2 }
+		cooksInto: { type: "item", code: "candela:tallow-molten", quantity: 4 }
 	},
 	{
 		code: "molten tallow3",
 		isFood: true,
 		perishableProps: {
 			type: "Harden",
-			freshHours: { avg: 0.5 },
-			transitionHours: { avg: 0.1 },
+			freshHours: { avg: 0.1 },
+			transitionHours: { avg: 0.05 },
 			transitionRatio: 1,
 			transitionedStack: { type: "item", code: "game:fat-rendered" }
 		},
@@ -69,15 +70,15 @@
 				portionSizeLitres: 0.5
 			}
 		],
-		cooksInto: { type: "item", code: "candela:tallow-molten", quantity: 3 }
+		cooksInto: { type: "item", code: "candela:tallow-molten", quantity: 6 }
 	},
 	{
 		code: "molten tallow4",
 		isFood: true,
 		perishableProps: {
 			type: "Harden",
-			freshHours: { avg: 0.5 },
-			transitionHours: { avg: 0.1 },
+			freshHours: { avg: 0.1 },
+			transitionHours: { avg: 0.05 },
 			transitionRatio: 1,
 			transitionedStack: { type: "item", code: "game:fat-rendered" }
 		},
@@ -91,6 +92,6 @@
 				portionSizeLitres: 0.5
 			}
 		],
-		cooksInto: { type: "item", code: "candela:tallow-molten", quantity: 4 }
+		cooksInto: { type: "item", code: "candela:tallow-molten", quantity: 8 }
 	}
 ]

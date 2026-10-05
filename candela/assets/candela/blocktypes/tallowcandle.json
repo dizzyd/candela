@@ -18,9 +18,9 @@
 	sideopaque: { all: false },
 	sidesolid: { all: false },
 	sounds: {
-		place: "block/planks",
-		break: "block/planks",
-		hit: "block/planks"
+		place: "game:block/planks",
+		break: "game:block/planks",
+		hit: "game:block/planks"
 	},
 	materialDensity: 300,
 	combustibleProps: {

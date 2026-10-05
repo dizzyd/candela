@@ -136,10 +136,16 @@ public class BEBehaviorLanternFuel : BlockEntityBehavior, IIgnitable
     {
         base.FromTreeAttributes(tree, worldAccessForResolve);
         bool flamingBefore = flame.Flaming, spentBefore = flame.Spent;
-        byte[] lightBefore = Api?.Side == EnumAppSide.Server && Blockentity.Block != null ? Relight.Capture(Blockentity) : null;
+        byte[] lightBefore = Api != null && Blockentity.Block != null ? Relight.Capture(Blockentity) : null;
 
         flame.FromTreeAttributes(tree);
         Candle = tree.GetString("candela:candle", DefaultCandle);
+
+        if (Api?.Side == EnumAppSide.Client)
+        {
+            Relight.Synced(Blockentity, lightBefore);
+            return;
+        }
 
         // State restored onto a running block entity - a schematic pasted - needs the
         // light recomputed; see BECandles.FromTreeAttributes.

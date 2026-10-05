@@ -1,7 +1,10 @@
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using candela;
+using HarmonyLib;
 using Vintagestory.API.Common;
+using Vintagestory.API.Config;
 using Vintagestory.API.MathTools;
 using Vintagestory.GameContent;
 using VsTestkit.Testing;
@@ -28,7 +31,7 @@ namespace Candela.Tests
         const string Tallow      = "candela:tallow-molten";
 
         // Well above the setting point, so a few game minutes of cooling during a
-        // test cannot take it below - 90°C a game hour is vanilla's item cooling.
+        // test cannot take it below - tallow cools at ItemMoltenWax.CooldownSpeed.
         const float HotTallow = 300f;
 
         [VsTest]
@@ -42,11 +45,16 @@ namespace Candela.Tests
             }
 
             // The patch adds the behavior through behaviorsByType "*", which every
-            // finished firepit state takes.
+            // finished firepit state takes - ahead of Container, which opens the GUI
+            // and stops the chain, so behind it a dip never runs.
             foreach (string state in new[] { "extinct", "lit", "cold" })
             {
                 Block firepit = Sapi.World.GetBlock(new AssetLocation("game:firepit-" + state));
-                Assert.True(firepit.BlockBehaviors.Any(b => b is BlockBehaviorDipVat), $"firepit-{state} has no CandelaDipVat");
+                var behaviors = firepit.BlockBehaviors.ToList();
+                int dipVat = behaviors.FindIndex(b => b is BlockBehaviorDipVat);
+                int container = behaviors.FindIndex(b => b is BlockBehaviorContainer);
+                Assert.True(dipVat >= 0, $"firepit-{state} has no CandelaDipVat");
+                Assert.True(dipVat < container, $"firepit-{state} runs Container before CandelaDipVat");
             }
         }
 
@@ -75,6 +83,9 @@ namespace Candela.Tests
             Assert.NotNull(recipe);
             Assert.Equal(Tallow, recipe.CooksInto.ResolvedItemstack.Collectible.Code.ToString());
             Assert.Equal(3, servings);
+
+            // Two portions of tallow a lump of fat: six lumps, twelve portions.
+            Assert.Equal(12, recipe.CooksInto.Quantity * servings);
         }
 
         [VsTest]
@@ -84,7 +95,7 @@ namespace Candela.Tests
 
             ItemSlot tallow = TallowSlot(firepit);
             Assert.NotNull(tallow, "no molten tallow in the pot's cooking slots after cooking");
-            Assert.Equal(6, tallow.StackSize);
+            Assert.Equal(12, tallow.StackSize);
 
             // The cooked pot has nothing in its own contents, so vanilla reverts it to
             // the empty pot, and the tallow is left in that pot's visible slots.
@@ -134,6 +145,97 @@ namespace Candela.Tests
             Assert.Greater(tallow.Itemstack.Collectible.GetTransitionRateMul(Sapi.World, tallow, EnumTransitionType.Harden), 0f);
         }
 
+        /// <summary>
+        /// Vanilla's DoSmelt gives the pot the ingredients' heat and the cooksInto stack
+        /// none, so tallow cooked from fat at 170°C came out at 20°C: "Cold" in the
+        /// firepit dialog, and already setting. Every other test here sets the tallow's
+        /// temperature by hand after cooking, which is how that went unseen.
+        /// </summary>
+        [VsTest]
+        public async Task CookedTallowKeepsTheFatsHeat()
+        {
+            World.SetBlock(FirepitCode, Firepit);
+            await Ticks(2);
+            var firepit = World.BE<BlockEntityFirepit>(Firepit);
+
+            Cook(firepit, fatPerSlot: 3, slots: 2, fatTemperature: 170f);
+
+            ItemSlot tallow = TallowSlot(firepit);
+            Assert.Greater(tallow.Itemstack.Collectible.GetTemperature(Sapi.World, tallow.Itemstack), 160f);
+        }
+
+        /// <summary>
+        /// The dialog's output line asks what the pot's contents would cook into, which
+        /// for tallow is nothing - "No matching recipe found" under a pot just finished.
+        /// </summary>
+        [VsTest]
+        public async Task ThePotSaysWhetherItsTallowIsReady()
+        {
+            var firepit = await FirepitWithCookedTallow(fatPerSlot: 1, slots: 1);
+            var inventory = (InventorySmelting)firepit.Inventory;
+            Assert.Equal(Lang.Get("candela:firepit-molten-tallow"), inventory.GetOutputText());
+
+            ItemSlot tallow = TallowSlot(firepit);
+            tallow.Itemstack.Collectible.SetTemperature(Sapi.World, tallow.Itemstack, 20f);
+            Assert.Equal(Lang.Get("candela:firepit-setting-tallow"), inventory.GetOutputText());
+        }
+
+        /// <summary>
+        /// The pot patches go on both sides, and singleplayer's two sides share one
+        /// process: registered per side, each postfix would run twice.
+        /// </summary>
+        [VsTest, RequiresClient]
+        public void PotPatchesRegisterOnce()
+        {
+            foreach (string method in new[] { "DoSmelt", "GetOutputText" })
+            {
+                var info = Harmony.GetPatchInfo(AccessTools.Method(typeof(BlockCookingContainer), method));
+                Assert.Equal(1, info.Postfixes.Count(p => p.owner == WaxPotPatch.HarmonyId));
+            }
+        }
+
+        /// <summary>
+        /// Off the fire, fresh tallow should set within about half a game hour. It took
+        /// two: vanilla cooling, a half-hour hold at heat after every warming, and a
+        /// half-hour harden on top.
+        /// </summary>
+        [VsTest]
+        public async Task TallowOffTheFireSetsWithinHalfAnHour()
+        {
+            var slot = new DummySlot(World.Stack(Tallow, 6));
+            slot.Itemstack.Collectible.SetTemperature(Sapi.World, slot.Itemstack, 170f);
+
+            await Hours(0.1);
+            slot.Itemstack.Collectible.UpdateAndGetTransitionStates(Sapi.World, slot);
+            Assert.Equal(Tallow, slot.Itemstack.Collectible.Code.ToString(), "set before it could have cooled");
+            Assert.Greater(ItemMoltenWax.Temperature(Sapi.World, slot), ((ItemMoltenWax)slot.Itemstack.Collectible).SetsBelow);
+
+            await Hours(0.45);
+            slot.Itemstack.Collectible.UpdateAndGetTransitionStates(Sapi.World, slot);
+            Assert.Equal(RenderedFat, slot.Itemstack.Collectible.Code.ToString(), "still molten half an hour off the fire");
+            Assert.Equal(6, slot.Itemstack.StackSize);
+        }
+
+        /// <summary>
+        /// A burning fire keeps heating a pot of tallow once it has cooked. The firepit
+        /// heats its input only while it can still cook something, and tallow matches
+        /// no recipe, so the heat stopped with the cook - the tallow cooled on a fire
+        /// that was still going, and the fire let itself go out at the end of the log.
+        /// </summary>
+        [VsTest]
+        public async Task ABurningFireKeepsTheTallowHot()
+        {
+            var firepit = await FirepitWithCookedTallow(fatPerSlot: 3, slots: 2, temperature: 60f);
+            firepit.fuelSlot.Itemstack = World.Stack("game:firewood", 8);
+            firepit.igniteWithFuel(firepit.fuelSlot.Itemstack);
+            firepit.furnaceTemperature = 400f;
+
+            Assert.True(firepit.canHeatInput(), "the firepit will not heat a pot of tallow");
+
+            await Ticks(60);
+            Assert.Greater(ItemMoltenWax.Temperature(Sapi.World, TallowSlot(firepit)), 80f, "the fire did not warm the tallow");
+        }
+
         [VsTest]
         public void HotTallowDoesNotSet()
         {
@@ -145,6 +247,18 @@ namespace Candela.Tests
 
             tallow.SetTemperature(Sapi.World, slot.Itemstack, 20f);
             Assert.Greater(tallow.GetTransitionRateMul(Sapi.World, slot, EnumTransitionType.Harden), 0f);
+        }
+
+        /// <summary>The wicks are flax fibres, as vanilla's own candle takes - not twine.</summary>
+        [VsTest]
+        public void ARodIsAStickAndFourFlaxFibres()
+        {
+            GridRecipe rod = Sapi.World.GridRecipes.Single(r =>
+                r.Output.ResolvedItemStack?.Collectible.Code.ToString() == "candela:dippingrod-0");
+
+            var wicks = rod.ResolvedIngredients.Single(i => i?.Code?.ToString() == "game:flaxfibers");
+            Assert.Equal(4, wicks.Quantity);
+            Assert.True(rod.ResolvedIngredients.Any(i => i?.Code?.ToString() == "game:stick"), "the rod takes no stick");
         }
 
         [VsTest]
@@ -177,6 +291,61 @@ namespace Candela.Tests
             Assert.True(World.BlockCode(Firepit).StartsWith("game:firepit-"), "the firepit is gone");
         }
 
+        /// <summary>
+        /// A real cook, with the firepit's dialog open as a player has it: the pot should
+        /// stand open with its tallow once done. With the dialog open the client hears of
+        /// each slot on its own, and the pot's change arrived before the tallow's - so
+        /// the renderer was chosen for a pot with nothing in it, kept its lid on, and was
+        /// never asked again. FirepitWithCookedTallow sets the firepit all at once and
+        /// could not show this.
+        /// </summary>
+        [VsTest(TimeoutMs = 240000), RequiresClient]
+        public async Task ACookedPotStandsOpenWithTheDialogOpen()
+        {
+            World.SetBlock(FirepitCode, Firepit);
+            await Ticks(2);
+            var firepit = World.BE<BlockEntityFirepit>(Firepit);
+            firepit.inputSlot.Itemstack = World.Stack(EmptyPot, 1);
+            ItemStack fat = World.Stack(RenderedFat, 6);
+            fat.Collectible.SetTemperature(Sapi.World, fat, 150f);
+            firepit.otherCookingSlots[0].Itemstack = fat;
+            firepit.fuelSlot.Itemstack = World.Stack("game:firewood", 32);
+            firepit.igniteWithFuel(firepit.fuelSlot.Itemstack);
+            firepit.MarkDirty(true);
+            await Ticks(10);
+
+            await EmptyHand();
+            await Interact.UseBlock(Firepit);
+            await Gui.WaitFor<GuiDialogBlockEntityFirepit>();
+
+            await Until(() => TallowSlot(firepit) != null, 4000);
+            await Ticks(20);
+
+            await OnClient();
+            var clientFirepit = (BlockEntityFirepit)Capi.World.BlockAccessor.GetBlockEntity(Firepit);
+            bool clientHasTallow = TallowSlot(clientFirepit) != null;
+            string renderer = ContentRenderer(clientFirepit)?.GetType().Name;
+            await OnServer();
+
+            Assert.True(clientHasTallow, "the client never saw the tallow");
+            Assert.Equal(nameof(WaxPotRenderer), renderer, "the pot on the fire is drawn by the wrong renderer");
+        }
+
+        static object ContentRenderer(BlockEntityFirepit firepit)
+        {
+            const BindingFlags Any = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
+            object renderer = typeof(BlockEntityFirepit).GetField("renderer", Any)?.GetValue(firepit);
+            return renderer?.GetType().GetField("contentStackRenderer", Any)?.GetValue(renderer);
+        }
+
+        static async Task EmptyHand()
+        {
+            ItemSlot hand = Player.Me.InventoryManager.ActiveHotbarSlot;
+            hand.Itemstack = null;
+            hand.MarkDirty();
+            await Ticks(4);
+        }
+
         [VsTest(TimeoutMs = 60000), RequiresClient]
         public async Task DippingAddsACoatAndUsesTallow()
         {
@@ -186,7 +355,7 @@ namespace Candela.Tests
             await Dip();
 
             Assert.Equal("candela:dippingrod-1", Player.Held?.Collectible.Code.ToString());
-            Assert.Equal(5, TallowSlot(firepit).StackSize);
+            Assert.Equal(11, TallowSlot(firepit).StackSize);
         }
 
         [VsTest(TimeoutMs = 60000), RequiresClient]
@@ -198,7 +367,7 @@ namespace Candela.Tests
             await Dip();
             await Dip(expectChange: false);
             Assert.Equal("candela:dippingrod-1", Player.Held?.Collectible.Code.ToString());
-            Assert.Equal(5, TallowSlot(firepit).StackSize);
+            Assert.Equal(11, TallowSlot(firepit).StackSize);
 
             await Hours(ItemDippingRod.SetHours * 1.5);
             await Dip();
@@ -214,7 +383,7 @@ namespace Candela.Tests
             await Dip(expectChange: false);
 
             Assert.Equal("candela:dippingrod-0", Player.Held?.Collectible.Code.ToString());
-            Assert.Equal(1, TallowSlot(firepit).StackSize);
+            Assert.Equal(2, TallowSlot(firepit).StackSize);
         }
 
         [VsTest(TimeoutMs = 60000), RequiresClient]
@@ -226,14 +395,14 @@ namespace Candela.Tests
             await Dip(expectChange: false);
 
             Assert.Equal("candela:dippingrod-6", Player.Held?.Collectible.Code.ToString());
-            Assert.Equal(1, TallowSlot(firepit).StackSize);
+            Assert.Equal(2, TallowSlot(firepit).StackSize);
         }
 
         /// <summary>
         /// A firepit with a pot of molten tallow in it, cooked through vanilla's own
         /// DoSmelt and left to settle into the state cooking really leaves it in.
         /// </summary>
-        static async Task<BlockEntityFirepit> FirepitWithCookedTallow(int fatPerSlot, int slots, float temperature = HotTallow)
+        internal static async Task<BlockEntityFirepit> FirepitWithCookedTallow(int fatPerSlot, int slots, float temperature = HotTallow)
         {
             World.SetBlock(FirepitCode, Firepit);
             await Ticks(2);
@@ -254,20 +423,22 @@ namespace Candela.Tests
             return firepit;
         }
 
-        static void Cook(BlockEntityFirepit firepit, int fatPerSlot, int slots)
+        static void Cook(BlockEntityFirepit firepit, int fatPerSlot, int slots, float fatTemperature = 20f)
         {
             firepit.inputSlot.Itemstack = World.Stack(EmptyPot, 1);
             firepit.inputSlot.MarkDirty();
             for (int i = 0; i < slots; i++)
             {
-                firepit.otherCookingSlots[i].Itemstack = World.Stack(RenderedFat, fatPerSlot);
+                ItemStack fat = World.Stack(RenderedFat, fatPerSlot);
+                fat.Collectible.SetTemperature(Sapi.World, fat, fatTemperature);
+                firepit.otherCookingSlots[i].Itemstack = fat;
             }
 
             var pot = (BlockCookingContainer)firepit.inputSlot.Itemstack.Collectible;
             pot.DoSmelt(Sapi.World, firepit.Inventory as ISlotProvider, firepit.inputSlot, firepit.outputSlot);
         }
 
-        static ItemSlot TallowSlot(BlockEntityFirepit firepit) => ItemMoltenTallow.FindIn(firepit);
+        internal static ItemSlot TallowSlot(BlockEntityFirepit firepit) => ItemMoltenWax.FindIn(firepit);
 
         /// <summary>
         /// Hold right-click on the firepit until the rod changes, or for long enough
@@ -281,6 +452,14 @@ namespace Candela.Tests
             await Input.MouseDown(EnumMouseButton.Right);
             try
             {
+                // Checked mid-hold, not after: with the firepit's Container ahead of the
+                // dip vat the dialog opened on the first frame, the injected hold carried
+                // on behind it - a player's ends at the dialog - and the finished dip
+                // closed it again, so the end state looked like a clean dip.
+                await Frames.Wait(5);
+                Assert.False((await Gui.OpenDialogs()).Contains("GuiDialogBlockEntityFirepit"),
+                    "dipping opened the firepit's dialog");
+
                 // 0.8 s of hold; a throttled window renders slowly, so the ceiling is generous.
                 await Until(() => Player.Held?.Collectible.Code.ToString() != before, 200);
             }

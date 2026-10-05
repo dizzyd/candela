@@ -25,7 +25,7 @@ namespace Candela.Tests
         static BlockPos Bunch => P(8, 1, 8);
 
         // Written out rather than read from the mod, so a changed duration fails here.
-        const double BeeswaxHours = 96;
+        const double BeeswaxHours = 432;
 
         // Assigned into rather than replaced: ConfigKit, when it is installed, holds
         // this object and would otherwise go on editing one nobody reads.
@@ -53,7 +53,7 @@ namespace Candela.Tests
         [VsTest]
         public void StubsCarryTheirShareOfHours()
         {
-            foreach (var (left, hours) in new[] { (75, 72.0), (50, 48.0), (25, 24.0) })
+            foreach (var (left, hours) in new[] { (75, 324.0), (50, 216.0), (25, 108.0) })
             {
                 Item stub = Sapi.World.GetItem(new AssetLocation("candela:candlestub-beeswax-" + left));
                 Assert.NotNull(stub, "candlestub-beeswax-" + left);
@@ -289,6 +289,26 @@ namespace Candela.Tests
             await Interact.UseBlock(Bunch);
             await Ticks(4);
             Assert.False(be.Snuffed, "a lit torch should relight it");
+        }
+
+        /// <summary>
+        /// The server's light was right and the client's was not: a snuffed bunch went
+        /// on lighting the room for the player, which every server-side check passed.
+        /// </summary>
+        [VsTest(TimeoutMs = 60000), RequiresClient]
+        public async Task ASnuffedBunchIsDarkOnTheClient()
+        {
+            var be = await PlaceBunch(2);
+            Assert.Equal(8, await EngineLight.Settled(Bunch, 8), "a new bunch never lit the client");
+            await EmptyHand();
+
+            await ShiftUse(Bunch);
+            Assert.True(be.Snuffed, "shift-click with a free hand should snuff");
+
+            Assert.Equal(0, await EngineLight.Settled(Bunch, 0), "the client is still lit by a snuffed bunch");
+
+            Assert.True(be.TryIgnite(), "a snuffed bunch with fuel should light");
+            Assert.Equal(8, await EngineLight.Settled(Bunch, 8), "relighting did not light the client");
         }
 
         /// <summary>

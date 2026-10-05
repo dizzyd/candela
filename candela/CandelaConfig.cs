@@ -88,8 +88,10 @@ public class CandelaConfig
     [Range(0, 10000)]
     public double CatchUpCapHours = DefaultCatchUpCapHours;
 
-    private const double DefaultBeeswaxBurnHours = 96;
-    private const double DefaultTallowBurnHours = 48;
+    // Two months and one of a world with vanilla's nine-day months - in hours, so they
+    // stay put on a world whose months are longer.
+    private const double DefaultBeeswaxBurnHours = 432;
+    private const double DefaultTallowBurnHours = 216;
     private const double DefaultCatchUpCapHours = 24;
 
     /// <summary>

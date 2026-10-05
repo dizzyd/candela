@@ -19,7 +19,7 @@ namespace Candela.Tests
     {
         static BlockPos Chandelier => P(8, 1, 8);
 
-        const double BeeswaxHours = 96;
+        const double BeeswaxHours = 432;
 
         [BeforeEach, AfterEach]
         public void DefaultConfig() => CandelaConfig.Current.AssignFrom(new CandelaConfig());

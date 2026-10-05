@@ -1,9 +1,10 @@
 [
 	{
-		ingredientPattern: "ST",
+		ingredientPattern: "SF",
 		ingredients: {
 			"S": { type: "item", code: "game:stick" },
-			"T": { type: "item", code: "game:flaxtwine", quantity: 4 }
+			// Fibres for the wicks, as vanilla's own candle takes.
+			"F": { type: "item", code: "game:flaxfibers", quantity: 4 }
 		},
 		width: 2,
 		height: 1,

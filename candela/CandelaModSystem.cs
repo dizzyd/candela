@@ -17,7 +17,7 @@ public class CandelaModSystem : ModSystem
     {
         base.Start(api);
 
-        api.RegisterItemClass("CandelaMoltenTallow", typeof(ItemMoltenTallow));
+        api.RegisterItemClass("CandelaMoltenWax", typeof(ItemMoltenWax));
         api.RegisterItemClass("CandelaDippingRod", typeof(ItemDippingRod));
         api.RegisterBlockBehaviorClass("CandelaDipVat", typeof(BlockBehaviorDipVat));
 
@@ -31,6 +31,13 @@ public class CandelaModSystem : ModSystem
         api.RegisterBlockEntityBehaviorClass("CandelaLanternFuel", typeof(BEBehaviorLanternFuel));
 
         RegisterWithConfigKit(api);
+        WaxPotPatch.Install(api);
+    }
+
+    public override void Dispose()
+    {
+        WaxPotPatch.Uninstall();
+        base.Dispose();
     }
 
     private const string ConfigKitSystem = "ConfigKit.ConfigKitModSystem";

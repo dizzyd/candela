@@ -1,6 +1,8 @@
+using System;
 using System.Text;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
+using Vintagestory.GameContent;
 
 namespace candela;
 
@@ -12,7 +14,7 @@ namespace candela;
 /// The time of the last dip is an attribute: it gates the next one, since a coat
 /// laid over one that has not set just melts it off again.
 /// </summary>
-public class ItemDippingRod : Item
+public class ItemDippingRod : Item, IWaxWorker
 {
     public const int MaxLayers = 6;
 
@@ -29,10 +31,13 @@ public class ItemDippingRod : Item
     /// Whether the last coat has set. A rod that has never been dipped has nothing
     /// to wait for.
     /// </summary>
-    public static bool HasSet(IWorldAccessor world, ItemStack stack)
+    public static bool HasSet(IWorldAccessor world, ItemStack stack) => SetProgress(world, stack) >= 1;
+
+    /// <summary>How far the last coat has set, from 0 just dipped to 1 ready for the next.</summary>
+    public static double SetProgress(IWorldAccessor world, ItemStack stack)
     {
-        if (!stack.Attributes.HasAttribute(LastDipAttr)) return true;
-        return world.Calendar.TotalHours - stack.Attributes.GetDouble(LastDipAttr) >= SetHours;
+        if (!stack.Attributes.HasAttribute(LastDipAttr)) return 1;
+        return Math.Clamp((world.Calendar.TotalHours - stack.Attributes.GetDouble(LastDipAttr)) / SetHours, 0, 1);
     }
 
     /// <summary>
@@ -45,6 +50,34 @@ public class ItemDippingRod : Item
         stack.Attributes.SetDouble(LastDipAttr, world.Calendar.TotalHours);
         return stack;
     }
+
+    public override void OnLoaded(ICoreAPI api)
+    {
+        base.OnLoaded(api);
+        SettingBar.Register(api, this, (world, stack) => IsFinished ? 1 : SetProgress(world, stack));
+    }
+
+    public override void OnUnloaded(ICoreAPI api)
+    {
+        base.OnUnloaded(api);
+        SettingBar.Dispose();
+    }
+
+    public string CannotWork(IWorldAccessor world, ItemStack held, BlockEntityFirepit firepit, out ItemSlot waxSlot, out int portions)
+    {
+        portions = 1;
+        waxSlot = ItemMoltenWax.FindIn(firepit, "tallow");
+
+        if (IsFinished) return "rodfinished";
+        if (waxSlot == null) return "notallow";
+        if (!((ItemMoltenWax)waxSlot.Itemstack.Collectible).IsWorkable(world, waxSlot)) return "tallowcold";
+        if (!HasSet(world, held)) return "coatsetting";
+        return null;
+    }
+
+    public ItemStack Worked(IWorldAccessor world, ItemStack held, string wax) => WithAnotherLayer(world);
+
+    public bool Takes(ItemStack held, string wax) => wax == "tallow" && !IsFinished;
 
     public override void GetHeldItemInfo(ItemSlot inSlot, StringBuilder dsc, IWorldAccessor world, bool withDebugInfo)
     {

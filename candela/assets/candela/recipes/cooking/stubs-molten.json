@@ -1,0 +1,327 @@
+[
+	{
+		// Candle stubs melted back down, one portion of their own wax a stub whatever its
+		// size. Tallow here, beeswax in the second half; one recipe per number of pot
+		// slots used, and no comments between them.
+		"code": "molten tallow stubs1",
+		"isFood": true,
+		"perishableProps": {
+			"type": "Harden",
+			"freshHours": {
+				"avg": 0.1
+			},
+			"transitionHours": {
+				"avg": 0.05
+			},
+			"transitionRatio": 1,
+			"transitionedStack": {
+				"type": "item",
+				"code": "game:fat-rendered"
+			}
+		},
+		"shape": {
+			"base": "game:block/food/meal/liquid"
+		},
+		"ingredients": [
+			{
+				"code": "tallow stub",
+				"validStacks": [
+					{
+						"type": "item",
+						"code": "candela:candlestub-tallow-*"
+					}
+				],
+				"minQuantity": 1,
+				"maxQuantity": 1,
+				"portionSizeLitres": 0.5
+			}
+		],
+		"cooksInto": {
+			"type": "item",
+			"code": "candela:tallow-molten",
+			"quantity": 1
+		}
+	},
+	{
+		"code": "molten tallow stubs2",
+		"isFood": true,
+		"perishableProps": {
+			"type": "Harden",
+			"freshHours": {
+				"avg": 0.1
+			},
+			"transitionHours": {
+				"avg": 0.05
+			},
+			"transitionRatio": 1,
+			"transitionedStack": {
+				"type": "item",
+				"code": "game:fat-rendered"
+			}
+		},
+		"shape": {
+			"base": "game:block/food/meal/liquid"
+		},
+		"ingredients": [
+			{
+				"code": "tallow stub",
+				"validStacks": [
+					{
+						"type": "item",
+						"code": "candela:candlestub-tallow-*"
+					}
+				],
+				"minQuantity": 2,
+				"maxQuantity": 2,
+				"portionSizeLitres": 0.5
+			}
+		],
+		"cooksInto": {
+			"type": "item",
+			"code": "candela:tallow-molten",
+			"quantity": 2
+		}
+	},
+	{
+		"code": "molten tallow stubs3",
+		"isFood": true,
+		"perishableProps": {
+			"type": "Harden",
+			"freshHours": {
+				"avg": 0.1
+			},
+			"transitionHours": {
+				"avg": 0.05
+			},
+			"transitionRatio": 1,
+			"transitionedStack": {
+				"type": "item",
+				"code": "game:fat-rendered"
+			}
+		},
+		"shape": {
+			"base": "game:block/food/meal/liquid"
+		},
+		"ingredients": [
+			{
+				"code": "tallow stub",
+				"validStacks": [
+					{
+						"type": "item",
+						"code": "candela:candlestub-tallow-*"
+					}
+				],
+				"minQuantity": 3,
+				"maxQuantity": 3,
+				"portionSizeLitres": 0.5
+			}
+		],
+		"cooksInto": {
+			"type": "item",
+			"code": "candela:tallow-molten",
+			"quantity": 3
+		}
+	},
+	{
+		"code": "molten tallow stubs4",
+		"isFood": true,
+		"perishableProps": {
+			"type": "Harden",
+			"freshHours": {
+				"avg": 0.1
+			},
+			"transitionHours": {
+				"avg": 0.05
+			},
+			"transitionRatio": 1,
+			"transitionedStack": {
+				"type": "item",
+				"code": "game:fat-rendered"
+			}
+		},
+		"shape": {
+			"base": "game:block/food/meal/liquid"
+		},
+		"ingredients": [
+			{
+				"code": "tallow stub",
+				"validStacks": [
+					{
+						"type": "item",
+						"code": "candela:candlestub-tallow-*"
+					}
+				],
+				"minQuantity": 4,
+				"maxQuantity": 4,
+				"portionSizeLitres": 0.5
+			}
+		],
+		"cooksInto": {
+			"type": "item",
+			"code": "candela:tallow-molten",
+			"quantity": 4
+		}
+	},
+
+	{
+		// Beeswax stubs.
+		"code": "molten beeswax stubs1",
+		"isFood": true,
+		"perishableProps": {
+			"type": "Harden",
+			"freshHours": {
+				"avg": 0.1
+			},
+			"transitionHours": {
+				"avg": 0.05
+			},
+			"transitionRatio": 1,
+			"transitionedStack": {
+				"type": "item",
+				"code": "game:beeswax"
+			}
+		},
+		"shape": {
+			"base": "game:block/food/meal/liquid"
+		},
+		"ingredients": [
+			{
+				"code": "beeswax stub",
+				"validStacks": [
+					{
+						"type": "item",
+						"code": "candela:candlestub-beeswax-*"
+					}
+				],
+				"minQuantity": 1,
+				"maxQuantity": 1,
+				"portionSizeLitres": 0.5
+			}
+		],
+		"cooksInto": {
+			"type": "item",
+			"code": "candela:beeswax-molten",
+			"quantity": 1
+		}
+	},
+	{
+		"code": "molten beeswax stubs2",
+		"isFood": true,
+		"perishableProps": {
+			"type": "Harden",
+			"freshHours": {
+				"avg": 0.1
+			},
+			"transitionHours": {
+				"avg": 0.05
+			},
+			"transitionRatio": 1,
+			"transitionedStack": {
+				"type": "item",
+				"code": "game:beeswax"
+			}
+		},
+		"shape": {
+			"base": "game:block/food/meal/liquid"
+		},
+		"ingredients": [
+			{
+				"code": "beeswax stub",
+				"validStacks": [
+					{
+						"type": "item",
+						"code": "candela:candlestub-beeswax-*"
+					}
+				],
+				"minQuantity": 2,
+				"maxQuantity": 2,
+				"portionSizeLitres": 0.5
+			}
+		],
+		"cooksInto": {
+			"type": "item",
+			"code": "candela:beeswax-molten",
+			"quantity": 2
+		}
+	},
+	{
+		"code": "molten beeswax stubs3",
+		"isFood": true,
+		"perishableProps": {
+			"type": "Harden",
+			"freshHours": {
+				"avg": 0.1
+			},
+			"transitionHours": {
+				"avg": 0.05
+			},
+			"transitionRatio": 1,
+			"transitionedStack": {
+				"type": "item",
+				"code": "game:beeswax"
+			}
+		},
+		"shape": {
+			"base": "game:block/food/meal/liquid"
+		},
+		"ingredients": [
+			{
+				"code": "beeswax stub",
+				"validStacks": [
+					{
+						"type": "item",
+						"code": "candela:candlestub-beeswax-*"
+					}
+				],
+				"minQuantity": 3,
+				"maxQuantity": 3,
+				"portionSizeLitres": 0.5
+			}
+		],
+		"cooksInto": {
+			"type": "item",
+			"code": "candela:beeswax-molten",
+			"quantity": 3
+		}
+	},
+	{
+		"code": "molten beeswax stubs4",
+		"isFood": true,
+		"perishableProps": {
+			"type": "Harden",
+			"freshHours": {
+				"avg": 0.1
+			},
+			"transitionHours": {
+				"avg": 0.05
+			},
+			"transitionRatio": 1,
+			"transitionedStack": {
+				"type": "item",
+				"code": "game:beeswax"
+			}
+		},
+		"shape": {
+			"base": "game:block/food/meal/liquid"
+		},
+		"ingredients": [
+			{
+				"code": "beeswax stub",
+				"validStacks": [
+					{
+						"type": "item",
+						"code": "candela:candlestub-beeswax-*"
+					}
+				],
+				"minQuantity": 4,
+				"maxQuantity": 4,
+				"portionSizeLitres": 0.5
+			}
+		],
+		"cooksInto": {
+			"type": "item",
+			"code": "candela:beeswax-molten",
+			"quantity": 4
+		}
+	}
+]

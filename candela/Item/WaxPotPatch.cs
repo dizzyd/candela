@@ -8,7 +8,7 @@ namespace candela;
 
 /// <summary>
 /// Corrections to the vanilla cooking pot for a pot of molten wax, which it was never
-/// written to hold once cooked.
+/// written to hold once cooked. Found with tallow, the first; beeswax has them too.
 ///
 /// DoSmelt means to give the pot the ingredients' temperature, but on the cooksInto
 /// path it has already swapped the ingredients for the output - a fresh clone with no

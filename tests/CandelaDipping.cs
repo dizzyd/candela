@@ -68,7 +68,9 @@ namespace Candela.Tests
         {
             var recipes = Sapi.ModLoader.GetModSystem<RecipeRegistrySystem>().CookingRecipes;
             Assert.True(recipes.Any(r => r.Code == "rendered fat1"), "vanilla's rendered fat recipe is missing");
-            Assert.Equal(4, recipes.Count(r => r.CooksInto?.ResolvedItemstack?.Collectible.Code.ToString() == Tallow));
+            // Four from rendered fat, four from tallow stubs.
+            Assert.Equal(8, recipes.Count(r => r.CooksInto?.ResolvedItemstack?.Collectible.Code.ToString() == Tallow));
+            Assert.Equal(8, recipes.Count(r => r.CooksInto?.ResolvedItemstack?.Collectible.Code.ToString() == "candela:beeswax-molten"));
         }
 
         [VsTest]

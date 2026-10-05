@@ -5,8 +5,9 @@ using Vintagestory.GameContent;
 namespace candela;
 
 /// <summary>
-/// Wax melted down in a cooking pot - tallow from rendered fat, for dipping. Which
-/// wax, and where it sets, are the item's <c>candela</c> attributes.
+/// Wax melted down in a cooking pot - tallow from rendered fat, for dipping and
+/// moulds, or beeswax, for moulds. Which wax, and where it sets, are the item's
+/// <c>candela</c> attributes.
 ///
 /// It sets back into what it was melted from (rendered fat, beeswax) through an
 /// ordinary Harden transition, held at zero for as long as it stays hot. On a burning

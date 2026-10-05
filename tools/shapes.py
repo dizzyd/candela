@@ -5,6 +5,8 @@ better described by numbers than drawn by hand:
 
   shapes/item/dippingrod-{0..6}.json   a stick with four wicks, thickening a coat at a time
   shapes/item/candlestub-{75,50,25}.json   vanilla's candle3, cut down
+  shapes/item/candlemould-{empty,filled}.json   a clay block with four wells, and
+                                                with wax standing in them
 
 Run from the repo root after changing a proportion here:
 
@@ -106,3 +108,31 @@ for left in (75, 50, 25):
     write(f"candlestub-{left}", shape({"candle": "game:block/candle"}, [body]))
 
 print("wrote", sorted(os.listdir(OUT)))
+
+# ----- candle mould -----
+#
+# An 8x8 clay block with four 2x2 wells, the footprint of its clayforming pattern
+# (recipes/clayforming/candlemould.json) drawn taller: the wells are candle-length.
+
+M0, M1 = 4, 12      # footprint, both axes
+MH = 8              # height
+WELLS = [(5, 7), (9, 11)]   # well spans, both axes
+
+def mould(filled):
+    els = [box("floor", [M0, 0, M0], [M1, 1, M1], "clay")]
+    # Walls: three full-depth strips across x, and between them short strips that
+    # leave the wells open.
+    for i, (x0, x1) in enumerate([(4, 5), (7, 9), (11, 12)]):
+        els.append(box(f"wallx{i}", [x0, 1, M0], [x1, MH, M1], "clay"))
+    for wx0, wx1 in WELLS:
+        for j, (z0, z1) in enumerate([(4, 5), (7, 9), (11, 12)]):
+            els.append(box(f"wallz{wx0}{j}", [wx0, 1, z0], [wx1, MH, z1], "clay"))
+    if filled:
+        for wx0, wx1 in WELLS:
+            for wz0, wz1 in WELLS:
+                els.append(box(f"wax{wx0}{wz0}", [wx0, 1, wz0], [wx1, MH - 0.5, wz1], "wax"))
+    return els
+
+write("candlemould-empty", shape({"clay": "game:block/clay/hardened/blue"}, mould(False)))
+write("candlemould-filled", shape({"clay": "game:block/clay/hardened/blue", "wax": "game:block/candle"}, mould(True)))
+

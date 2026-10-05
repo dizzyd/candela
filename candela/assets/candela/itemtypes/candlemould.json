@@ -1,0 +1,61 @@
+{
+	code: "candlemould",
+	class: "CandelaCandleMould",
+	// Raw from the clayforming grid, fired in a pit kiln, then empty or full of one
+	// wax or the other - see ItemCandleMould. In vanilla's three mould clays; red
+	// fires to earthy orange, as vanilla's moulds do.
+	variantgroups: [
+		{ code: "color", states: ["blue", "fire", "red"] },
+		{ code: "state", states: ["raw", "fired", "tallow", "beeswax"] }
+	],
+	behaviors: [
+		{ name: "GroundStorable", properties: { layout: "Quadrants", placeRemoveSound: "game:sounds/block/ceramicplace", collisionBox: { x1: 0, y1: 0, z1: 0, x2: 1, y2: 0.5, z2: 1 } } }
+	],
+	shapeByType: {
+		"*-raw": { base: "candela:item/candlemould-empty" },
+		"*-fired": { base: "candela:item/candlemould-empty" },
+		"*": { base: "candela:item/candlemould-filled" }
+	},
+	// First match wins: raw clay; red fires to earthy orange; each wax in its own colour.
+	texturesByType: {
+		"*-raw": { "clay": { base: "game:block/clay/{color}clay" } },
+		"candlemould-red-beeswax": { "clay": { base: "game:block/clay/hardened/earthyorange" }, "wax": { base: "game:block/candle" } },
+		"candlemould-red-*": { "clay": { base: "game:block/clay/hardened/earthyorange" }, "wax": { base: "candela:block/candle-tallow" } },
+		"*-beeswax": { "clay": { base: "game:block/clay/hardened/{color}" }, "wax": { base: "game:block/candle" } },
+		"*": { "clay": { base: "game:block/clay/hardened/{color}" }, "wax": { base: "candela:block/candle-tallow" } }
+	},
+	creativeinventory: { "general": ["*-raw", "*-fired"], "items": ["*-raw", "*-fired"] },
+	attributes: {
+		handbook: { groupBy: ["candlemould-*-{state}"] }
+	},
+	maxstacksizeByType: { "*-raw": 8, "*": 1 },
+	// Uses before it cracks; raw moulds have none to wear.
+	durabilityByType: { "*-raw": 0, "*": 20 },
+	combustiblePropsByType: {
+		"*-raw": {
+			meltingPoint: 650,
+			meltingDuration: 30,
+			smeltedRatio: 1,
+			smeltingType: "fire",
+			requiresContainer: false,
+			smeltedStack: { type: "item", code: "candela:candlemould-{color}-fired" }
+		}
+	},
+	// Turned over: items are drawn the other way up from blocks, and -22 showed the
+	// solid underside rather than the wells.
+	guiTransform: {
+		rotation: { x: 158, y: -45, z: 0 },
+		origin: { x: 0.5, y: 0.25, z: 0.5 },
+		scale: 1.6
+	},
+	groundTransform: {
+		origin: { x: 0.5, y: 0, z: 0.5 },
+		scale: 2.5
+	},
+	tpHandTransform: {
+		translation: { x: -0.8, y: -0.3, z: -0.6 },
+		rotation: { x: 0, y: 0, z: 0 },
+		origin: { x: 0.5, y: 0.25, z: 0.5 },
+		scale: 0.7
+	}
+}

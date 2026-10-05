@@ -1,0 +1,42 @@
+{
+	code: "beeswax",
+	class: "CandelaMoltenWax",
+	variantgroups: [
+		{ code: "state", states: ["molten"] }
+	],
+	// A liquid to look at - vanilla's liquid item shape, and in the pot on the fire a
+	// liquid surface (WaxPotRenderer) - but an ordinary item: it lives in the pot on
+	// the fire, and off the fire it sets within the hour, so there is nothing to carry
+	// it in a bucket for.
+	shape: { base: "game:item/liquid" },
+	texture: { base: "game:block/liquid/honey" },
+	creativeinventory: { "general": ["*"], "items": ["*"] },
+	attributes: {
+		// One portion a lump of beeswax, so a full pot is 24.
+		candela: { wax: "beeswax", setsBelow: 62, fullPot: 24 },
+		inContainerTexture: { base: "game:block/liquid/honey" },
+		handbook: {
+			extraSections: [ { title: "candela:handbook-beeswax-title", text: "candela:handbook-beeswax-text" } ]
+		}
+	},
+	maxstacksize: 64,
+	materialDensity: 620,
+	// Held at zero while the beeswax is hot - see ItemMoltenWax.
+	transitionableProps: [{
+		type: "Harden",
+		freshHours: { avg: 0.1 },
+		transitionHours: { avg: 0.05 },
+		transitionedStack: { type: "item", code: "game:beeswax" },
+		transitionRatio: 1
+	}],
+	// Vanilla's glue portion's, which uses the same shape.
+	guiTransform: {
+		translation: { x: 0, y: 1, z: 0 },
+		rotation: { x: 123, y: -33, z: -13 },
+		origin: { x: 0.5, y: 0, z: 0.5 },
+		scale: 1.4
+	},
+	tpHandTransform: {
+		translation: { x: -1.5, y: -1, z: -1.4 }
+	}
+}

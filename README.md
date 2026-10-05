@@ -9,11 +9,18 @@ burns forever. Candela adds the candles people actually made and gives light a c
 
 - **Dipping** - melt rendered fat into tallow in a cooking pot, keep it molten on a
   burning firepit, and build tapers up on a dipping rod one coat at a time
+- **Moulds** - shape a candle mould from clay and fire it, then fill it from the
+  pot in one go: four candles from six portions of tallow, or twelve of molten
+  beeswax. Let it set and knock them out; the mould wears, and cracks in the end
+- **Melting down** - beeswax melts in a pot too, for moulds, and burned-down stubs
+  melt back into their own wax, a portion a stub
 - **Burn-down** - vanilla's beeswax candles burn for 432 game hours each (two months), shrinking
   in quarters as they go. A part-burned candle taken off a bunch comes back as a
   stub carrying the hours it has left (rounded down)
 - **Snuffing** - shift-right-click a bunch with a free hand to put it out and save
   it; light it again with a lit torch or a firestarter. A lit candle can light a torch
+- **Weather** - rain, and now and then a strong wind, puts out candles and
+  chandeliers with the sky over them (snuffed, not spent). Lanterns are sheltered
 - **Tallow candles** - dipped tallow candles place and burn like beeswax ones:
   paler, smokier, a little dimmer, and 216 hours a candle (one month)
 - **Lanterns burn a candle** - a lantern starts with the candle it was crafted
@@ -27,8 +34,6 @@ burns forever. Candela adds the candles people actually made and gives light a c
   ones are cleared. One that falls lands with the candles it had
 - Candles and lanterns placed before Candela was installed carry on as vanilla
   until first touched (candles) or loaded (lanterns), when they start out new
-
-Planned: clay candle molds.
 
 Oil lamps are left to [Immersive Lighting](https://mods.vintagestory.at/techyimmersivelighting),
 and torches to vanilla.
@@ -46,6 +51,7 @@ synced to its players; without it, each side reads its own file.
 | `BurnoutMode` | `Dim` | `Dim` - a spent light gutters to a dim glow; `Dark` - it goes out; `None` - lights never burn down |
 | `UnattendedMode` | `LoadedOnly` | `LoadedOnly` - burns only while its chunk is loaded; `CappedCatchUp` - catches up unloaded time, up to `CatchUpCapHours`; `Always` - catches up all of it |
 | `CatchUpCapHours` | `24` | in-game hours |
+| `WeatherPutsOut` | `true` | rain and strong wind put out candles and chandeliers open to the sky |
 
 A changed burn time applies to candles placed and lanterns crafted after the
 change; a candle already burning keeps the hours it was given.

@@ -4,8 +4,8 @@ using Vintagestory.GameContent;
 namespace candela;
 
 /// <summary>
-/// Something held that takes wax from a pot on the fire - a dipping rod - by holding
-/// right-click on the firepit (BlockBehaviorDipVat).
+/// Something held that takes wax from a pot on the fire - a dipping rod, a candle
+/// mould - by holding right-click on the firepit (BlockBehaviorDipVat).
 /// </summary>
 public interface IWaxWorker
 {

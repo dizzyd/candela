@@ -76,6 +76,10 @@ public class CandelaConfig
     public BurnoutMode BurnoutMode = BurnoutMode.Dim;
 
     [Category("Upkeep")]
+    [Description("Whether rain, and now and then strong wind, put out candles and chandeliers open to the sky. They are snuffed, not spent: light them again. Lanterns are sheltered.")]
+    public bool WeatherPutsOut = true;
+
+    [Category("Upkeep")]
     [Description("How lights burn while no one is near: LoadedOnly burns only while the chunk is loaded, CappedCatchUp catches up unloaded time up to the cap, Always catches up all of it.")]
     public UnattendedMode UnattendedMode = UnattendedMode.LoadedOnly;
 
@@ -147,8 +151,8 @@ public class CandelaConfig
 
         if (isNew) api.Logger.Notification("[candela] Wrote default config to ModConfig/{0}", FileName);
 
-        api.Logger.Notification("[candela] Beeswax {0}h, tallow {1}h, BurnoutMode {2}, UnattendedMode {3}, CatchUpCapHours {4}",
-            config.BeeswaxBurnHours, config.TallowBurnHours, config.BurnoutMode, config.UnattendedMode, config.CatchUpCapHours);
+        api.Logger.Notification("[candela] Beeswax {0}h, tallow {1}h, BurnoutMode {2}, UnattendedMode {3}, CatchUpCapHours {4}, WeatherPutsOut {5}",
+            config.BeeswaxBurnHours, config.TallowBurnHours, config.BurnoutMode, config.UnattendedMode, config.CatchUpCapHours, config.WeatherPutsOut);
 
         Current.AssignFrom(config);
     }

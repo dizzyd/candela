@@ -1,0 +1,165 @@
+[
+	{
+		// Beeswax melted for a candle mould, one portion a lump - a mould of four candles
+		// takes twelve, the three a candle vanilla's pot recipe does. As tallow-molten.json,
+		// one recipe per number of pot slots used, and no comments between them.
+		"code": "molten beeswax1",
+		"isFood": true,
+		"perishableProps": {
+			"type": "Harden",
+			"freshHours": {
+				"avg": 0.1
+			},
+			"transitionHours": {
+				"avg": 0.05
+			},
+			"transitionRatio": 1,
+			"transitionedStack": {
+				"type": "item",
+				"code": "game:beeswax"
+			}
+		},
+		"shape": {
+			"base": "game:block/food/meal/liquid"
+		},
+		"ingredients": [
+			{
+				"code": "beeswax",
+				"validStacks": [
+					{
+						"type": "item",
+						"code": "game:beeswax"
+					}
+				],
+				"minQuantity": 1,
+				"maxQuantity": 1,
+				"portionSizeLitres": 0.5
+			}
+		],
+		"cooksInto": {
+			"type": "item",
+			"code": "candela:beeswax-molten",
+			"quantity": 1
+		}
+	},
+	{
+		"code": "molten beeswax2",
+		"isFood": true,
+		"perishableProps": {
+			"type": "Harden",
+			"freshHours": {
+				"avg": 0.1
+			},
+			"transitionHours": {
+				"avg": 0.05
+			},
+			"transitionRatio": 1,
+			"transitionedStack": {
+				"type": "item",
+				"code": "game:beeswax"
+			}
+		},
+		"shape": {
+			"base": "game:block/food/meal/liquid"
+		},
+		"ingredients": [
+			{
+				"code": "beeswax",
+				"validStacks": [
+					{
+						"type": "item",
+						"code": "game:beeswax"
+					}
+				],
+				"minQuantity": 2,
+				"maxQuantity": 2,
+				"portionSizeLitres": 0.5
+			}
+		],
+		"cooksInto": {
+			"type": "item",
+			"code": "candela:beeswax-molten",
+			"quantity": 2
+		}
+	},
+	{
+		"code": "molten beeswax3",
+		"isFood": true,
+		"perishableProps": {
+			"type": "Harden",
+			"freshHours": {
+				"avg": 0.1
+			},
+			"transitionHours": {
+				"avg": 0.05
+			},
+			"transitionRatio": 1,
+			"transitionedStack": {
+				"type": "item",
+				"code": "game:beeswax"
+			}
+		},
+		"shape": {
+			"base": "game:block/food/meal/liquid"
+		},
+		"ingredients": [
+			{
+				"code": "beeswax",
+				"validStacks": [
+					{
+						"type": "item",
+						"code": "game:beeswax"
+					}
+				],
+				"minQuantity": 3,
+				"maxQuantity": 3,
+				"portionSizeLitres": 0.5
+			}
+		],
+		"cooksInto": {
+			"type": "item",
+			"code": "candela:beeswax-molten",
+			"quantity": 3
+		}
+	},
+	{
+		"code": "molten beeswax4",
+		"isFood": true,
+		"perishableProps": {
+			"type": "Harden",
+			"freshHours": {
+				"avg": 0.1
+			},
+			"transitionHours": {
+				"avg": 0.05
+			},
+			"transitionRatio": 1,
+			"transitionedStack": {
+				"type": "item",
+				"code": "game:beeswax"
+			}
+		},
+		"shape": {
+			"base": "game:block/food/meal/liquid"
+		},
+		"ingredients": [
+			{
+				"code": "beeswax",
+				"validStacks": [
+					{
+						"type": "item",
+						"code": "game:beeswax"
+					}
+				],
+				"minQuantity": 4,
+				"maxQuantity": 4,
+				"portionSizeLitres": 0.5
+			}
+		],
+		"cooksInto": {
+			"type": "item",
+			"code": "candela:beeswax-molten",
+			"quantity": 4
+		}
+	}
+]

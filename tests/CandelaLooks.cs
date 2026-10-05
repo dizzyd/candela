@@ -231,6 +231,47 @@ namespace Candela.Tests
         }
 
         /// <summary>
+        /// Not an assertion: the moulds in each state and the molten waxes, in the hotbar
+        /// and on the ground, with a part-set mould in hand to show its bar.
+        /// </summary>
+        [VsTest(TimeoutMs = 90000), RequiresClient]
+        public async Task MouldsForTheEye()
+        {
+            await World.SetCalendarTo(500 * 24 + 12);
+            string[] row = { "candela:candlemould-blue-raw", "candela:candlemould-fire-fired", "candela:candlemould-red-tallow",
+                             "candela:candlemould-blue-beeswax", "candela:tallow-molten", "candela:beeswax-molten" };
+
+            var hotbar = Player.Me.InventoryManager.GetHotbarInventory();
+            for (int i = 0; i < 10; i++) { hotbar[i].Itemstack = null; hotbar[i].MarkDirty(); }
+            for (int i = 0; i < row.Length; i++)
+            {
+                hotbar[i].Itemstack = World.Stack(row[i], 1);
+                hotbar[i].MarkDirty();
+            }
+            var empty = (ItemCandleMould)Sapi.World.GetItem(new AssetLocation("candela:candlemould-blue-fired"));
+            hotbar[6].Itemstack = empty.Worked(Sapi.World, World.Stack("candela:candlemould-blue-fired", 1), "tallow");
+            hotbar[6].MarkDirty();
+            await OnClient();
+            Capi.World.Player.InventoryManager.ActiveHotbarSlotNumber = 6;
+            await OnServer();
+
+            for (int i = 0; i < 4; i++)
+            {
+                var item = Sapi.World.SpawnItemEntity(World.Stack(row[i], 1), new Vec3d(P(6 + i, 1, 9).X + 0.5, P(6, 1, 9).Y + 0.1, P(6, 1, 9).Z + 0.5));
+                item.ServerPos.Motion.Set(0, 0, 0);
+            }
+            await Ticks(20);
+
+            await Player.Teleport(new Vec3d(P(7, 1, 6).X + 1.0, P(7, 1, 6).Y, P(7, 1, 6).Z + 0.5));
+            await Interact.LookAt(P(7, 0, 9));
+            await Frames.Wait(30);
+            Log("shot: " + await Shot.Take("results/looks-moulds.png"));
+            await Hours(ItemCandleMould.SetHours * 0.5);
+            await Frames.Wait(30);
+            Log("shot: " + await Shot.Take("results/looks-moulds-setting.png"));
+        }
+
+        /// <summary>
         /// The finished rod in hand, seen in third person, with two candidate
         /// third-person transforms swapped in on the client.
         ///

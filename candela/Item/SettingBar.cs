@@ -7,7 +7,7 @@ namespace candela;
 
 /// <summary>
 /// A bar under an item in its slot that fills while wax on it sets - a dipping rod's
-/// last coat - and is gone once it has.
+/// last coat, a mould's candles - and is gone once it has.
 ///
 /// Drawn every frame by an itemstack renderer, as vanilla's liquid litres are, rather
 /// than as a durability bar: the slot caches that, and redraws it only when the slot

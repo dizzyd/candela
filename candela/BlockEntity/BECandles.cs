@@ -80,6 +80,12 @@ public class BECandles : BlockEntity, IIgnitable
 
         flame.Burn(Api.World.Calendar.TotalHours, Quantity);
 
+        if (Flaming && Weather.PutsOutAt(Api, Pos))
+        {
+            Snuff();
+            return;
+        }
+
         if (Spent != spentBefore) Changed(light);
         else if (HeightFactor != heightBefore) MarkDirty(true);
         else Api.World.BlockAccessor.GetChunkAtBlockPos(Pos)?.MarkModified();

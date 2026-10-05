@@ -1,0 +1,49 @@
+{
+	// A solid base, then four layers of wall around four 2x2 wells - the footprint
+	// tools/shapes.py draws the mould with.
+	ingredient: { type: "item", code: "game:clay-*", name: "color", allowedVariants: ["blue", "fire", "red"] },
+	pattern: [
+		[
+			"########",
+			"########",
+			"########",
+			"########",
+			"########",
+			"########",
+			"########",
+			"########"
+		],
+		[
+			"########",
+			"#__##__#",
+			"#__##__#",
+			"########",
+			"########",
+			"#__##__#",
+			"#__##__#",
+			"########"
+		],
+		[
+			"########",
+			"#__##__#",
+			"#__##__#",
+			"########",
+			"########",
+			"#__##__#",
+			"#__##__#",
+			"########"
+		],
+		[
+			"########",
+			"#__##__#",
+			"#__##__#",
+			"########",
+			"########",
+			"#__##__#",
+			"#__##__#",
+			"########"
+		]
+	],
+	name: "Candle mould",
+	output: { type: "item", code: "candela:candlemould-{color}-raw" }
+}

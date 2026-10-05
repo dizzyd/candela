@@ -77,6 +77,7 @@ public class ItemDippingRod : Item, IWaxWorker
 
     public ItemStack Worked(IWorldAccessor world, ItemStack held, string wax) => WithAnotherLayer(world);
 
+    // Tallow only: beeswax is for moulds.
     public bool Takes(ItemStack held, string wax) => wax == "tallow" && !IsFinished;
 
     public override void GetHeldItemInfo(ItemSlot inSlot, StringBuilder dsc, IWorldAccessor world, bool withDebugInfo)

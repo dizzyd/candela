@@ -263,7 +263,7 @@ namespace Candela.Tests
             Assert.False(Sapi.World.GetItem(new AssetLocation(Empty)) is IWaxWorker);
         }
 
-        [VsTest]
+        [VsTest, RequiresClient]
         public async Task ASetMouldGivesFourCandlesAndWears()
         {
             ItemSlot hand = await HoldFilled("tallow", hoursAgo: ItemCandleMould.SetHours * 2);
@@ -276,7 +276,7 @@ namespace Candela.Tests
             Assert.Equal(9, hand.Itemstack.Collectible.GetRemainingDurability(hand.Itemstack));
         }
 
-        [VsTest]
+        [VsTest, RequiresClient]
         public async Task BeeswaxMouldsGiveBeeswaxCandles()
         {
             ItemSlot hand = await HoldFilled("beeswax", hoursAgo: ItemCandleMould.SetHours * 2);
@@ -287,7 +287,7 @@ namespace Candela.Tests
             Assert.Equal(before + 4, CountOf("game:candle"));
         }
 
-        [VsTest]
+        [VsTest, RequiresClient]
         public async Task CandlesThatHaveNotSetStayIn()
         {
             ItemSlot hand = await HoldFilled("tallow", hoursAgo: 0);
@@ -300,7 +300,7 @@ namespace Candela.Tests
         }
 
         /// <summary>Two flax fibres in the other hand for the wicks, taken; without them, nothing comes out.</summary>
-        [VsTest]
+        [VsTest, RequiresClient]
         public async Task TheCandlesNeedWicks()
         {
             EnumGameMode mode = Player.Me.WorldData.CurrentGameMode;
@@ -325,7 +325,7 @@ namespace Candela.Tests
         }
 
         /// <summary>The last use cracks it: the candles come out, the mould does not.</summary>
-        [VsTest]
+        [VsTest, RequiresClient]
         public async Task AWornMouldCracksOnItsLastUse()
         {
             ItemSlot hand = await HoldFilled("tallow", hoursAgo: ItemCandleMould.SetHours * 2);

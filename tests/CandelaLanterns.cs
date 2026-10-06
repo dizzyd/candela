@@ -140,7 +140,7 @@ namespace Candela.Tests
         /// The old candle comes out as burned as it is now, and the new one is not billed
         /// for the hours the old one burned.
         /// </summary>
-        [VsTest]
+        [VsTest, RequiresClient]
         public async Task RefuellingBillsTheOldCandleNotTheNew()
         {
             var fuel = await PlaceLantern();

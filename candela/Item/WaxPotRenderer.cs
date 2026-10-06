@@ -9,7 +9,8 @@ namespace candela;
 /// <summary>
 /// A pot of molten wax on the fire: open, with the wax showing, where vanilla's
 /// PotInFirepitRenderer draws any pot in the input slot empty with its lid on - right
-/// while something cooks, wrong for a pot being dipped or poured from.
+/// while something cooks, wrong for a pot being dipped or poured from. On a firepit,
+/// and on Stone Bake Oven's cooking top (StoneBakeOvenCompat).
 ///
 /// The firepit only asks for a new renderer when the pot itself changes, not its
 /// contents, so this one is given every cooking pot on the fire and outlasts any one
@@ -23,18 +24,27 @@ public class WaxPotRenderer : IInFirepitRenderer
     public int RenderRange => vanilla.RenderRange;
 
     private readonly ICoreClientAPI capi;
-    private readonly BlockEntityFirepit firepit;
+    private readonly BlockPos pos;
+    private readonly InventorySmelting inventory;
+    private readonly float potY;
     private readonly IInFirepitRenderer vanilla;
     private readonly MultiTextureMeshRef potRef;
     private readonly Dictionary<string, MultiTextureMeshRef> liquidRefs = new();
     private readonly Matrixf modelMat = new();
 
-    private bool HasWax => ItemMoltenWax.FindIn(firepit) != null;
+    private bool HasWax => ItemMoltenWax.FindIn(inventory) != null;
 
-    public WaxPotRenderer(ICoreClientAPI capi, ItemStack potStack, BlockEntityFirepit firepit, IInFirepitRenderer vanilla)
+    /// <summary>
+    /// A pot in <paramref name="inventory"/>'s pot slot at <paramref name="pos"/>, its
+    /// base <paramref name="potY"/> above the block's - where <paramref name="vanilla"/>,
+    /// the renderer it stands in for, draws it.
+    /// </summary>
+    public WaxPotRenderer(ICoreClientAPI capi, ItemStack potStack, BlockPos pos, InventorySmelting inventory, float potY, IInFirepitRenderer vanilla)
     {
         this.capi = capi;
-        this.firepit = firepit;
+        this.pos = pos;
+        this.inventory = inventory;
+        this.potY = potY;
         this.vanilla = vanilla;
 
         // Vanilla's open pot. The surface is its liquid one - the one meals in a bowl
@@ -56,7 +66,7 @@ public class WaxPotRenderer : IInFirepitRenderer
 
     public void OnRenderFrame(float deltaTime, EnumRenderStage stage)
     {
-        ItemSlot slot = ItemMoltenWax.FindIn(firepit);
+        ItemSlot slot = ItemMoltenWax.FindIn(inventory);
         if (slot?.Itemstack.Collectible is not ItemMoltenWax wax)
         {
             vanilla.OnRenderFrame(deltaTime, stage);
@@ -65,7 +75,6 @@ public class WaxPotRenderer : IInFirepitRenderer
 
         IRenderAPI rpi = capi.Render;
         Vec3d camPos = capi.World.Player.Entity.CameraPos;
-        BlockPos pos = firepit.Pos;
 
         rpi.GlDisableCullFace();
         rpi.GlToggleBlend(true);
@@ -76,7 +85,7 @@ public class WaxPotRenderer : IInFirepitRenderer
         prog.ProjectionMatrix = rpi.CurrentProjectionMatrix;
         prog.ModelMatrix = modelMat.Identity()
             .Translate(pos.X - camPos.X + 0.001f, pos.Y - camPos.Y, pos.Z - camPos.Z - 0.001f)
-            .Translate(0f, 1 / 16f, 0f)
+            .Translate(0f, potY, 0f)
             .Values;
         rpi.RenderMultiTextureMesh(potRef, "tex");
 

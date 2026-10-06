@@ -117,14 +117,20 @@ public class ItemMoltenWax : Item
         return slot.Itemstack.Collectible.GetTemperature(world, slot.Itemstack);
     }
 
+    /// <summary>The firepit slot holding molten wax - see the inventory's overload.</summary>
+    public static ItemSlot FindIn(BlockEntityFirepit firepit, string wax = null) =>
+        firepit.Inventory is InventorySmelting inventory ? FindIn(inventory, wax) : null;
+
     /// <summary>
-    /// The firepit slot holding molten wax - of <paramref name="wax"/>, if given - or
-    /// null. Searches every cooking slot, visible or not: see <see cref="Temperature"/>
-    /// for why freshly cooked wax briefly sits in slots the firepit does not report.
+    /// The pot slot holding molten wax - of <paramref name="wax"/>, if given - or null,
+    /// in a firepit or anything else built on vanilla's smelting inventory (Stone Bake
+    /// Oven's cooking top). Searches every cooking slot, visible or not: see
+    /// <see cref="Temperature"/> for why freshly cooked wax briefly sits in slots the
+    /// inventory does not report.
     /// </summary>
-    public static ItemSlot FindIn(BlockEntityFirepit firepit, string wax = null)
+    public static ItemSlot FindIn(InventorySmelting inventory, string wax = null)
     {
-        if (firepit.Inventory is not InventorySmelting inventory) return null;
+        if (inventory == null) return null;
 
         foreach (ItemSlot slot in inventory.Slots)
         {

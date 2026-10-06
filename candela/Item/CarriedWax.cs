@@ -71,17 +71,18 @@ public static class CarriedWax
     }
 
     /// <summary>
-    /// Marks the firepit's pot while it holds wax, and unmarks it once its slots are
-    /// empty. Server side, from the firepit's tick (WaxPotPatch.CanHeatInput).
+    /// Marks the pot in <paramref name="inventory"/> while it holds wax, and unmarks it
+    /// once its slots are empty. Server side, from the firepit's tick (or the oven's),
+    /// and as the pot is moved out (<see cref="MarkBeforeMoving"/>).
     /// </summary>
-    public static void KeepMark(BlockEntityFirepit firepit)
+    public static void KeepMark(InventorySmelting inventory)
     {
-        if (firepit.Api?.Side != EnumAppSide.Server || firepit.Inventory is not InventorySmelting inventory) return;
-        ItemSlot potSlot = firepit.inputSlot;
+        if (inventory?.Api?.Side != EnumAppSide.Server) return;
+        ItemSlot potSlot = inventory[1];
         if (potSlot.Itemstack?.Collectible is not BlockCookingContainer) return;
 
         bool marked = potSlot.Itemstack.Attributes.GetBool(HoldsWax);
-        if (!marked && ItemMoltenWax.FindIn(firepit) != null)
+        if (!marked && ItemMoltenWax.FindIn(inventory) != null)
         {
             potSlot.Itemstack.Attributes.SetBool(HoldsWax, true);
             potSlot.MarkDirty();
@@ -103,7 +104,8 @@ public static class CarriedWax
     {
         if (__instance.Api?.Side != EnumAppSide.Server || slot != __instance[1]) return;
         if (extractedStack == null || extractedStack == slot.Itemstack || extractedStack.StackSize != 1) return;
-        if (extractedStack.Collectible is not BlockCookingContainer || !extractedStack.Attributes.GetBool(HoldsWax)) return;
+        if (extractedStack.Collectible is not BlockCookingContainer) return;
+        if (!extractedStack.Attributes.GetBool(HoldsWax) && ItemMoltenWax.FindIn(__instance) == null) return;
 
         var contents = new TreeAttribute();
         ItemSlot[] slots = __instance.Slots;
@@ -118,6 +120,18 @@ public static class CarriedWax
 
         extractedStack.Attributes.RemoveAttribute(HoldsWax);
         if (contents.Count > 0) extractedStack.Attributes[Contents] = contents;
+    }
+
+    /// <summary>
+    /// Marked as it is moved out, as well as from a tick: the mark is what keeps it from
+    /// merging into a stack of empty pots on the way, and only a firepit's tick (or an
+    /// oven's Candela knows) keeps it up otherwise - any other cooker built on the
+    /// smelting inventory would hand over an unmarked pot.
+    /// </summary>
+    [HarmonyPrefix, HarmonyPatch(typeof(ItemSlot), nameof(ItemSlot.TryPutInto), new[] { typeof(ItemSlot), typeof(ItemStackMoveOperation) }, new[] { ArgumentType.Normal, ArgumentType.Ref })]
+    private static void MarkBeforeMoving(ItemSlot __instance)
+    {
+        if (__instance.Inventory is InventorySmelting inventory && __instance == inventory[1]) KeepMark(inventory);
     }
 
     /// <summary>

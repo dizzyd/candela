@@ -28,6 +28,7 @@ public static class WaxPotPatch
         if (harmony != null || Harmony.HasAnyPatches(HarmonyId)) return;
         harmony = new Harmony(HarmonyId);
         harmony.PatchAll(typeof(WaxPotPatch).Assembly);
+        StoneBakeOvenCompat.Install(harmony, api);
     }
 
     public static void Uninstall()
@@ -105,7 +106,7 @@ public static class WaxPotPatch
     private static void GetRendererWhenInFirepit(ItemStack stack, BlockEntityFirepit firepit, bool forOutputSlot, ref IInFirepitRenderer __result)
     {
         if (forOutputSlot || __result == null || firepit.Api is not ICoreClientAPI capi) return;
-        __result = new WaxPotRenderer(capi, stack, firepit, __result);
+        __result = new WaxPotRenderer(capi, stack, firepit.Pos, firepit.Inventory as InventorySmelting, 1 / 16f, __result);
     }
 
     /// <summary>
@@ -118,7 +119,7 @@ public static class WaxPotPatch
     {
         // Asked every server tick, lit or not: the one place to keep the pot's mark
         // in step with what it holds.
-        CarriedWax.KeepMark(__instance);
+        CarriedWax.KeepMark(__instance.Inventory as InventorySmelting);
 
         if (!__result && __instance.inputStack?.Collectible is BlockCookingContainer && ItemMoltenWax.FindIn(__instance) != null)
         {

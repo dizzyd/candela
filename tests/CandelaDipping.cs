@@ -45,17 +45,21 @@ namespace Candela.Tests
                 Assert.NotNull(Sapi.World.GetItem(new AssetLocation("candela:dippingrod-" + i)));
             }
 
-            // The patch adds the behavior through behaviorsByType "*", which every
-            // finished firepit state takes - ahead of Container, which opens the GUI
-            // and stops the chain, so behind it a dip never runs.
+            // Added in AssetsFinalize to every finished state of every firepit, vanilla's
+            // and any other mod's - ahead of Container, which opens the GUI and stops the
+            // chain, so behind it a dip never runs.
             foreach (string state in new[] { "extinct", "lit", "cold" })
             {
-                Block firepit = Sapi.World.GetBlock(new AssetLocation("game:firepit-" + state));
+                Assert.NotNull(Sapi.World.GetBlock(new AssetLocation("game:firepit-" + state)), $"no game:firepit-{state}");
+            }
+            foreach (Block firepit in Sapi.World.Blocks.Where(b => b is BlockFirepit))
+            {
                 var behaviors = firepit.BlockBehaviors.ToList();
-                int dipVat = behaviors.FindIndex(b => b is BlockBehaviorDipVat);
                 int container = behaviors.FindIndex(b => b is BlockBehaviorContainer);
-                Assert.True(dipVat >= 0, $"firepit-{state} has no CandelaDipVat");
-                Assert.True(dipVat < container, $"firepit-{state} runs Container before CandelaDipVat");
+                if (container < 0) continue;   // a construct stage
+                int dipVat = behaviors.FindIndex(b => b is BlockBehaviorDipVat);
+                Assert.True(dipVat >= 0, $"{firepit.Code} has no CandelaDipVat");
+                Assert.True(dipVat < container, $"{firepit.Code} runs Container before CandelaDipVat");
             }
         }
 
@@ -417,9 +421,9 @@ namespace Candela.Tests
         /// A firepit with a pot of molten tallow in it, cooked through vanilla's own
         /// DoSmelt and left to settle into the state cooking really leaves it in.
         /// </summary>
-        internal static async Task<BlockEntityFirepit> FirepitWithCookedTallow(int fatPerSlot, int slots, float temperature = HotTallow)
+        internal static async Task<BlockEntityFirepit> FirepitWithCookedTallow(int fatPerSlot, int slots, float temperature = HotTallow, string firepitCode = FirepitCode)
         {
-            World.SetBlock(FirepitCode, Firepit);
+            World.SetBlock(firepitCode, Firepit);
             await Ticks(2);
 
             var firepit = World.BE<BlockEntityFirepit>(Firepit);
@@ -459,7 +463,7 @@ namespace Candela.Tests
         /// Hold right-click on the firepit until the rod changes, or for long enough
         /// that it would have.
         /// </summary>
-        static async Task Dip(bool expectChange = true)
+        internal static async Task Dip(bool expectChange = true)
         {
             string before = Player.Held?.Collectible.Code.ToString();
             await Interact.Aim(Firepit);

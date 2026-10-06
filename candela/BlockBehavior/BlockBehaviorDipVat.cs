@@ -1,8 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json.Linq;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
+using Vintagestory.API.Datastructures;
+using Vintagestory.API.Util;
 using Vintagestory.GameContent;
 
 namespace candela;
@@ -17,11 +20,11 @@ namespace candela;
 /// contents hot - BlockEntityFirepit heats the cooking slots themselves while it
 /// burns. Anywhere else the wax would set within a minute or so of real time.
 ///
-/// Patched onto the firepit as a behavior rather than by Harmony: BlockFirepit hands
+/// Added to the firepit as a behavior rather than by Harmony: BlockFirepit hands
 /// any held item it does not recognise to <c>base.OnBlockInteractStart</c>, which is
 /// where behaviors run. Those run in order, and the firepit's own Container behavior
-/// opens its GUI and stops the chain, so the patch inserts this one ahead of it -
-/// behind Lockable, so a locked firepit stays locked.
+/// opens its GUI and stops the chain, so <see cref="AddToFirepits"/> inserts this one
+/// ahead of it - behind Lockable, so a locked firepit stays locked.
 /// </summary>
 public class BlockBehaviorDipVat : BlockBehavior
 {
@@ -30,6 +33,43 @@ public class BlockBehaviorDipVat : BlockBehavior
 
     public BlockBehaviorDipVat(Block block) : base(block)
     {
+    }
+
+    /// <summary>
+    /// Puts a dip vat just ahead of Container on every firepit, on the server once
+    /// every mod's assets are in; the client takes the order from the server's block
+    /// packets.
+    ///
+    /// In code rather than a JSON patch, which can only name a file and an index. Art
+    /// of Growing adds a firepit of its own - <c>artofgrowing:firepit</c>, vanilla's
+    /// class with vanilla's behaviors - and makes it the one dry grass builds, so a
+    /// patch on <c>game:blocktypes/wood/firepit.json</c> never reached the firepits
+    /// its players actually had, and the rod fell through to Container's GUI. Any
+    /// mod that reorders the vanilla list would have done the same.
+    /// </summary>
+    public static void AddToFirepits(ICoreAPI api)
+    {
+        int added = 0;
+        foreach (Block block in api.World.Blocks)
+        {
+            if (block is not BlockFirepit || block.HasBehavior<BlockBehaviorDipVat>()) continue;
+
+            // The construct stages have no Container, and are no vat until they are built.
+            int blockAt = block.BlockBehaviors.IndexOf(b => b is BlockBehaviorContainer);
+            int collectibleAt = block.CollectibleBehaviors.IndexOf(b => b is BlockBehaviorContainer);
+            if (blockAt < 0 || collectibleAt < 0) continue;
+
+            var vat = new BlockBehaviorDipVat(block);
+            vat.Initialize(new JsonObject(new JObject()));
+            block.BlockBehaviors = block.BlockBehaviors.InsertAt<BlockBehavior>(vat, blockAt);
+            block.CollectibleBehaviors = block.CollectibleBehaviors.InsertAt<CollectibleBehavior>(vat, collectibleAt);
+            added++;
+        }
+
+        if (added == 0)
+        {
+            api.Logger.Warning("[candela] found no firepit with a Container behavior to dip from - dipping rods will not work");
+        }
     }
 
     public override bool OnBlockInteractStart(IWorldAccessor world, IPlayer byPlayer, BlockSelection blockSel, ref EnumHandling handling)

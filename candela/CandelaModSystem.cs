@@ -36,6 +36,13 @@ public class CandelaModSystem : ModSystem
         WaxPotPatch.Install(api);
     }
 
+    public override void AssetsFinalize(ICoreAPI api)
+    {
+        base.AssetsFinalize(api);
+
+        if (api.Side == EnumAppSide.Server) BlockBehaviorDipVat.AddToFirepits(api);
+    }
+
     public override void Dispose()
     {
         WaxPotPatch.Uninstall();

@@ -208,9 +208,7 @@ namespace Candela.Tests
         {
             await SetDown("candela:candlemould-blue-tallow", hoursAgo: ItemCandleMould.SetHours * 2);
             EnumGameMode mode = Player.Me.WorldData.CurrentGameMode;
-            // Set directly: vstestkit's Player.SetGameMode runs /gamemode, which throws
-            // looking the player up by name. The server is what checks it.
-            Player.Me.WorldData.CurrentGameMode = EnumGameMode.Survival;
+            await Player.SetGameMode(EnumGameMode.Survival);
             try
             {
                 await Player.Hold("game:flaxfibers", 3);
@@ -225,7 +223,7 @@ namespace Candela.Tests
             }
             finally
             {
-                Player.Me.WorldData.CurrentGameMode = mode;
+                await Player.SetGameMode(mode);
             }
         }
 
@@ -306,9 +304,7 @@ namespace Candela.Tests
         public async Task TheCandlesNeedWicks()
         {
             EnumGameMode mode = Player.Me.WorldData.CurrentGameMode;
-            // Set directly: vstestkit's Player.SetGameMode runs /gamemode, which throws
-            // looking the player up by name. The server is what checks it.
-            Player.Me.WorldData.CurrentGameMode = EnumGameMode.Survival;
+            await Player.SetGameMode(EnumGameMode.Survival);
             try
             {
                 ItemSlot hand = await HoldFilled("tallow", hoursAgo: ItemCandleMould.SetHours * 2);
@@ -324,7 +320,7 @@ namespace Candela.Tests
             }
             finally
             {
-                Player.Me.WorldData.CurrentGameMode = mode;
+                await Player.SetGameMode(mode);
             }
         }
 

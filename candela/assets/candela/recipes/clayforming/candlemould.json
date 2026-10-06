@@ -1,6 +1,6 @@
 {
-	// A solid base, then four layers of wall around four 2x2 wells - the footprint
-	// tools/shapes.py draws the mould with.
+	// A solid base, then three layers of wall around four 2x2 wells - the mould
+	// tools/shapes.py draws, voxel for voxel. Change one, change the other.
 	ingredient: { type: "item", code: "game:clay-*", name: "color", allowedVariants: ["blue", "fire", "red"] },
 	pattern: [
 		[

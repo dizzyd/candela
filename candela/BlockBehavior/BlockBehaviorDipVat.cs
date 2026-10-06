@@ -10,7 +10,8 @@ namespace candela;
 /// <summary>
 /// Lets a firepit holding a pot of molten wax serve as a vat: hold right-click on it
 /// with something that takes wax (an <see cref="IWaxWorker"/>) - a dipping rod, for
-/// another coat; an empty candle mould, to fill it.
+/// another coat. Moulds are poured into from the pot lifted off the fire instead
+/// (<see cref="ItemCandleMould"/>).
 ///
 /// The firepit is the vat because it is the one place vanilla already keeps a pot's
 /// contents hot - BlockEntityFirepit heats the cooking slots themselves while it
@@ -123,7 +124,7 @@ public class BlockBehaviorDipVat : BlockBehavior
     private static WorldInteraction[] Help(IWorldAccessor world, string wax)
     {
         var help = new List<WorldInteraction>();
-        foreach (var (lang, prefix) in new[] { ("candela:blockhelp-dip", "dippingrod-"), ("candela:blockhelp-fillmould", "candlemould-") })
+        foreach (var (lang, prefix) in new[] { ("candela:blockhelp-dip", "dippingrod-") })
         {
             ItemStack[] takers = world.Items
                 .Where(item => item.Code?.Domain == "candela" && item.Code.Path.StartsWith(prefix) && item is IWaxWorker)

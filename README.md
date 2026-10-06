@@ -9,9 +9,11 @@ burns forever. Candela adds the candles people actually made and gives light a c
 
 - **Dipping** - melt rendered fat into tallow in a cooking pot, keep it molten on a
   burning firepit, and build tapers up on a dipping rod one coat at a time
-- **Moulds** - shape a candle mould from clay and fire it, then fill it from the
-  pot in one go: four candles from six portions of tallow, or twelve of molten
-  beeswax. Let it set and knock them out; the mould wears, and cracks in the end
+- **Moulds** - shape a candle mould from clay, fire it, and set it on the ground.
+  Lift the pot of molten wax off the fire and pour: four candles from six portions
+  of tallow, or twelve of molten beeswax. A carried pot keeps its wax, and stays
+  pourable for a few hours. Let it set and take them out with two flax fibres for
+  the wicks - half what dipping takes. The mould cracks after ten uses
 - **Melting down** - beeswax melts in a pot too, for moulds, and burned-down stubs
   melt back into their own wax, a portion a stub
 - **Burn-down** - vanilla's beeswax candles burn for 432 game hours each (two months), shrinking

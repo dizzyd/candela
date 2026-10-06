@@ -74,6 +74,25 @@ namespace Candela.Tests
             Assert.Equal(8, recipes.Count(r => r.CooksInto?.ResolvedItemstack?.Collectible.Code.ToString() == "candela:beeswax-molten"));
         }
 
+        /// <summary>
+        /// A pot full of fat makes twelve portions, more than the pot's six servings -
+        /// which vanilla's preview held against it ("too small to make 12x molten
+        /// tallow") while the cook, counting servings, went ahead.
+        /// </summary>
+        [VsTest]
+        public void APotFullOfFatSaysItWillMakeTallow()
+        {
+            World.SetBlock(FirepitCode, Firepit);
+            var firepit = World.BE<BlockEntityFirepit>(Firepit);
+            firepit.inputSlot.Itemstack = World.Stack(EmptyPot, 1);
+            firepit.otherCookingSlots[0].Itemstack = World.Stack(RenderedFat, 6);
+
+            var pot = (BlockCookingContainer)firepit.inputSlot.Itemstack.Collectible;
+            string text = pot.GetOutputText(Sapi.World, firepit.Inventory as ISlotProvider, firepit.inputSlot);
+            Assert.Equal(Lang.Get("mealcreation-nonfood", 12, Lang.Get("candela:item-tallow-molten").ToLower()), text);
+            Assert.True(pot.CanSmelt(Sapi.World, firepit.Inventory as ISlotProvider, firepit.inputSlot.Itemstack, null), "the pot would not cook it");
+        }
+
         [VsTest]
         public void RenderedFatInAPotMatchesTheTallowRecipe()
         {

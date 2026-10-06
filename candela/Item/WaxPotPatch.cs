@@ -73,7 +73,7 @@ public static class WaxPotPatch
     /// wax already cooked is nothing: "No matching recipe found".
     /// </summary>
     [HarmonyPostfix, HarmonyPatch(nameof(BlockCookingContainer.GetOutputText))]
-    private static void GetOutputText(IWorldAccessor world, ISlotProvider cookingSlotsProvider, ref string __result)
+    private static void GetOutputText(BlockCookingContainer __instance, IWorldAccessor world, ISlotProvider cookingSlotsProvider, ref string __result)
     {
         foreach (ItemSlot slot in cookingSlotsProvider.Slots)
         {
@@ -84,6 +84,16 @@ public static class WaxPotPatch
                 : Lang.Get("candela:firepit-setting-" + wax.Wax);
             return;
         }
+
+        // Before the cook: vanilla holds the portions it will make - servings times
+        // the recipe's two a lump of fat - to the pot's limit on servings, and says a
+        // full pot of fat "is too small to make 12x molten tallow". The cook itself
+        // checks servings, and goes ahead.
+        CookingRecipe recipe = __instance.GetMatchingCookingRecipe(world, __instance.GetCookingStacks(cookingSlotsProvider, false), out int servings);
+        if (recipe?.CooksInto?.ResolvedItemstack?.Collectible is not ItemMoltenWax) return;
+        if (servings < 1 || servings > __instance.MaxServingSize) return;
+
+        __result = Lang.Get("mealcreation-nonfood", servings * recipe.CooksInto.Quantity, recipe.CooksInto.ResolvedItemstack.GetName().ToLower());
     }
 
     /// <summary>
@@ -106,6 +116,10 @@ public static class WaxPotPatch
     [HarmonyPostfix, HarmonyPatch(typeof(BlockEntityFirepit), nameof(BlockEntityFirepit.canHeatInput))]
     private static void CanHeatInput(BlockEntityFirepit __instance, ref bool __result)
     {
+        // Asked every server tick, lit or not: the one place to keep the pot's mark
+        // in step with what it holds.
+        CarriedWax.KeepMark(__instance);
+
         if (!__result && __instance.inputStack?.Collectible is BlockCookingContainer && ItemMoltenWax.FindIn(__instance) != null)
         {
             __result = true;

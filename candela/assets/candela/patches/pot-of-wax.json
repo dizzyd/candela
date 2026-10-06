@@ -1,0 +1,10 @@
+[
+	{
+		// The clay cooking pot, carrying wax off the fire: drawn with it, says so, and
+		// pours it. Does nothing for a pot carrying nothing. See CollectibleBehaviorPotOfWax.
+		op: "add",
+		path: "/behaviors/-",
+		value: { name: "CandelaPotOfWax" },
+		file: "game:blocktypes/clay/fired/pot.json"
+	}
+]

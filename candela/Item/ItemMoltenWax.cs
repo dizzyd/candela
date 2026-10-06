@@ -1,3 +1,4 @@
+using System;
 using Vintagestory.API.Common;
 using Vintagestory.API.Datastructures;
 using Vintagestory.GameContent;
@@ -54,6 +55,22 @@ public class ItemMoltenWax : Item
         base.SetTemperature(world, itemstack, temperature, delayCooldown: false);
         (itemstack?.Attributes["temperature"] as ITreeAttribute)?.SetFloat("cooldownSpeed", CooldownSpeed);
     }
+
+    /// <summary>
+    /// Cools <paramref name="stack"/> from now so that it reaches its setting point in
+    /// <paramref name="hours"/>: wax carried off in its pot, which holds the heat far
+    /// longer than a thin pot on a dead fire. Back on a fire, SetTemperature puts it
+    /// back to <see cref="CooldownSpeed"/>.
+    /// </summary>
+    public void KeepWarmFor(IWorldAccessor world, ItemStack stack, double hours)
+    {
+        float now = GetTemperature(world, stack);
+        base.SetTemperature(world, stack, now, delayCooldown: false);
+        (stack.Attributes["temperature"] as ITreeAttribute)?.SetFloat("cooldownSpeed", (float)Math.Max(1, (now - SetsBelow) / hours));
+    }
+
+    /// <summary>Whether <paramref name="stack"/> is hot enough to work, held anywhere.</summary>
+    public bool IsWorkable(IWorldAccessor world, ItemStack stack) => GetTemperature(world, stack) >= SetsBelow;
 
     public override float GetTransitionRateMul(IWorldAccessor world, ItemSlot inSlot, EnumTransitionType transType)
     {

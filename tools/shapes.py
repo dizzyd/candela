@@ -111,11 +111,12 @@ print("wrote", sorted(os.listdir(OUT)))
 
 # ----- candle mould -----
 #
-# An 8x8 clay block with four 2x2 wells, the footprint of its clayforming pattern
-# (recipes/clayforming/candlemould.json) drawn taller: the wells are candle-length.
+# An 8x8 clay block with four 2x2 wells, voxel for voxel what its clayforming pattern
+# (recipes/clayforming/candlemould.json) forms: a floor and three layers of wall.
+# Change one, change the other.
 
 M0, M1 = 4, 12      # footprint, both axes
-MH = 8              # height
+MH = 4              # height: the pattern's four layers
 WELLS = [(5, 7), (9, 11)]   # well spans, both axes
 
 def mould(filled):

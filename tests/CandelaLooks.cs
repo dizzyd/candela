@@ -263,7 +263,7 @@ namespace Candela.Tests
                 hotbar[i].MarkDirty();
             }
             var empty = (ItemCandleMould)Sapi.World.GetItem(new AssetLocation("candela:candlemould-blue-fired"));
-            hotbar[6].Itemstack = empty.Worked(Sapi.World, World.Stack("candela:candlemould-blue-fired", 1), "tallow");
+            hotbar[6].Itemstack = empty.Filled(Sapi.World, World.Stack("candela:candlemould-blue-fired", 1), "tallow");
             hotbar[6].MarkDirty();
             await OnClient();
             Capi.World.Player.InventoryManager.ActiveHotbarSlotNumber = 6;
@@ -283,6 +283,82 @@ namespace Candela.Tests
             await Hours(ItemCandleMould.SetHours * 0.5);
             await Frames.Wait(30);
             Log("shot: " + await Shot.Take("results/looks-moulds-setting.png"));
+        }
+
+        /// <summary>
+        /// Not an assertion: pots lifted off the fire with their wax - molten tallow
+        /// full and nearly empty, beeswax, and tallow gone cold and set - in the hotbar,
+        /// one in hand, one set down on the ground and one dropped.
+        /// </summary>
+        [VsTest(TimeoutMs = 90000), RequiresClient]
+        public async Task CarriedPotsForTheEye()
+        {
+            await World.SetCalendarTo(500 * 24 + 12);
+            ItemStack[] pots =
+            {
+                PotOf("candela:tallow-molten", 24, 300f), PotOf("candela:tallow-molten", 4, 300f),
+                PotOf("candela:beeswax-molten", 18, 300f), PotOf("candela:tallow-molten", 24, 20f),
+            };
+
+            var hotbar = Player.Me.InventoryManager.GetHotbarInventory();
+            for (int i = 0; i < 10; i++) { hotbar[i].Itemstack = i < pots.Length ? pots[i] : null; hotbar[i].MarkDirty(); }
+            await OnClient();
+            Capi.World.Player.InventoryManager.ActiveHotbarSlotNumber = 0;
+            await OnServer();
+            await Ticks(4);
+
+            // One set down on the ground, from hand, as a player does it.
+            World.SetBlock("game:air", P(8, 1, 8));
+            await Hands.ShiftUse(P(8, 0, 8), BlockFacing.UP);
+            hotbar[0].Itemstack = PotOf("candela:tallow-molten", 24, 300f);
+            hotbar[0].MarkDirty();
+
+            var dropped = Sapi.World.SpawnItemEntity(PotOf("candela:beeswax-molten", 18, 300f), new Vec3d(P(9, 1, 8).X + 0.5, P(9, 1, 8).Y + 0.1, P(9, 1, 8).Z + 0.5));
+            dropped.ServerPos.Motion.Set(0, 0, 0);
+            await Ticks(20);
+
+            await Player.Teleport(new Vec3d(P(8, 1, 6).X + 0.5, P(8, 1, 6).Y, P(8, 1, 6).Z + 0.5));
+            await Interact.LookAt(new Vec3d(P(8, 1, 8).X + 1.0, P(8, 1, 8).Y + 0.1, P(8, 1, 8).Z + 0.5));
+            await Frames.Wait(30);
+            Log("shot: " + await Shot.Take("results/looks-carried-pots.png"));
+        }
+
+        /// <summary>Not an assertion: each clay's mould, raw and fired, set down in a row - raw at the back.</summary>
+        [VsTest(TimeoutMs = 90000), RequiresClient]
+        public async Task MouldColoursForTheEye()
+        {
+            await World.SetCalendarTo(500 * 24 + 12);
+            string[] colours = { "blue", "fire", "red" };
+            for (int i = 0; i < colours.Length; i++)
+            {
+                foreach (var (state, z) in new[] { ("raw", 10), ("fired", 8) })
+                {
+                    World.SetBlock("game:air", P(6 + 2 * i, 1, z));
+                    ItemSlot hand = Player.Me.InventoryManager.ActiveHotbarSlot;
+                    hand.Itemstack = World.Stack($"candela:candlemould-{colours[i]}-{state}", 1);
+                    hand.MarkDirty();
+                    await Ticks(4);
+                    await Player.Teleport(new Vec3d(P(6 + 2 * i, 1, z - 2).X + 0.5, P(6, 1, 6).Y, P(6, 1, z - 2).Z + 0.5));
+                    await Hands.ShiftUse(P(6 + 2 * i, 0, z), BlockFacing.UP);
+                }
+            }
+            await Hands.EmptyHand();
+
+            await Player.Teleport(new Vec3d(P(8, 1, 5).X + 0.5, P(8, 1, 5).Y + 1.5, P(8, 1, 5).Z + 0.5));
+            await Interact.LookAt(new Vec3d(P(8, 1, 9).X + 0.5, P(8, 1, 9).Y, P(8, 1, 9).Z + 0.5));
+            await Frames.Wait(30);
+            Log("shot: " + await Shot.Take("results/mould-colours.png"));
+        }
+
+        static ItemStack PotOf(string molten, int portions, float temperature)
+        {
+            ItemStack wax = World.Stack(molten, portions);
+            wax.Collectible.SetTemperature(Sapi.World, wax, temperature);
+            var contents = new Vintagestory.API.Datastructures.TreeAttribute();
+            contents.SetItemstack("0", wax);
+            ItemStack pot = World.Stack("game:claypot-blue-fired", 1);
+            pot.Attributes[CarriedWax.Contents] = contents;
+            return pot;
         }
 
         /// <summary>

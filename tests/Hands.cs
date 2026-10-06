@@ -24,15 +24,16 @@ namespace Candela.Tests
         }
 
         /// <summary>
-        /// Shift-right-click on <paramref name="pos"/>. Shift is let go whatever happens:
-        /// left down, it would turn every later test's right-click into a shift-click.
+        /// Shift-right-click on <paramref name="pos"/> - the middle of its
+        /// <paramref name="face"/>, if given. Shift is let go whatever happens: left
+        /// down, it would turn every later test's right-click into a shift-click.
         /// </summary>
-        public static async Task ShiftUse(BlockPos pos)
+        public static async Task ShiftUse(BlockPos pos, BlockFacing face = null)
         {
             await Input.KeyDown(GlKeys.ShiftLeft, shift: true);
             try
             {
-                await Interact.UseBlock(pos);
+                await Interact.UseBlock(pos, face);
             }
             finally
             {

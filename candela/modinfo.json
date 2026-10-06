@@ -6,7 +6,7 @@
         "DizzyD"
     ],
     "description": "Candle-making beyond the cooking pot - tallow, wicks and dipping - and candles that burn down and need tending",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "dependencies": {
         "game": "1.22.0"
     }

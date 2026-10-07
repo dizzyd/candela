@@ -1,3 +1,5 @@
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Vintagestory.API.Client;
@@ -18,14 +20,33 @@ namespace candela;
 /// <see cref="BEBehaviorLanternFuel"/>, or from the item's attributes while it is an
 /// item: the light, the candle a crafted lantern starts with, carrying the candle
 /// through being picked up, and the interactions to refuel, snuff and light it.
+///
+/// A coloured candle's flame is part of the model, so the lantern gets a coloured
+/// copy of it (<see cref="FlameMeshes"/>): placed, through <see cref="LanternFlamePatch"/>;
+/// in hand, through <see cref="OnBeforeRender"/>; and on a shelf or in a display case,
+/// through <see cref="IContainedMeshSource"/>. A plain one is vanilla's mesh.
+///
+/// Not <see cref="ColouredFlameMeshes"/>, as candles and chandeliers use: a lantern's
+/// mesh is made by vanilla's GenMesh, which picks its metal, lining and glass.
 /// </summary>
-public class BlockCandelaLantern : BlockLantern
+public class BlockCandelaLantern : BlockLantern, IContainedMeshSource
 {
     private WorldInteraction[] extraInteractions;
+
+    private System.Lazy<Shape> flameShape;
+
+    // By material, lining, glass and flame colour, as vanilla keys its own. Placed
+    // ones are filled on the tesselation thread.
+    private readonly ConcurrentDictionary<string, MeshData> colouredMeshes = new();
+    private readonly Dictionary<string, MultiTextureMeshRef> colouredMeshRefs = new();
 
     public override void OnLoaded(ICoreAPI api)
     {
         base.OnLoaded(api);
+        if (api is ICoreClientAPI capi)
+        {
+            flameShape = new(() => Vintagestory.API.Common.Shape.TryGet(capi, Shape.Base.CopyWithPathPrefixAndAppendixOnce("shapes/", ".json")));
+        }
 
         extraInteractions = ObjectCacheUtil.GetOrCreate(api, "candelaLanternInteractions", () =>
         {
@@ -39,6 +60,72 @@ public class BlockCandelaLantern : BlockLantern
                 new() { ActionLangCode = "candela:blockhelp-light", MouseButton = EnumMouseButton.Right, Itemstacks = torches },
             };
         });
+    }
+
+    /// <summary>The lantern with a <paramref name="flameColour"/> flame, or null for a plain one.</summary>
+    public MeshData ColouredMesh(ICoreClientAPI capi, ITesselatorAPI tesselator, string material, string lining, string glass, string flameColour)
+    {
+        if (FlameColours.Get(flameColour) == null || flameShape?.Value is not Shape shape) return null;
+        return colouredMeshes.GetOrAdd($"{material}-{lining}-{glass}-{flameColour}", _ =>
+        {
+            // GenMesh keeps the metal, lining and glass it is making in fields on the
+            // block while it works, and this runs on the tesselation thread for placed
+            // lanterns and the main thread for held ones: one at a time, or a lantern
+            // could be made with another's metal and kept so. Vanilla's own two callers
+            // share the hazard, but not one cache.
+            lock (this) return GenMesh(capi, material, lining, glass, FlameMeshes.Recoloured(shape, _ => flameColour), tesselator);
+        });
+    }
+
+    /// <summary>A lantern on a shelf, in a display case or on the ground: its flame in its colour.</summary>
+    MeshData IContainedMeshSource.GenMesh(ItemSlot slot, ITextureAtlasAPI targetAtlas, BlockPos atBlockPos)
+    {
+        ItemStack stack = slot.Itemstack;
+        string flameColour = LanternStack.FlameColour(stack);
+        MeshData coloured = flameColour == null || api is not ICoreClientAPI capi ? null
+            : ColouredMesh(capi, capi.Tesselator, stack.Attributes.GetString("material"), stack.Attributes.GetString("lining"),
+                stack.Attributes.GetString("glass", "quartz"), flameColour);
+        // A copy: the holder moves the mesh into place, and this one is cached.
+        return coloured?.Clone() ?? GenMesh(slot, targetAtlas, atBlockPos);
+    }
+
+    /// <summary>Vanilla's key, and the flame colour: without it a blue lantern and a plain one would share a mesh.</summary>
+    string IContainedMeshSource.GetMeshCacheKey(ItemSlot slot) =>
+        LanternStack.FlameColour(slot.Itemstack) is string flameColour ? GetMeshCacheKey(slot) + "-" + flameColour : GetMeshCacheKey(slot);
+
+    public override void OnBeforeRender(ICoreClientAPI capi, ItemStack itemstack, EnumItemRenderTarget target, ref ItemRenderInfo renderinfo)
+    {
+        string flameColour = LanternStack.FlameColour(itemstack);
+        if (flameColour == null)
+        {
+            base.OnBeforeRender(capi, itemstack, target, ref renderinfo);
+            return;
+        }
+
+        string material = itemstack.Attributes.GetString("material");
+        string lining = itemstack.Attributes.GetString("lining");
+        string glass = itemstack.Attributes.GetString("glass", "quartz");
+        string key = $"{material}-{lining}-{glass}-{flameColour}";
+        if (!colouredMeshRefs.TryGetValue(key, out MultiTextureMeshRef meshRef))
+        {
+            MeshData mesh = ColouredMesh(capi, capi.Tesselator, material, lining, glass, flameColour);
+            if (mesh == null)
+            {
+                base.OnBeforeRender(capi, itemstack, target, ref renderinfo);
+                return;
+            }
+            colouredMeshRefs[key] = meshRef = capi.Render.UploadMultiTextureMesh(mesh);
+        }
+
+        renderinfo.ModelRef = meshRef;
+        renderinfo.CullFaces = false;
+    }
+
+    public override void OnUnloaded(ICoreAPI api)
+    {
+        base.OnUnloaded(api);
+        foreach (MultiTextureMeshRef meshRef in colouredMeshRefs.Values) meshRef.Dispose();
+        colouredMeshRefs.Clear();
     }
 
     public override byte[] GetLightHsv(IBlockAccessor blockAccessor, BlockPos pos, ItemStack stack = null)

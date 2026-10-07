@@ -6,10 +6,13 @@ Makes the treated-wick and verdigris textures by tinting vanilla's own:
 
 Wicks are vanilla's flax fibres stained part way towards the colour they burn;
 verdigris is vanilla's crushed lime, coloured as the game's own Verdigris pigment
-(nugget.json's pigment for malachite). Plain Python - no imaging library - like
-icon.py: vanilla's sources here are 8-bit RGB or RGBA, not interlaced.
+(nugget.json's pigment for malachite). Flames are vanilla's candle texture turned
+to each flame's hue: the flames of chandeliers, lanterns and bunches' tips are
+cubes in the model that sample its orange corner, and FlameMeshes points them at
+these instead. Plain Python - no imaging library - like icon.py: vanilla's sources
+here are 8-bit RGB or RGBA, not interlaced.
 """
-import os, struct, sys, zlib
+import colorsys, os, struct, sys, zlib
 
 def read(path):
     data = open(path, 'rb').read()
@@ -63,6 +66,19 @@ def tint(src, dest, colour, strength):
     write(dest, w, h, out)
     print("wrote", os.path.normpath(dest))
 
+def turn(src, dest, hue):
+    """Each pixel's hue set to `hue` (0-1), its saturation and brightness kept."""
+    w, h, rows = read(src)
+    out = []
+    for row in rows:
+        line = []
+        for r, g, b, a in row:
+            _, s, v = colorsys.rgb_to_hsv(r / 255, g / 255, b / 255)
+            line.append(tuple(int(c * 255 + 0.5) for c in colorsys.hsv_to_rgb(hue, s, v)) + (a,))
+        out.append(line)
+    write(dest, w, h, out)
+    print("wrote", os.path.normpath(dest))
+
 # The flame colours of FlameColours.cs, as a stain on the fibres.
 WICKS = {
     "red":    (200, 40, 30),
@@ -70,6 +86,15 @@ WICKS = {
     "teal":   (40, 170, 160),
     "blue":   (50, 80, 210),
     "violet": (150, 70, 200),
+}
+
+# FlameColours.cs's particle hues, 0-255, so the model's flames match the particles'.
+FLAMES = {
+    "red":    4,
+    "green":  80,
+    "teal":   120,
+    "blue":   165,
+    "violet": 195,
 }
 
 def main():
@@ -80,5 +105,10 @@ def main():
     for name, colour in WICKS.items():
         tint(os.path.join(game, 'item', 'resource', 'fibers.png'), os.path.join(out, f'wick-{name}.png'), colour, 0.6)
     tint(os.path.join(game, 'item', 'resource', 'crushed', 'lime.png'), os.path.join(out, 'powder-verdigris.png'), (112, 154, 108), 0.9)
+
+    blocks = os.path.join(os.path.dirname(__file__), '..', 'candela', 'assets', 'candela', 'textures', 'block')
+    os.makedirs(blocks, exist_ok=True)
+    for name, hue in FLAMES.items():
+        turn(os.path.join(game, 'block', 'candle.png'), os.path.join(blocks, f'flame-{name}.png'), hue / 256)
 
 main()

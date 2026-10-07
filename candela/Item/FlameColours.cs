@@ -30,6 +30,12 @@ public static class FlameColours
     /// <param name="ParticleHue">On the 0-255 scale particle colours use, matching the light's.</param>
     public record Colour(string Code, byte LightHue, byte ParticleHue);
 
+    // A colour added here also needs: its wick (itemtypes/wick.json, recipes/grid/wick.json),
+    // its lang keys (item-wick-, flame-, colour-), its hues in tools/tint.py and the
+    // textures that makes, and its flame texture in every block that draws flames in
+    // its model - patches/candles-burn.json, chandelier-burn.json, lantern-fuel.json,
+    // and blocktypes/tallowcandles.json and tallowcandle.json. A block missing one
+    // draws that colour's flame untextured.
     private static readonly Dictionary<string, Colour> byCode = new Colour[]
     {
         new("red", 0, 4),
@@ -46,7 +52,7 @@ public static class FlameColours
 
     /// <summary>
     /// Stamps <paramref name="stack"/>, in place, as burning <paramref name="flame"/> -
-    /// null, or a colour there is no such, makes it plain. Returns it.
+    /// null, or a colour not in the table, makes it plain. Returns it.
     /// </summary>
     public static ItemStack Stamp(ItemStack stack, string flame)
     {

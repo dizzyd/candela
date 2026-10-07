@@ -21,6 +21,9 @@ namespace candela;
 /// worth an hour per candle. Vanilla takes beeswax candles only, and so does this -
 /// part-burned beeswax stubs included, which is a use for them. Unlike vanilla, a
 /// candle can be taken out again, which is how spent ones are cleared.
+///
+/// Its flames are part of its model, so coloured candles get a coloured copy of it
+/// (<see cref="FlameMeshes"/>); all plain, it is drawn as vanilla draws it.
 /// </summary>
 public class BlockCandelaChandelier : Block, ICandleHolder
 {
@@ -34,12 +37,15 @@ public class BlockCandelaChandelier : Block, ICandleHolder
 
     private WorldInteraction[] interactions;
 
+    private ColouredFlameMeshes coloured;
+
     public override void OnLoaded(ICoreAPI api)
     {
         base.OnLoaded(api);
 
         string type = Variant["type"] ?? "candle0";
         Quantity = type.StartsWith("candle") ? type.Substring("candle".Length).ToInt(0) : 0;
+        if (api is ICoreClientAPI capi) coloured = new ColouredFlameMeshes(capi, this);
 
         interactions = ObjectCacheUtil.GetOrCreate(api, "candelaChandelierInteractions", () =>
         {
@@ -59,6 +65,9 @@ public class BlockCandelaChandelier : Block, ICandleHolder
     /// <summary>Whether this kind of candle goes in: whole or stub, of this chandelier's wax.</summary>
     public bool AcceptsCandle(CollectibleObject candle) =>
         CandleWax.IsCandle(candle) && candle.Attributes["candela"]["wax"].AsString() == Wax;
+
+    /// <summary>The chandelier with <paramref name="be"/>'s candles' flames in their colours, or null while all are plain.</summary>
+    public MeshData ColouredMesh(ITesselatorAPI tesselator, BECandles be) => coloured?.For(tesselator, be.Colours.ToArray());
 
     public override byte[] GetLightHsv(IBlockAccessor blockAccessor, BlockPos pos, ItemStack stack = null)
     {

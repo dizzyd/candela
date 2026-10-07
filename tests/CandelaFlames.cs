@@ -1,6 +1,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using candela;
+using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
@@ -147,6 +148,64 @@ namespace Candela.Tests
             await TakeCandle(be);
             await TakeCandle(be);
             Assert.True(await ClientLightTurns(above, blue: false), "the blue did not leave the room");
+        }
+
+        /// <summary>
+        /// Every chandelier shape gives each of its candles a flame of its own, in the order
+        /// the candles go in - the six-candle one too, whose sixth tip vanilla left unlit -
+        /// and the shape vanilla draws plain chandeliers from is left as it was.
+        /// </summary>
+        [VsTest]
+        public void EachChandelierCandleHasItsOwnFlame()
+        {
+            string[] rainbow = { "red", "green", "teal", "blue", "violet" };
+            for (int n = 1; n <= 8; n++)
+            {
+                Shape shape = Shape.TryGet(Sapi, $"game:shapes/block/metal/chandelier/candle{n}.json");
+                Assert.NotNull(shape, $"no shape for {n} candles");
+                Shape coloured = FlameMeshes.Recoloured(shape, i => rainbow[i % rainbow.Length]);
+
+                string expected = string.Join(",", Enumerable.Range(0, n).Select(i => rainbow[i % rainbow.Length]));
+                Assert.Equal(expected, string.Join(",", PaintedFlames(coloured)), $"{n} candles");
+                Assert.Equal(0, PaintedFlames(shape).Count(), $"{n} candles: the original shape was changed");
+            }
+        }
+
+        /// <summary>The bunch's tips, which do not glow, in the order of the particle flames' wicks; and the single candle's.</summary>
+        [VsTest]
+        public void EveryBunchCandleHasItsOwnTip()
+        {
+            string[] rainbow = { "red", "green", "teal", "blue", "violet" };
+            Shape bunch = Shape.TryGet(Sapi, "game:shapes/block/wax/bunch.json");
+            string expected = string.Join(",", Enumerable.Range(0, 9).Select(i => rainbow[i % rainbow.Length]));
+            Assert.Equal(expected, string.Join(",", PaintedFlames(FlameMeshes.Recoloured(bunch, i => rainbow[i % rainbow.Length]))));
+
+            Shape single = Shape.TryGet(Sapi, "game:shapes/block/wax/candle3.json");
+            Assert.Equal("violet", string.Join(",", PaintedFlames(FlameMeshes.Recoloured(single, _ => "violet"))));
+        }
+
+        [VsTest]
+        public void EveryLanternShapeHasOneFlame()
+        {
+            foreach (string size in new[] { "large", "small" })
+            foreach (string hang in new[] { "ground", "wall", "ceiling" })
+            {
+                Shape shape = Shape.TryGet(Sapi, $"game:shapes/block/metal/lantern/{size}/{hang}.json");
+                Assert.NotNull(shape, $"no {size} {hang} lantern");
+                Assert.Equal("teal", string.Join(",", PaintedFlames(FlameMeshes.Recoloured(shape, _ => "teal"))), $"{size} {hang}");
+            }
+        }
+
+        /// <summary>The colour of each element whose faces FlameMeshes repainted, in shape order.</summary>
+        static System.Collections.Generic.IEnumerable<string> PaintedFlames(Shape shape)
+        {
+            System.Collections.Generic.IEnumerable<string> Walk(ShapeElement element)
+            {
+                string painted = element.FacesResolved?.FirstOrDefault(f => f?.Texture?.StartsWith("candela-flame-") == true)?.Texture;
+                if (painted != null) yield return painted.Substring("candela-flame-".Length);
+                foreach (ShapeElement child in element.Children ?? []) foreach (string c in Walk(child)) yield return c;
+            }
+            return shape.Elements.SelectMany(Walk);
         }
 
         /// <summary>
@@ -409,16 +468,7 @@ namespace Candela.Tests
         [VsTest(TimeoutMs = 120000), RequiresClient]
         public async Task ColouredFlamesForTheEye()
         {
-            await World.SetCalendarTo(500 * 24 + 22);
-            // A dark box over the scene: under the open night sky the moon lights the
-            // ground brighter than candles do, and their colour is lost in it.
-            World.Fill(P(1, 4, 1), P(14, 4, 14), "game:planks-oak-ud");
-            World.Fill(P(1, 1, 1), P(14, 3, 1), "game:planks-oak-ud");
-            World.Fill(P(1, 1, 14), P(14, 3, 14), "game:planks-oak-ud");
-            World.Fill(P(1, 1, 1), P(1, 3, 14), "game:planks-oak-ud");
-            World.Fill(P(14, 1, 1), P(14, 3, 14), "game:planks-oak-ud");
-            // A pale floor, so the light's colour shows - grass greens everything.
-            World.Fill(P(1, 0, 1), P(14, 0, 14), "game:rock-chalk");
+            await DarkRoom();
             string[] rainbow = { "red", "green", "teal", "blue", "violet" };
             for (int i = 0; i < rainbow.Length; i++)
             {
@@ -492,6 +542,227 @@ namespace Candela.Tests
             }
         }
 
+        /// <summary>
+        /// A chandelier's and a lantern's flames are drawn from the coloured flame
+        /// textures - each candle's own on a chandelier - and an all-plain chandelier is
+        /// left to vanilla's mesh.
+        /// </summary>
+        [VsTest, RequiresClient]
+        public async Task ChandeliersAndLanternsAreDrawnInTheirColours()
+        {
+            BlockPos chandelier = P(6, 1, 8), lantern = P(10, 1, 8);
+            World.SetBlock("game:chandelier-candle0", chandelier);
+            await Ticks(2);
+            var be = World.BE<BECandles>(chandelier);
+            be.AddCandle(BeeswaxHours, null);
+            Sapi.World.BlockAccessor.ExchangeBlock(Sapi.World.GetBlock(new AssetLocation("game:chandelier-candle1")).BlockId, chandelier);
+            await Ticks(4);
+
+            await OnClient();
+            Assert.Null(Drawn(chandelier), "an all-plain chandelier should be vanilla's mesh");
+            await OnServer();
+
+            be.AddCandle(BeeswaxHours, "red");
+            Sapi.World.BlockAccessor.ExchangeBlock(Sapi.World.GetBlock(new AssetLocation("game:chandelier-candle2")).BlockId, chandelier);
+            await PlaceLantern(lantern, "blue", glass: null);
+
+            for (int i = 0; i < 100; i++)
+            {
+                await OnClient();
+                bool synced = Capi.World.BlockAccessor.GetBlockEntity(chandelier) is BECandles client && Seq(client.Colours) == "-,red"
+                    && Capi.World.BlockAccessor.GetBlockEntity(lantern)?.GetBehavior<BEBehaviorLanternFuel>()?.FlameColour == "blue";
+                await OnServer();
+                if (synced) break;
+                await Ticks(1);
+            }
+
+            await OnClient();
+            MeshData chandelierMesh = Drawn(chandelier), lanternMesh = Drawn(lantern);
+            Assert.NotNull(chandelierMesh, "a chandelier with a red candle drew nothing of its own");
+            Assert.True(Samples(chandelierMesh, "red"), "the red candle's flame is not red");
+            Assert.False(Samples(chandelierMesh, "blue"), "a flame took a colour no candle burns");
+            Assert.NotNull(lanternMesh, "the lantern drew nothing");
+            Assert.True(Samples(lanternMesh, "blue"), "the blue candle's flame is not blue");
+            ShapeLeftAlone(Capi.World.BlockAccessor.GetBlock(chandelier));
+            ShapeLeftAlone(Capi.World.BlockAccessor.GetBlock(lantern));
+            await OnServer();
+        }
+
+        /// <summary>
+        /// A bunch's tips are drawn in their candles' colours, beeswax or tallow, its
+        /// candles still from their own wax's texture; a plain bunch's tips stay orange.
+        /// </summary>
+        [VsTest, RequiresClient]
+        public async Task BunchTipsAreDrawnInTheirColours()
+        {
+            BlockPos beeswax = P(6, 1, 8), tallow = P(10, 1, 8), plain = P(8, 1, 10);
+            foreach ((BlockPos at, string code) in new[] { (beeswax, "game:bunchocandles-2"), (tallow, "candela:tallowcandles-2"), (plain, "game:bunchocandles-2") })
+            {
+                World.SetBlock(code, at);
+                await Ticks(2);
+                World.BE<BECandles>(at).SetFuel(2 * BeeswaxHours, at == plain ? null : "green");
+            }
+
+            for (int i = 0; i < 100; i++)
+            {
+                await OnClient();
+                bool synced = Capi.World.BlockAccessor.GetBlockEntity(beeswax) is BECandles b && Seq(b.Colours) == "green,green"
+                    && Capi.World.BlockAccessor.GetBlockEntity(tallow) is BECandles t && Seq(t.Colours) == "green,green";
+                await OnServer();
+                if (synced) break;
+                await Ticks(1);
+            }
+
+            await OnClient();
+            MeshData beeswaxMesh = Drawn(beeswax), tallowMesh = Drawn(tallow), plainMesh = Drawn(plain);
+            Assert.True(Samples(beeswaxMesh, "green"), "a green beeswax bunch's tips are not green");
+            Assert.True(SamplesTexture(beeswaxMesh, "game:block/candle"), "a green beeswax bunch's candles lost their texture");
+            Assert.True(Samples(tallowMesh, "green"), "a green tallow bunch's tips are not green");
+            Assert.True(SamplesTexture(tallowMesh, "candela:block/candle-tallow"), "a green tallow bunch's candles are not tallow");
+            Assert.False(Samples(plainMesh, "green"), "a plain bunch's tips were coloured");
+            ShapeLeftAlone(Capi.World.BlockAccessor.GetBlock(beeswax));
+            await OnServer();
+        }
+
+        /// <summary>
+        /// A lantern off its block - on a shelf or in a display case, or in hand - shows
+        /// its candle's colour, and a blue one is not given a plain one's cached mesh.
+        /// </summary>
+        [VsTest, RequiresClient]
+        public async Task ALanternOffItsBlockShowsItsColour()
+        {
+            await OnClient();
+            var lantern = (BlockCandelaLantern)Capi.World.GetBlock(new AssetLocation(LanternCode));
+            ItemStack blue = new(lantern), plain = new(lantern);
+            foreach (ItemStack stack in new[] { blue, plain })
+            {
+                stack.Attributes.SetString("material", "copper");
+                stack.Attributes.SetString("lining", "plain");
+                stack.Attributes.SetString("glass", "quartz");
+            }
+            LanternStack.Write(blue, BeeswaxHours, "game:bunchocandles", snuffed: false, "blue");
+
+            var source = (IContainedMeshSource)lantern;
+            Assert.True(Samples(source.GenMesh(new DummySlot(blue), Capi.BlockTextureAtlas, null), "blue"), "a blue lantern on a shelf is not blue");
+            Assert.False(Samples(source.GenMesh(new DummySlot(plain), Capi.BlockTextureAtlas, null), "blue"), "a plain lantern on a shelf is blue");
+            Assert.True(source.GetMeshCacheKey(new DummySlot(blue)) != source.GetMeshCacheKey(new DummySlot(plain)), "a blue and a plain lantern share a shelf mesh");
+
+            ItemRenderInfo blueInfo = new(), plainInfo = new();
+            lantern.OnBeforeRender(Capi, blue, EnumItemRenderTarget.HandFp, ref blueInfo);
+            lantern.OnBeforeRender(Capi, plain, EnumItemRenderTarget.HandFp, ref plainInfo);
+            Assert.NotNull(blueInfo.ModelRef, "a blue lantern in hand has no model");
+            Assert.True(blueInfo.ModelRef != plainInfo.ModelRef, "a blue lantern in hand is drawn as a plain one");
+            await OnServer();
+        }
+
+        /// <summary>
+        /// The block's own shape location is as its JSON gave it. Making the coloured copy
+        /// once turned it into "shapes/....json" in place, and vanilla, looking the shape up
+        /// by it, drew the block invisible.
+        /// </summary>
+        static void ShapeLeftAlone(Block block)
+        {
+            string path = block.Shape.Base.Path;
+            Assert.False(path.StartsWith("shapes/") || path.EndsWith(".json"), $"{block.Code}'s shape location was changed to {path}");
+        }
+
+        /// <summary>What the client's block entity at <paramref name="pos"/> draws of its own, or null if it leaves it to the block.</summary>
+        static MeshData Drawn(BlockPos pos)
+        {
+            var pool = new MeshRecorder();
+            return Capi.World.BlockAccessor.GetBlockEntity(pos).OnTesselation(pool, Capi.Tesselator) ? pool.Mesh : null;
+        }
+
+        /// <summary>Whether any of <paramref name="mesh"/>'s texture coordinates fall in <paramref name="flame"/>'s flame texture.</summary>
+        static bool Samples(MeshData mesh, string flame) => SamplesTexture(mesh, "candela:block/flame-" + flame);
+
+        static bool SamplesTexture(MeshData mesh, string texture)
+        {
+            TextureAtlasPosition at = Capi.BlockTextureAtlas[new AssetLocation(texture)];
+            Assert.NotNull(at, $"{texture} is not in the block atlas");
+            for (int i = 0; i + 1 < mesh.UvCount; i += 2)
+            {
+                float u = mesh.Uv[i], v = mesh.Uv[i + 1];
+                if (u >= at.x1 && u <= at.x2 && v >= at.y1 && v <= at.y2) return true;
+            }
+            return false;
+        }
+
+        private class MeshRecorder : ITerrainMeshPool
+        {
+            public MeshData Mesh;
+            public void AddMeshData(MeshData data, int lodLevel = 1) => Mesh = data;
+            public void AddMeshData(MeshData data, float[] tfMatrix, int lodLevel = 1) => Mesh = data;
+            public void AddMeshData(MeshData data, ColorMapData colorMapData, int lodLevel = 1) => Mesh = data;
+        }
+
+        /// <summary>
+        /// Not an assertion: chandeliers and lanterns, whose flames are in their models, in
+        /// every colour at night - for the eye.
+        /// </summary>
+        [VsTest(TimeoutMs = 120000), RequiresClient]
+        public async Task ColouredModelFlamesForTheEye()
+        {
+            await DarkRoom();
+            string[] rainbow = { "red", "green", "teal", "blue", "violet" };
+
+            // Stood on the floor, where its flames can be seen at eye level: every candle a
+            // different colour, the last three plain.
+            BlockPos chandelier = P(4, 1, 8);
+            World.SetBlock("game:chandelier-candle0", chandelier);
+            await Ticks(2);
+            var be = World.BE<BECandles>(chandelier);
+            string[] candles = [.. rainbow, null, null, null];
+            for (int i = 0; i < candles.Length; i++)
+            {
+                be.AddCandle(BeeswaxHours, candles[i]);
+                Sapi.World.BlockAccessor.ExchangeBlock(Sapi.World.GetBlock(new AssetLocation("game:chandelier-candle" + (i + 1))).BlockId, chandelier);
+            }
+
+            for (int i = 0; i < rainbow.Length; i++) await PlaceLantern(P(8 + i, 1, 8), rainbow[i], glass: null);
+            // Long enough for the client to have the night, and the blocks.
+            await Ticks(60);
+
+            await Player.Teleport(P(8, 1, 3).ToVec3d().Add(0.5, 0, 0.5));
+            await Interact.LookAt(P(7, 1, 8));
+            await Input.Hotkey("togglehud");
+            await Frames.Wait(90);
+            Log("shot: " + await Shot.Take("results/flames-model-room.png"));
+
+            // Close, from a little above, where all the tips show.
+            await Player.Teleport(chandelier.ToVec3d().Add(0.5, -0.4, -1.3));
+            await Interact.LookAt(chandelier.ToVec3d().Add(0.5, 0.6, 0.5));
+            await Frames.Wait(60);
+            Log("shot: " + await Shot.Take("results/flames-model-chandelier.png"));
+
+            // Each lantern close, at its own height.
+            for (int i = 0; i < rainbow.Length; i++)
+            {
+                BlockPos at = P(8 + i, 1, 8);
+                await Player.Teleport(at.ToVec3d().Add(0.5, -0.6, -0.9));
+                await Interact.LookAt(at.ToVec3d().Add(0.5, 0.4, 0.5));
+                await Frames.Wait(40);
+                Log("shot: " + await Shot.Take($"results/flames-model-lantern-{rainbow[i]}.png"));
+            }
+            await Input.Hotkey("togglehud");
+        }
+
+        /// <summary>
+        /// A dark box over the plot at night: under the open sky the moon lights the
+        /// ground brighter than candles do, and their colour is lost in it. A pale floor,
+        /// so the light's colour shows - grass greens everything.
+        /// </summary>
+        static async Task DarkRoom()
+        {
+            await World.SetCalendarTo(500 * 24 + 22);
+            World.Fill(P(1, 4, 1), P(14, 4, 14), "game:planks-oak-ud");
+            World.Fill(P(1, 1, 1), P(14, 3, 1), "game:planks-oak-ud");
+            World.Fill(P(1, 1, 14), P(14, 3, 14), "game:planks-oak-ud");
+            World.Fill(P(1, 1, 1), P(1, 3, 14), "game:planks-oak-ud");
+            World.Fill(P(14, 1, 1), P(14, 3, 14), "game:planks-oak-ud");
+            World.Fill(P(1, 0, 1), P(14, 0, 14), "game:rock-chalk");
+        }
+
         /// <summary>SystemRenderParticles and its private renderParticles flag, reached through ClientMain.particleManager.</summary>
         static (object system, System.Reflection.FieldInfo field) ParticleRenderer()
         {
@@ -534,15 +805,17 @@ namespace Candela.Tests
             r.Output.ResolvedItemStack?.Collectible.Code.ToString() == output && (r.ResolvedIngredients ?? []).Any(i => i?.Code?.ToString() == ingredient));
 
         /// <summary>"red,-,blue": the testkit's Equal compares sequences by reference.</summary>
-        static string Seq(System.Collections.Generic.IEnumerable<string> flames) => string.Join(",", flames.Select(f => f ?? "-"));
+        static string Seq(System.Collections.Generic.IEnumerable<string> colours) => string.Join(",", colours.Select(c => c ?? "-"));
 
         static byte[] BunchLight() => World.GetBlock(Bunch).GetLightHsv(Sapi.World.BlockAccessor, Bunch);
 
-        static async Task<BEBehaviorLanternFuel> PlaceLantern(string flame, string glass)
+        static Task<BEBehaviorLanternFuel> PlaceLantern(string flame, string glass) => PlaceLantern(Lantern, flame, glass);
+
+        static async Task<BEBehaviorLanternFuel> PlaceLantern(BlockPos at, string flame, string glass)
         {
-            World.SetBlock(LanternCode, Lantern);
+            World.SetBlock(LanternCode, at);
             await Ticks(2);
-            var be = World.BE<BlockEntity>(Lantern);
+            var be = World.BE<BlockEntity>(at);
             if (glass != null) ((BELantern)be).DidPlace("copper", "plain", glass);
 
             ItemStack from = World.Stack(LanternCode, 1);

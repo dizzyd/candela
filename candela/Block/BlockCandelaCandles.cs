@@ -48,6 +48,7 @@ public class BlockCandelaCandles : BlockBunchOCandles, ICandleHolder
     private Vec3f[][] wicksByRotation;
     private int rotations;
     private WorldInteraction[] extraInteractions;
+    private ColouredFlameMeshes coloured;
 
     // Vanilla's BlockBunchOCandles.candleWickPositions, in sixteenths.
     private static readonly Vec3f[] BunchWicks =
@@ -84,6 +85,8 @@ public class BlockCandelaCandles : BlockBunchOCandles, ICandleHolder
             }).ToArray();
         }
 
+        if (api is ICoreClientAPI capi) coloured = new ColouredFlameMeshes(capi, this);
+
         extraInteractions = ObjectCacheUtil.GetOrCreate(api, "candelaCandleInteractions", () =>
         {
             ItemStack[] torches = api.World.SearchBlocks(new AssetLocation("game:torch-*-lit-*"))
@@ -102,6 +105,13 @@ public class BlockCandelaCandles : BlockBunchOCandles, ICandleHolder
     /// with flames drawn here.
     /// </summary>
     public int RotationIndex(BlockPos pos) => rotations == 1 ? 0 : GameMath.MurmurHash3Mod(pos.X, pos.Y, pos.Z, rotations);
+
+    /// <summary>
+    /// The bunch, unrotated and full height, with <paramref name="be"/>'s candles' tips in
+    /// their colours - the model lists its candles in the order of <see cref="BunchWicks"/>,
+    /// as the particle flames are - or null while all are plain.
+    /// </summary>
+    public MeshData ColouredMesh(ITesselatorAPI tesselator, BECandles be) => coloured?.For(tesselator, be.Colours.ToArray());
 
     public override byte[] GetLightHsv(IBlockAccessor blockAccessor, BlockPos pos, ItemStack stack = null)
     {

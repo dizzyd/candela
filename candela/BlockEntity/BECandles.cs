@@ -213,9 +213,17 @@ public class BECandles : BlockEntity, IIgnitable
 
     public override bool OnTesselation(ITerrainMeshPool mesher, ITesselatorAPI tessThreadTesselator)
     {
+        if (Block is BlockCandelaChandelier chandelier)
+        {
+            MeshData coloured = chandelier.ColouredMesh(tessThreadTesselator, this);
+            if (coloured == null) return false;
+            mesher.AddMeshData(coloured);
+            return true;
+        }
+
         if (Block is not BlockCandelaCandles candles || Api is not ICoreClientAPI capi) return false;
 
-        MeshData mesh = capi.TesselatorManager.GetDefaultBlockMesh(Block).Clone();
+        MeshData mesh = (candles.ColouredMesh(tessThreadTesselator, this) ?? capi.TesselatorManager.GetDefaultBlockMesh(Block)).Clone();
         int rotation = candles.RotationIndex(Pos);
         if (rotation > 0) mesh.Rotate(new Vec3f(0.5f, 0.5f, 0.5f), 0, rotation * GameMath.PIHALF, 0);
 
@@ -248,7 +256,8 @@ public class BECandles : BlockEntity, IIgnitable
         float heightBefore = HeightFactor;
         bool flamingBefore = Flaming;
         bool spentBefore = Spent;
-        string colourBefore = FlameColours.Prevailing(Colours);
+        string lightColourBefore = FlameColours.Prevailing(Colours);
+        string candleColoursBefore = string.Join(",", Colours);
         byte[] lightBefore = Api != null && Block != null ? Relight.Capture(this) : null;
 
         flame.FromTreeAttributes(tree);
@@ -257,7 +266,8 @@ public class BECandles : BlockEntity, IIgnitable
 
         if (Api is ICoreClientAPI)
         {
-            if (HeightFactor != heightBefore || Flaming != flamingBefore) MarkDirty(true);
+            // Redrawn for colours too: a chandelier's flames and a bunch's tips are in its mesh.
+            if (HeightFactor != heightBefore || Flaming != flamingBefore || string.Join(",", Colours) != candleColoursBefore) MarkDirty(true);
             Relight.Synced(this, lightBefore);
             return;
         }
@@ -268,7 +278,7 @@ public class BECandles : BlockEntity, IIgnitable
         // full until something else changed. Deferred a tick rather than exchanging
         // the block from inside its own deserialisation. A coloured one was lit plain,
         // the same way.
-        if (lightBefore != null && (Flaming != flamingBefore || Spent != spentBefore || FlameColours.Prevailing(Colours) != colourBefore))
+        if (lightBefore != null && (Flaming != flamingBefore || Spent != spentBefore || FlameColours.Prevailing(Colours) != lightColourBefore))
         {
             RegisterDelayedCallback(_ => Changed(lightBefore), 0);
         }

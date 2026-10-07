@@ -52,7 +52,15 @@
 			alternates: [{ rotateY: 90 }, { rotateY: 180 }, { rotateY: 270 }]
 		}
 	},
-	textures: { "candle": { base: "candela:block/candle-tallow" } },
+	textures: {
+		"candle": { base: "candela:block/candle-tallow" },
+		// The coloured tips FlameMeshes draws in place of the orange.
+		"candela-flame-red": { base: "candela:block/flame-red" },
+		"candela-flame-green": { base: "candela:block/flame-green" },
+		"candela-flame-teal": { base: "candela:block/flame-teal" },
+		"candela-flame-blue": { base: "candela:block/flame-blue" },
+		"candela-flame-violet": { base: "candela:block/flame-violet" }
+	},
 	creativeinventory: { },
 	blockmaterial: "Other",
 	replaceable: 900,

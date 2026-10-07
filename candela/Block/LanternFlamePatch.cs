@@ -5,10 +5,10 @@ using Vintagestory.GameContent;
 namespace candela;
 
 /// <summary>
-/// A placed lantern drawn with its candle's flame colour. Harmony because BELantern
-/// builds its mesh in OnTesselation without calling base, so a block entity behavior
-/// - <see cref="BEBehaviorLanternFuel"/> - is never asked. A plain flame falls through
-/// to vanilla's own mesh.
+/// A placed lantern drawn with its candle in its look - flame colour and wax dye.
+/// Harmony because BELantern builds its mesh in OnTesselation without calling base,
+/// so a block entity behavior - <see cref="BEBehaviorLanternFuel"/> - is never asked.
+/// A plain candle falls through to vanilla's own mesh.
 /// </summary>
 [HarmonyPatch(typeof(BELantern), nameof(BELantern.OnTesselation))]
 public static class LanternFlamePatch
@@ -17,10 +17,10 @@ public static class LanternFlamePatch
     [HarmonyPrefix]
     private static bool Prefix(BELantern __instance, ITerrainMeshPool mesher, ITesselatorAPI tesselator, ref bool __result)
     {
-        string flameColour = __instance.GetBehavior<BEBehaviorLanternFuel>()?.Look.Flame;
-        if (flameColour == null || __instance.Block is not BlockCandelaLantern block || __instance.Api is not ICoreClientAPI capi) return true;
+        CandleLook look = __instance.GetBehavior<BEBehaviorLanternFuel>()?.Look ?? CandleLook.Plain;
+        if (look.IsPlain || __instance.Block is not BlockCandelaLantern block || __instance.Api is not ICoreClientAPI capi) return true;
 
-        MeshData mesh = block.ColouredMesh(capi, tesselator, __instance.material, __instance.lining, __instance.glass, flameColour);
+        MeshData mesh = block.ColouredMesh(capi, tesselator, __instance.material, __instance.lining, __instance.glass, look);
         if (mesh == null) return true;
 
         // As vanilla turns it: a standing or hanging lantern faces the way it was placed.

@@ -50,7 +50,19 @@ public class CollectibleBehaviorPotOfWax : CollectibleBehavior, IContainedMeshSo
             AddSurface(wax);
             if (SetInto(wax) is Item set) AddSurface(set);
         }
+
+        // Dyed wax shows as vanilla's liquid dye.
+        foreach (string dye in WaxDyes.All)
+        {
+            capi.BlockTextureAtlas.GetOrInsertTexture(new AssetLocation("game:block/liquid/dye/" + dye), out _, out TextureAtlasPosition pos);
+            if (pos != null) surfaces[DyeKey(dye)] = pos;
+        }
     }
+
+    private static string DyeKey(string dye) => "dye-" + dye;
+
+    /// <summary>The surface molten wax dyed <paramref name="dye"/> shows, or null if it has none.</summary>
+    public static TextureAtlasPosition DyeSurface(string dye) => dye != null && surfaces.TryGetValue(DyeKey(dye), out var pos) ? pos : null;
 
     private void AddSurface(CollectibleObject shown)
     {
@@ -89,17 +101,21 @@ public class CollectibleBehaviorPotOfWax : CollectibleBehavior, IContainedMeshSo
         if (stack == null) return null;
 
         CollectibleObject shown = stack.Collectible;
+        string dye = null;
         float full = 24;
         if (shown is ItemMoltenWax wax)
         {
             full = wax.FullPot;
+            // Set, it shows as what it set into, which is undyed.
             if (!wax.IsWorkable(capi.World, stack) && SetInto(wax) is Item set) shown = set;
+            else dye = WaxDyes.Of(stack);
         }
-        if (!surfaces.TryGetValue(shown.Code.ToString(), out surface)) return null;
+        string shownKey = dye != null ? DyeKey(dye) : shown.Code.ToString();
+        if (!surfaces.TryGetValue(shownKey, out surface)) return null;
 
         int step = (int)Math.Ceiling(GameMath.Clamp(stack.StackSize / full, 0, 1) * FillSteps);
         fill = step / (float)FillSteps;
-        return $"candela-potofwax-{pot.Collectible.Code}-{shown.Code}-{step}";
+        return $"candela-potofwax-{pot.Collectible.Code}-{shownKey}-{step}";
     }
 
     /// <summary>
@@ -152,11 +168,11 @@ public class CollectibleBehaviorPotOfWax : CollectibleBehavior, IContainedMeshSo
         bhHandling = EnumHandling.PreventDefault;
         return "pour";
     }
+}
 
-    /// <summary>One atlas position for every texture code a shape asks for.</summary>
-    private class OneTexture(TextureAtlasPosition pos, Size2i atlasSize) : ITexPositionSource
-    {
-        public TextureAtlasPosition this[string textureCode] => pos;
-        public Size2i AtlasSize => atlasSize;
-    }
+/// <summary>One atlas position for every texture code a shape asks for: a liquid surface.</summary>
+public class OneTexture(TextureAtlasPosition pos, Size2i atlasSize) : ITexPositionSource
+{
+    public TextureAtlasPosition this[string textureCode] => pos;
+    public Size2i AtlasSize => atlasSize;
 }

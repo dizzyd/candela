@@ -11,13 +11,24 @@
 	shape: { base: "game:block/wax/candle3" },
 	textures: {
 		"candle": { base: "candela:block/candle-tallow" },
-		// The coloured tips FlameMeshes draws in place of the orange.
+		// The coloured tips and dyed wax CandleMeshes draws in place of the plain.
 		"candela-flame-red": { base: "candela:block/flame-red" },
 		"candela-flame-yellow": { base: "candela:block/flame-yellow" },
 		"candela-flame-green": { base: "candela:block/flame-green" },
 		"candela-flame-teal": { base: "candela:block/flame-teal" },
 		"candela-flame-blue": { base: "candela:block/flame-blue" },
-		"candela-flame-violet": { base: "candela:block/flame-violet" }
+		"candela-flame-violet": { base: "candela:block/flame-violet" },
+		"candela-dye-red": { base: "candela:block/candle-tallow-red" },
+		"candela-dye-orange": { base: "candela:block/candle-tallow-orange" },
+		"candela-dye-yellow": { base: "candela:block/candle-tallow-yellow" },
+		"candela-dye-green": { base: "candela:block/candle-tallow-green" },
+		"candela-dye-blue": { base: "candela:block/candle-tallow-blue" },
+		"candela-dye-woad": { base: "candela:block/candle-tallow-woad" },
+		"candela-dye-purple": { base: "candela:block/candle-tallow-purple" },
+		"candela-dye-pink": { base: "candela:block/candle-tallow-pink" },
+		"candela-dye-white": { base: "candela:block/candle-tallow-white" },
+		"candela-dye-gray": { base: "candela:block/candle-tallow-gray" },
+		"candela-dye-black": { base: "candela:block/candle-tallow-black" }
 	},
 	creativeinventory: { },
 	blockmaterial: "Other",

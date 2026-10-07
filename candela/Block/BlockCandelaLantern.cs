@@ -21,12 +21,12 @@ namespace candela;
 /// item: the light, the candle a crafted lantern starts with, carrying the candle
 /// through being picked up, and the interactions to refuel, snuff and light it.
 ///
-/// A coloured candle's flame is part of the model, so the lantern gets a coloured
-/// copy of it (<see cref="FlameMeshes"/>): placed, through <see cref="LanternFlamePatch"/>;
+/// Its candle and flame are part of the model, so a dyed or coloured candle gets a
+/// copy of it in its look (<see cref="CandleMeshes"/>): placed, through <see cref="LanternFlamePatch"/>;
 /// in hand, through <see cref="OnBeforeRender"/>; and on a shelf or in a display case,
 /// through <see cref="IContainedMeshSource"/>. A plain one is vanilla's mesh.
 ///
-/// Not <see cref="ColouredFlameMeshes"/>, as candles and chandeliers use: a lantern's
+/// Not <see cref="ColouredCandleMeshes"/>, as candles and chandeliers use: a lantern's
 /// mesh is made by vanilla's GenMesh, which picks its metal, lining and glass.
 /// </summary>
 public class BlockCandelaLantern : BlockLantern, IContainedMeshSource
@@ -62,54 +62,51 @@ public class BlockCandelaLantern : BlockLantern, IContainedMeshSource
         });
     }
 
-    /// <summary>The lantern with a <paramref name="flameColour"/> flame, or null for a plain one.</summary>
-    public MeshData ColouredMesh(ICoreClientAPI capi, ITesselatorAPI tesselator, string material, string lining, string glass, string flameColour)
+    /// <summary>The lantern with its candle looking <paramref name="look"/>, or null for a plain one.</summary>
+    public MeshData ColouredMesh(ICoreClientAPI capi, ITesselatorAPI tesselator, string material, string lining, string glass, CandleLook look)
     {
-        if (FlameColours.Get(flameColour) == null || flameShape?.Value is not Shape shape) return null;
-        return colouredMeshes.GetOrAdd($"{material}-{lining}-{glass}-{flameColour}", _ =>
+        if (look.IsPlain || flameShape?.Value is not Shape shape) return null;
+        return colouredMeshes.GetOrAdd($"{material}-{lining}-{glass}-{look.Flame}-{look.Dye}", _ =>
         {
             // GenMesh keeps the metal, lining and glass it is making in fields on the
             // block while it works, and this runs on the tesselation thread for placed
             // lanterns and the main thread for held ones: one at a time, or a lantern
             // could be made with another's metal and kept so. Vanilla's own two callers
             // share the hazard, but not one cache.
-            lock (this) return GenMesh(capi, material, lining, glass, FlameMeshes.Recoloured(shape, _ => flameColour), tesselator);
+            lock (this) return GenMesh(capi, material, lining, glass, CandleMeshes.Recoloured(shape, _ => look), tesselator);
         });
     }
 
-    /// <summary>A lantern on a shelf, in a display case or on the ground: its flame in its colour.</summary>
+    /// <summary>The lantern a stack is, its candle in its look, or null for a plain one.</summary>
+    private MeshData ColouredMesh(ICoreClientAPI capi, ItemStack stack) =>
+        ColouredMesh(capi, capi.Tesselator, stack.Attributes.GetString("material"), stack.Attributes.GetString("lining"),
+            stack.Attributes.GetString("glass", "quartz"), LanternStack.Look(stack));
+
+    /// <summary>A lantern on a shelf, in a display case or on the ground: its candle in its look.</summary>
     MeshData IContainedMeshSource.GenMesh(ItemSlot slot, ITextureAtlasAPI targetAtlas, BlockPos atBlockPos)
     {
-        ItemStack stack = slot.Itemstack;
-        string flameColour = LanternStack.Look(stack).Flame;
-        MeshData coloured = flameColour == null || api is not ICoreClientAPI capi ? null
-            : ColouredMesh(capi, capi.Tesselator, stack.Attributes.GetString("material"), stack.Attributes.GetString("lining"),
-                stack.Attributes.GetString("glass", "quartz"), flameColour);
+        MeshData coloured = api is ICoreClientAPI capi ? ColouredMesh(capi, slot.Itemstack) : null;
         // A copy: the holder moves the mesh into place, and this one is cached.
         return coloured?.Clone() ?? GenMesh(slot, targetAtlas, atBlockPos);
     }
 
-    /// <summary>Vanilla's key, and the flame colour: without it a blue lantern and a plain one would share a mesh.</summary>
+    /// <summary>Vanilla's key, and the candle's look: without it a blue lantern and a plain one would share a mesh.</summary>
     string IContainedMeshSource.GetMeshCacheKey(ItemSlot slot) =>
-        LanternStack.Look(slot.Itemstack).Flame is string flameColour ? GetMeshCacheKey(slot) + "-" + flameColour : GetMeshCacheKey(slot);
+        LanternStack.Look(slot.Itemstack) is { IsPlain: false } look ? $"{GetMeshCacheKey(slot)}-{look.Flame}-{look.Dye}" : GetMeshCacheKey(slot);
 
     public override void OnBeforeRender(ICoreClientAPI capi, ItemStack itemstack, EnumItemRenderTarget target, ref ItemRenderInfo renderinfo)
     {
-        string flameColour = LanternStack.Look(itemstack).Flame;
-        if (flameColour == null)
+        CandleLook look = LanternStack.Look(itemstack);
+        if (look.IsPlain)
         {
             base.OnBeforeRender(capi, itemstack, target, ref renderinfo);
             return;
         }
 
-        string material = itemstack.Attributes.GetString("material");
-        string lining = itemstack.Attributes.GetString("lining");
-        string glass = itemstack.Attributes.GetString("glass", "quartz");
-        string key = $"{material}-{lining}-{glass}-{flameColour}";
+        string key = $"{itemstack.Attributes.GetString("material")}-{itemstack.Attributes.GetString("lining")}-{itemstack.Attributes.GetString("glass", "quartz")}-{look.Flame}-{look.Dye}";
         if (!colouredMeshRefs.TryGetValue(key, out MultiTextureMeshRef meshRef))
         {
-            MeshData mesh = ColouredMesh(capi, capi.Tesselator, material, lining, glass, flameColour);
-            if (mesh == null)
+            if (ColouredMesh(capi, itemstack) is not MeshData mesh)
             {
                 base.OnBeforeRender(capi, itemstack, target, ref renderinfo);
                 return;

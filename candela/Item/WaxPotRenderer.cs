@@ -55,13 +55,17 @@ public class WaxPotRenderer : IInFirepitRenderer
         potRef = capi.Render.UploadMultiTextureMesh(pot);
     }
 
-    private MultiTextureMeshRef Liquid(ItemMoltenWax wax)
+    /// <summary>The surface of <paramref name="molten"/>: the wax's own, or vanilla's liquid dye if it is dyed.</summary>
+    private MultiTextureMeshRef Liquid(ItemStack molten)
     {
-        if (liquidRefs.TryGetValue(wax.Wax, out var mesh)) return mesh;
+        var wax = (ItemMoltenWax)molten.Collectible;
+        TextureAtlasPosition dyed = CollectibleBehaviorPotOfWax.DyeSurface(WaxDyes.Of(molten));
+        string key = dyed != null ? wax.Wax + "-" + WaxDyes.Of(molten) : wax.Wax;
+        if (liquidRefs.TryGetValue(key, out var mesh)) return mesh;
 
-        capi.Tesselator.TesselateShape("candela " + wax.Wax, Shape.TryGet(capi, "shapes/block/food/meal/liquid.json"), out MeshData liquid,
-            capi.Tesselator.GetTextureSource(wax));
-        return liquidRefs[wax.Wax] = capi.Render.UploadMultiTextureMesh(liquid);
+        ITexPositionSource source = dyed != null ? new OneTexture(dyed, capi.BlockTextureAtlas.Size) : capi.Tesselator.GetTextureSource(wax);
+        capi.Tesselator.TesselateShape("candela " + key, Shape.TryGet(capi, "shapes/block/food/meal/liquid.json"), out MeshData liquid, source);
+        return liquidRefs[key] = capi.Render.UploadMultiTextureMesh(liquid);
     }
 
     public void OnRenderFrame(float deltaTime, EnumRenderStage stage)
@@ -92,7 +96,7 @@ public class WaxPotRenderer : IInFirepitRenderer
         // From just off the bottom to where vanilla puts a full pot's meal.
         float fill = GameMath.Clamp(slot.StackSize / (float)wax.FullPot, 0, 1);
         prog.ModelMatrix = modelMat.Translate(0f, (0.3f + 2.2f * fill) / 16f, 0f).Values;
-        rpi.RenderMultiTextureMesh(Liquid(wax), "tex");
+        rpi.RenderMultiTextureMesh(Liquid(slot.Itemstack), "tex");
 
         prog.Stop();
     }

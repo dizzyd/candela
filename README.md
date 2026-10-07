@@ -43,6 +43,11 @@ burns forever. Candela adds the candles people actually made and gives light a c
   colour most of them burn, and a tie lights it plain. Lanterns burn their candle's
   colour unless the glass is coloured, which wins. The colour is in the wick, so
   stubs melt back into plain wax
+- **Dyed wax** - cook any of vanilla's dyes in with the wax, a tenth of a litre a
+  lump, and the candles poured or dipped from it take its colour, black and white
+  included; a dipped candle is the colour of its last coat. Dyed wax and treated
+  wicks go together - black candles with red flames. Stubs melt back undyed, and can
+  be dyed again in the same cook
 - Candles and lanterns placed before Candela was installed carry on as vanilla
   until first touched (candles) or loaded (lanterns), when they start out new
 

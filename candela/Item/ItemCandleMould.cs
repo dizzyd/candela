@@ -31,7 +31,7 @@ namespace candela;
 /// beeswax - so a full one looks full. The time it was filled is an attribute, as a
 /// rod's last dip is.
 /// </summary>
-public class ItemCandleMould : Item, IContainedInteractable, IGroundStoredParticleEmitter
+public class ItemCandleMould : Item, IContainedInteractable, IGroundStoredParticleEmitter, IContainedMeshSource
 {
     public const int CandlesPerFill = 4;
 
@@ -263,6 +263,17 @@ public class ItemCandleMould : Item, IContainedInteractable, IGroundStoredPartic
         // The last mould on the spot cracked: no ground storage left holding nothing.
         if (be.Inventory.Empty) world.BlockAccessor.SetBlock(0, be.Pos);
     }
+
+    // Its wax drawn dyed, if it is: in hand, and on the ground where it is poured and sets.
+
+    public override void OnBeforeRender(ICoreClientAPI capi, ItemStack itemstack, EnumItemRenderTarget target, ref ItemRenderInfo renderinfo)
+    {
+        if (!DyedItems.Render(capi, itemstack, "wax", State, ref renderinfo)) base.OnBeforeRender(capi, itemstack, target, ref renderinfo);
+    }
+
+    public MeshData GenMesh(ItemSlot slot, ITextureAtlasAPI targetAtlas, BlockPos atBlockPos) => DyedItems.Contained(api, slot, "wax", State, targetAtlas);
+
+    public string GetMeshCacheKey(ItemSlot slot) => DyedItems.CacheKey(slot);
 
     // ----- steam while it sets -----
 

@@ -46,6 +46,7 @@ public class CandelaModSystem : ModSystem
     public override void Dispose()
     {
         WaxPotPatch.Uninstall();
+        DyedItems.Dispose();
         base.Dispose();
     }
 

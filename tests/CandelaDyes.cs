@@ -2,6 +2,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using candela;
+using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
@@ -206,6 +207,205 @@ namespace Candela.Tests
             Assert.Equal("green", WaxDyes.Of(Player.Held));
         }
 
+        /// <summary>
+        /// Every candle body in the bunch's, a chandelier's and a lantern's shapes takes its
+        /// own dye, beside its flame, in the order the candles go in.
+        /// </summary>
+        [VsTest]
+        public void EveryCandleInAShapeTakesItsOwnDye()
+        {
+            string[] dyes = WaxDyes.All.ToArray();
+            CandleLook LookOf(int i) => new(null, dyes[i % dyes.Length]);
+
+            Shape bunch = Shape.TryGet(Sapi, "game:shapes/block/wax/bunch.json");
+            Assert.Equal(string.Join(",", Enumerable.Range(0, 9).Select(i => dyes[i % dyes.Length])), string.Join(",", PaintedDyes(CandleMeshes.Recoloured(bunch, LookOf))));
+
+            Shape chandelier = Shape.TryGet(Sapi, "game:shapes/block/metal/chandelier/candle8.json");
+            Assert.Equal(string.Join(",", Enumerable.Range(0, 8).Select(i => dyes[i % dyes.Length])), string.Join(",", PaintedDyes(CandleMeshes.Recoloured(chandelier, LookOf))));
+
+            Shape lantern = Shape.TryGet(Sapi, "game:shapes/block/metal/lantern/small/ground.json");
+            Assert.Equal("black", string.Join(",", PaintedDyes(CandleMeshes.Recoloured(lantern, _ => new CandleLook("red", "black")))));
+        }
+
+        /// <summary>
+        /// Placed, a dyed candle is drawn from its own wax's dyed texture - tallow's for a
+        /// tallow bunch, beeswax's for a chandelier and a lantern - and an undyed one is not.
+        /// </summary>
+        [VsTest, RequiresClient]
+        public async Task PlacedCandlesAreDrawnDyed()
+        {
+            BlockPos tallow = P(5, 1, 8), chandelier = P(8, 1, 8), lantern = P(11, 1, 8), plain = P(8, 1, 11);
+            World.SetBlock("candela:tallowcandles-2", tallow);
+            World.SetBlock("game:chandelier-candle0", chandelier);
+            World.SetBlock("game:bunchocandles-2", plain);
+            await Ticks(2);
+            World.BE<BECandles>(tallow).SetFuel(2 * TallowHours, new CandleLook("red", "black"));
+            World.BE<BECandles>(plain).SetFuel(2 * 432, new CandleLook("red", null));
+            var be = World.BE<BECandles>(chandelier);
+            be.AddCandle(432, new CandleLook(null, "white"));
+            Sapi.World.BlockAccessor.ExchangeBlock(Sapi.World.GetBlock(new AssetLocation("game:chandelier-candle1")).BlockId, chandelier);
+
+            World.SetBlock("game:lantern-large-up", lantern);
+            await Ticks(2);
+            ItemStack from = World.Stack("game:lantern-large-up", 1);
+            LanternStack.Write(from, 432, "game:bunchocandles", snuffed: false, new CandleLook(null, "purple"));
+            foreach (var behavior in World.BE<BlockEntity>(lantern).Behaviors) behavior.OnBlockPlaced(from);
+
+            for (int i = 0; i < 100; i++)
+            {
+                await OnClient();
+                bool synced = Capi.World.BlockAccessor.GetBlockEntity(tallow) is BECandles t && t.LookOf(0).Dye == "black"
+                    && Capi.World.BlockAccessor.GetBlockEntity(chandelier) is BECandles c && c.LookOf(0).Dye == "white"
+                    && Capi.World.BlockAccessor.GetBlockEntity(lantern)?.GetBehavior<BEBehaviorLanternFuel>()?.Look.Dye == "purple";
+                await OnServer();
+                if (synced) break;
+                await Ticks(1);
+            }
+
+            await OnClient();
+            Assert.True(CandelaFlames.SamplesTexture(CandelaFlames.Drawn(tallow), "candela:block/candle-tallow-black"), "a black tallow bunch is not black tallow");
+            Assert.True(CandelaFlames.SamplesTexture(CandelaFlames.Drawn(tallow), "candela:block/flame-red"), "its red flames lost their colour");
+            Assert.True(CandelaFlames.SamplesTexture(CandelaFlames.Drawn(chandelier), "candela:block/candle-beeswax-white"), "a white candle on a chandelier is not white");
+            Assert.True(CandelaFlames.SamplesTexture(CandelaFlames.Drawn(lantern), "candela:block/candle-beeswax-purple"), "a purple lantern candle is not purple");
+            MeshData plainMesh = CandelaFlames.Drawn(plain);
+            Assert.False(WaxDyes.All.Any(d => CandelaFlames.SamplesTexture(plainMesh, "candela:block/candle-beeswax-" + d)), "an undyed bunch was drawn dyed");
+            await OnServer();
+        }
+
+        /// <summary>
+        /// Off the block: candles, stubs, the rod and the mould are drawn dyed in hand and
+        /// on the ground or a shelf, from their own wax's texture; undyed they are left to
+        /// draw themselves.
+        /// </summary>
+        [VsTest, RequiresClient]
+        public async Task DyedItemsAreDrawnDyed()
+        {
+            await OnClient();
+            var cases = new (string code, string wax)[]
+            {
+                ("game:candle", "beeswax"),
+                ("candela:candle-tallow", "tallow"),
+                ("candela:candlestub-beeswax-50", "beeswax"),
+                ("candela:candlestub-tallow-25", "tallow"),
+                ("candela:dippingrod-6", "tallow"),
+                ("candela:candlemould-blue-tallow", "tallow"),
+            };
+            foreach (var (code, wax) in cases)
+            {
+                // On the client's own items: World.Stack is the server's.
+                ItemStack dyed = WaxDyes.Stamp(new ItemStack(Capi.World.GetItem(new AssetLocation(code))), "green");
+                ItemStack plain = new ItemStack(Capi.World.GetItem(new AssetLocation(code)));
+                var source = (IContainedMeshSource)dyed.Collectible;
+
+                MeshData mesh = source.GenMesh(new DummySlot(dyed), Capi.ItemTextureAtlas, null);
+                Assert.NotNull(mesh, code + " dyed has no mesh");
+                Assert.True(CandelaFlames.SamplesTexture(mesh, $"candela:block/candle-{wax}-green", Capi.ItemTextureAtlas), code + " on a shelf is not green");
+                Assert.Null(source.GenMesh(new DummySlot(plain), Capi.ItemTextureAtlas, null), code + " undyed should be left to draw itself");
+                Assert.True(source.GetMeshCacheKey(new DummySlot(dyed)) != source.GetMeshCacheKey(new DummySlot(plain)), code + " dyed and undyed share a shelf mesh");
+
+                ItemRenderInfo dyedInfo = new(), plainInfo = new();
+                dyed.Collectible.OnBeforeRender(Capi, dyed, EnumItemRenderTarget.Gui, ref dyedInfo);
+                plain.Collectible.OnBeforeRender(Capi, plain, EnumItemRenderTarget.Gui, ref plainInfo);
+                Assert.NotNull(dyedInfo.ModelRef, code + " in hand has no dyed model");
+                Assert.True(dyedInfo.ModelRef != plainInfo.ModelRef, code + " in hand is drawn undyed");
+            }
+            await OnServer();
+        }
+
+        /// <summary>Molten wax dyed shows as vanilla's liquid dye, in a pot on the fire or carried.</summary>
+        [VsTest, RequiresClient]
+        public async Task EveryDyeHasAMoltenSurface()
+        {
+            await OnClient();
+            foreach (string dye in WaxDyes.All) Assert.NotNull(CollectibleBehaviorPotOfWax.DyeSurface(dye), $"no surface for {dye} wax");
+            Assert.Null(CollectibleBehaviorPotOfWax.DyeSurface(null));
+            await OnServer();
+        }
+
+        /// <summary>
+        /// Not an assertion: black candles with red flames, as the player asked, and a
+        /// candle of every dye, a chandelier and a lantern, at night - for the eye.
+        /// </summary>
+        [VsTest(TimeoutMs = 120000), RequiresClient]
+        public async Task DyedWaxForTheEye()
+        {
+            await CandelaFlames.DarkRoom();
+
+            // Black tallow, red flames, front and centre.
+            BlockPos black = P(8, 1, 6);
+            World.SetBlock("candela:tallowcandles-5", black);
+            await Ticks(2);
+            World.BE<BECandles>(black).SetFuel(5 * TallowHours, new CandleLook("red", "black"));
+
+            // A candle of every dye, along the back.
+            string[] dyes = WaxDyes.All.ToArray();
+            for (int i = 0; i < dyes.Length; i++)
+            {
+                BlockPos at = P(2 + i, 1, 11);
+                World.SetBlock("candela:tallowcandles-1", at);
+                await Ticks(1);
+                World.BE<BECandles>(at).SetFuel(TallowHours, new CandleLook(null, dyes[i]));
+            }
+
+            // A chandelier of white and black beeswax, and a purple lantern candle.
+            BlockPos chandelier = P(4, 1, 7);
+            World.SetBlock("game:chandelier-candle0", chandelier);
+            await Ticks(2);
+            var be = World.BE<BECandles>(chandelier);
+            for (int i = 0; i < 8; i++)
+            {
+                be.AddCandle(432, new CandleLook(i % 2 == 0 ? "red" : null, i % 2 == 0 ? "black" : "white"));
+                Sapi.World.BlockAccessor.ExchangeBlock(Sapi.World.GetBlock(new AssetLocation("game:chandelier-candle" + (i + 1))).BlockId, chandelier);
+            }
+            BlockPos lantern = P(12, 1, 7);
+            World.SetBlock("game:lantern-large-up", lantern);
+            await Ticks(2);
+            ItemStack from = World.Stack("game:lantern-large-up", 1);
+            LanternStack.Write(from, 432, "game:bunchocandles", snuffed: false, new CandleLook("violet", "purple"));
+            foreach (var behavior in World.BE<BlockEntity>(lantern).Behaviors) behavior.OnBlockPlaced(from);
+
+            // Particles for the flames: see CandelaFlames.ColouredFlamesForTheEye.
+            await Player.Teleport(P(8, 1, 2).ToVec3d().Add(0.5, 0, 0.5));
+            await Ticks(25 * 33);
+            await OnClient();
+            var particles = CandelaFlames.ParticleRenderer();
+            bool wasOn = (bool)particles.field.GetValue(particles.system);
+            particles.field.SetValue(particles.system, true);
+            await OnServer();
+            await Cmd("/time speed 60");
+            try
+            {
+                await Input.Hotkey("togglehud");
+                await Player.Teleport(P(8, 1, 2).ToVec3d().Add(0.5, 0, 0.5));
+                await Interact.LookAt(P(8, 1, 9));
+                await Frames.Wait(90);
+                Log("shot: " + await Shot.Take("results/dyes-room.png"));
+
+                await Player.Teleport(black.ToVec3d().Add(0.5, -0.5, -1.1));
+                await Interact.LookAt(black.ToVec3d().Add(0.5, 0.3, 0.5));
+                await Frames.Wait(40);
+                Log("shot: " + await Shot.Take("results/dyes-black-red.png"));
+
+                await Player.Teleport(P(7, 1, 9).ToVec3d().Add(0.5, -0.3, 0.2));
+                await Interact.LookAt(P(7, 1, 11).ToVec3d().Add(0.5, 0.2, 0.5));
+                await Frames.Wait(40);
+                Log("shot: " + await Shot.Take("results/dyes-every.png"));
+
+                await Player.Teleport(chandelier.ToVec3d().Add(0.5, -0.4, -1.3));
+                await Interact.LookAt(chandelier.ToVec3d().Add(0.5, 0.6, 0.5));
+                await Frames.Wait(40);
+                Log("shot: " + await Shot.Take("results/dyes-chandelier.png"));
+                await Input.Hotkey("togglehud");
+            }
+            finally
+            {
+                await OnClient();
+                particles.field.SetValue(particles.system, wasOn);
+                await OnServer();
+                await Cmd("/time speed 0");
+            }
+        }
+
         // ----- helpers -----
 
         /// <summary>
@@ -226,6 +426,18 @@ namespace Candela.Tests
             ItemSlot molten = ItemMoltenWax.FindIn(firepit);
             Assert.NotNull(molten, "nothing molten came out");
             return molten.Itemstack;
+        }
+
+        /// <summary>The dye of each element whose faces CandleMeshes painted with one, in shape order.</summary>
+        static System.Collections.Generic.IEnumerable<string> PaintedDyes(Shape shape)
+        {
+            System.Collections.Generic.IEnumerable<string> Walk(ShapeElement element)
+            {
+                string painted = element.FacesResolved?.FirstOrDefault(f => f?.Texture?.StartsWith("candela-dye-") == true)?.Texture;
+                if (painted != null) yield return painted.Substring("candela-dye-".Length);
+                foreach (ShapeElement child in element.Children ?? []) foreach (string d in Walk(child)) yield return d;
+            }
+            return shape.Elements.SelectMany(Walk);
         }
 
         /// <summary><paramref name="rod"/> with another coat of tallow dyed <paramref name="dye"/>.</summary>

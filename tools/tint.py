@@ -9,8 +9,10 @@ verdigris is vanilla's crushed lime, coloured as the game's own Verdigris pigmen
 (nugget.json's pigment for malachite). Flames are vanilla's candle texture turned
 to each flame's hue: the flames of chandeliers, lanterns and bunches' tips are
 cubes in the model that sample its orange corner, and FlameMeshes points them at
-these instead. Plain Python - no imaging library - like icon.py: vanilla's sources
-here are 8-bit RGB or RGBA, not interlaced.
+these instead. Dyed candles are the beeswax and tallow candle textures in each of
+vanilla's dyes, the flame's orange corner kept, and the tallow texture itself gets
+that corner back. Plain Python - no imaging library - like icon.py: vanilla's
+sources here are 8-bit RGB or RGBA, not interlaced.
 """
 import colorsys, os, struct, sys, zlib
 
@@ -89,6 +91,50 @@ WICKS = {
     "violet": (150, 70, 200),
 }
 
+# block/candle's flame: the corner the flame cubes in every candle model sample.
+FLAME_CORNER = (4, 5)  # columns, rows
+
+def in_corner(x, y):
+    return x < FLAME_CORNER[0] and y < FLAME_CORNER[1]
+
+def with_corner(rows, flame_rows):
+    """`rows` with the flame corner taken from `flame_rows`."""
+    return [[flame_rows[y][x] if in_corner(x, y) else p for x, p in enumerate(row)] for y, row in enumerate(rows)]
+
+def dye(rows, colour):
+    """Each wax pixel as `colour`, lighter or darker as it was than the wax's average,
+    so the grain shows at any colour - white and black included. The corner is left."""
+    lum = lambda p: 0.299 * p[0] + 0.587 * p[1] + 0.114 * p[2]
+    body = [lum(p) for y, row in enumerate(rows) for x, p in enumerate(row) if not in_corner(x, y) and p[3] > 0]
+    mean = sum(body) / len(body)
+    out = []
+    for y, row in enumerate(rows):
+        line = []
+        for x, p in enumerate(row):
+            if in_corner(x, y) or p[3] == 0:
+                line.append(p)
+                continue
+            d = (lum(p) - mean) * 0.9
+            line.append(tuple(max(0, min(255, int(c + d))) for c in colour) + (p[3],))
+        out.append(line)
+    return out
+
+# Vanilla's dyes: the average of each block/liquid/dye texture, gray and white set by
+# hand (theirs are palette PNGs, which read() does not take). Woad is blue's twin there.
+DYES = {
+    "red":    (181, 38, 66),
+    "orange": (181, 66, 38),
+    "yellow": (181, 172, 38),
+    "green":  (66, 136, 56),
+    "blue":   (56, 76, 136),
+    "woad":   (56, 76, 136),
+    "purple": (96, 56, 136),
+    "pink":   (181, 38, 119),
+    "white":  (228, 226, 220),
+    "gray":   (122, 122, 122),
+    "black":  (28, 28, 28),
+}
+
 # FlameColours.cs's particle hues, 0-255, so the model's flames match the particles'.
 FLAMES = {
     "red":    4,
@@ -112,5 +158,21 @@ def main():
     os.makedirs(blocks, exist_ok=True)
     for name, hue in FLAMES.items():
         turn(os.path.join(game, 'block', 'candle.png'), os.path.join(blocks, f'flame-{name}.png'), hue / 256)
+
+    # The tallow candle, drawn by hand from vanilla's, lost the flame corner: its tips
+    # were pale wax. Put it back, then dye both.
+    w, h, beeswax = read(os.path.join(game, 'block', 'candle.png'))
+    tallow_path = os.path.join(blocks, 'candle-tallow.png')
+    _, _, tallow = read(tallow_path)
+    tallow = with_corner(tallow, beeswax)
+    write(tallow_path, w, h, tallow)
+    print("wrote", os.path.normpath(tallow_path))
+    for name, colour in DYES.items():
+        # Tallow is the paler, more opaque wax, and takes a dye paler.
+        pale = tuple(int(c * 0.85 + 255 * 0.15) for c in colour)
+        for wax, rows, c in (("beeswax", beeswax, colour), ("tallow", tallow, pale)):
+            dest = os.path.join(blocks, f'candle-{wax}-{name}.png')
+            write(dest, w, h, dye(rows, c))
+            print("wrote", os.path.normpath(dest))
 
 main()

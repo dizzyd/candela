@@ -1,5 +1,6 @@
 using System;
 using System.Text;
+using Vintagestory.API.Client;
 using Vintagestory.API.Config;
 using Vintagestory.API.Common;
 using Vintagestory.API.Datastructures;
@@ -14,7 +15,7 @@ namespace candela;
 /// Still an ItemCandle, so everything that asks "is this a candle" - the chandelier,
 /// the bunch's take-one interaction - keeps working.
 /// </summary>
-public class ItemCandelaCandle : ItemCandle
+public class ItemCandelaCandle : ItemCandle, IContainedMeshSource
 {
     public override void OnHeldInteractStart(ItemSlot slot, EntityAgent byEntity, BlockSelection blockSel, EntitySelection entitySel, bool firstEvent, ref EnumHandHandling handHandling)
     {
@@ -22,6 +23,17 @@ public class ItemCandelaCandle : ItemCandle
     }
 
     public override string GetHeldItemName(ItemStack itemStack) => CandleLook.Name(itemStack, base.GetHeldItemName(itemStack));
+
+    // Its wax drawn dyed, if it is: in hand, and on the ground or a shelf.
+
+    public override void OnBeforeRender(ICoreClientAPI capi, ItemStack itemstack, EnumItemRenderTarget target, ref ItemRenderInfo renderinfo)
+    {
+        if (!DyedItems.Render(capi, itemstack, "candle", "beeswax", ref renderinfo)) base.OnBeforeRender(capi, itemstack, target, ref renderinfo);
+    }
+
+    public MeshData GenMesh(ItemSlot slot, ITextureAtlasAPI targetAtlas, BlockPos atBlockPos) => DyedItems.Contained(api, slot, "candle", "beeswax", targetAtlas);
+
+    public string GetMeshCacheKey(ItemSlot slot) => DyedItems.CacheKey(slot);
 }
 
 /// <summary>
@@ -33,8 +45,10 @@ public class ItemCandelaCandle : ItemCandle
 /// vanilla beeswax candles when broken, and a lantern recipe asking for a candle
 /// means a whole beeswax one.
 /// </summary>
-public class ItemPlaceableCandle : Item
+public class ItemPlaceableCandle : Item, IContainedMeshSource
 {
+    private string Wax => Attributes?["candela"]["wax"].AsString("tallow") ?? "tallow";
+
     public override void OnHeldInteractStart(ItemSlot slot, EntityAgent byEntity, BlockSelection blockSel, EntitySelection entitySel, bool firstEvent, ref EnumHandHandling handHandling)
     {
         if (CandlePlacement.TryPlace(slot, byEntity, blockSel))
@@ -59,6 +73,17 @@ public class ItemPlaceableCandle : Item
         base.OnCreatedByCrafting(allInputSlots, outputSlot, byRecipe);
         CandleLook.FromInputs(allInputSlots).Stamp(outputSlot.Itemstack);
     }
+
+    // Its wax drawn dyed, if it is: in hand, and on the ground or a shelf.
+
+    public override void OnBeforeRender(ICoreClientAPI capi, ItemStack itemstack, EnumItemRenderTarget target, ref ItemRenderInfo renderinfo)
+    {
+        if (!DyedItems.Render(capi, itemstack, "candle", Wax, ref renderinfo)) base.OnBeforeRender(capi, itemstack, target, ref renderinfo);
+    }
+
+    public MeshData GenMesh(ItemSlot slot, ITextureAtlasAPI targetAtlas, BlockPos atBlockPos) => DyedItems.Contained(api, slot, "candle", Wax, targetAtlas);
+
+    public string GetMeshCacheKey(ItemSlot slot) => DyedItems.CacheKey(slot);
 }
 
 /// <summary>

@@ -35,28 +35,50 @@
 		file: "game:itemtypes/resource/candle.json"
 	},
 	{
-		// The coloured tips FlameMeshes draws in place of the orange - textures the
-		// block declares, so they are in the block atlas.
+		// The coloured flames and dyed wax CandleMeshes draws in place of vanilla's -
+		// textures the block declares, so they are in the block atlas.
 		op: "addmerge", side: "Server", path: "/textures", value: {
 			"candela-flame-red": { base: "candela:block/flame-red" },
 			"candela-flame-yellow": { base: "candela:block/flame-yellow" },
 			"candela-flame-green": { base: "candela:block/flame-green" },
 			"candela-flame-teal": { base: "candela:block/flame-teal" },
 			"candela-flame-blue": { base: "candela:block/flame-blue" },
-			"candela-flame-violet": { base: "candela:block/flame-violet" }
+			"candela-flame-violet": { base: "candela:block/flame-violet" },
+			"candela-dye-red": { base: "candela:block/candle-beeswax-red" },
+			"candela-dye-orange": { base: "candela:block/candle-beeswax-orange" },
+			"candela-dye-yellow": { base: "candela:block/candle-beeswax-yellow" },
+			"candela-dye-green": { base: "candela:block/candle-beeswax-green" },
+			"candela-dye-blue": { base: "candela:block/candle-beeswax-blue" },
+			"candela-dye-woad": { base: "candela:block/candle-beeswax-woad" },
+			"candela-dye-purple": { base: "candela:block/candle-beeswax-purple" },
+			"candela-dye-pink": { base: "candela:block/candle-beeswax-pink" },
+			"candela-dye-white": { base: "candela:block/candle-beeswax-white" },
+			"candela-dye-gray": { base: "candela:block/candle-beeswax-gray" },
+			"candela-dye-black": { base: "candela:block/candle-beeswax-black" }
 		},
 		file: "game:blocktypes/wax/bunchocandles.json"
 	},
 	{
-		// The coloured tips FlameMeshes draws in place of the orange - textures the
-		// block declares, so they are in the block atlas.
+		// The coloured flames and dyed wax CandleMeshes draws in place of vanilla's -
+		// textures the block declares, so they are in the block atlas.
 		op: "addmerge", side: "Server", path: "/textures", value: {
 			"candela-flame-red": { base: "candela:block/flame-red" },
 			"candela-flame-yellow": { base: "candela:block/flame-yellow" },
 			"candela-flame-green": { base: "candela:block/flame-green" },
 			"candela-flame-teal": { base: "candela:block/flame-teal" },
 			"candela-flame-blue": { base: "candela:block/flame-blue" },
-			"candela-flame-violet": { base: "candela:block/flame-violet" }
+			"candela-flame-violet": { base: "candela:block/flame-violet" },
+			"candela-dye-red": { base: "candela:block/candle-beeswax-red" },
+			"candela-dye-orange": { base: "candela:block/candle-beeswax-orange" },
+			"candela-dye-yellow": { base: "candela:block/candle-beeswax-yellow" },
+			"candela-dye-green": { base: "candela:block/candle-beeswax-green" },
+			"candela-dye-blue": { base: "candela:block/candle-beeswax-blue" },
+			"candela-dye-woad": { base: "candela:block/candle-beeswax-woad" },
+			"candela-dye-purple": { base: "candela:block/candle-beeswax-purple" },
+			"candela-dye-pink": { base: "candela:block/candle-beeswax-pink" },
+			"candela-dye-white": { base: "candela:block/candle-beeswax-white" },
+			"candela-dye-gray": { base: "candela:block/candle-beeswax-gray" },
+			"candela-dye-black": { base: "candela:block/candle-beeswax-black" }
 		},
 		file: "game:blocktypes/wax/candle.json"
 	}

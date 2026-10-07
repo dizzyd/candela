@@ -1,7 +1,9 @@
 using System;
 using System.Text;
+using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
+using Vintagestory.API.MathTools;
 using Vintagestory.GameContent;
 
 namespace candela;
@@ -14,7 +16,7 @@ namespace candela;
 /// The time of the last dip is an attribute: it gates the next one, since a coat
 /// laid over one that has not set just melts it off again.
 /// </summary>
-public class ItemDippingRod : Item, IWaxWorker
+public class ItemDippingRod : Item, IWaxWorker, IContainedMeshSource
 {
     public const int MaxLayers = 6;
 
@@ -68,6 +70,17 @@ public class ItemDippingRod : Item, IWaxWorker
     }
 
     public override string GetHeldItemName(ItemStack itemStack) => CandleLook.Name(itemStack, base.GetHeldItemName(itemStack));
+
+    // Its wax drawn dyed, if it is: in hand, and on the ground or a shelf.
+
+    public override void OnBeforeRender(ICoreClientAPI capi, ItemStack itemstack, EnumItemRenderTarget target, ref ItemRenderInfo renderinfo)
+    {
+        if (!DyedItems.Render(capi, itemstack, "wax", "tallow", ref renderinfo)) base.OnBeforeRender(capi, itemstack, target, ref renderinfo);
+    }
+
+    public MeshData GenMesh(ItemSlot slot, ITextureAtlasAPI targetAtlas, BlockPos atBlockPos) => DyedItems.Contained(api, slot, "wax", "tallow", targetAtlas);
+
+    public string GetMeshCacheKey(ItemSlot slot) => DyedItems.CacheKey(slot);
 
     public override void OnUnloaded(ICoreAPI api)
     {

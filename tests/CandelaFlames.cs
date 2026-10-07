@@ -47,8 +47,8 @@ namespace Candela.Tests
         }
 
         /// <summary>
-        /// Every block that draws flames in its model declares every colour's flame
-        /// texture: a block missing one would draw that colour's flame untextured. The
+        /// Every block that draws candles in its model declares every colour's flame
+        /// texture and every dye's wax: a block missing one would draw it untextured. The
         /// list of places is in FlameColours. On the client: the server keeps no
         /// textures.
         /// </summary>
@@ -62,9 +62,15 @@ namespace Candela.Tests
                 Block[] found = Capi.World.SearchBlocks(new AssetLocation(pattern));
                 Assert.True(found.Length > 0, "no blocks for " + pattern);
                 foreach (Block block in found)
-                foreach (FlameColours.Colour colour in FlameColours.All)
                 {
-                    Assert.True(block.Textures?.ContainsKey(FlameMeshes.TextureCode(colour.Code)) == true, $"{block.Code} does not declare the {colour.Code} flame");
+                    foreach (FlameColours.Colour colour in FlameColours.All)
+                    {
+                        Assert.True(block.Textures?.ContainsKey(CandleMeshes.FlameTextureCode(colour.Code)) == true, $"{block.Code} does not declare the {colour.Code} flame");
+                    }
+                    foreach (string dye in WaxDyes.All)
+                    {
+                        Assert.True(block.Textures?.ContainsKey(CandleMeshes.DyeTextureCode(dye)) == true, $"{block.Code} does not declare {dye} wax");
+                    }
                 }
             }
             await OnServer();
@@ -213,7 +219,7 @@ namespace Candela.Tests
             {
                 Shape shape = Shape.TryGet(Sapi, $"game:shapes/block/metal/chandelier/candle{n}.json");
                 Assert.NotNull(shape, $"no shape for {n} candles");
-                Shape coloured = FlameMeshes.Recoloured(shape, i => rainbow[i % rainbow.Length]);
+                Shape coloured = CandleMeshes.Recoloured(shape, i => Flame(rainbow[i % rainbow.Length]));
 
                 string expected = string.Join(",", Enumerable.Range(0, n).Select(i => rainbow[i % rainbow.Length]));
                 Assert.Equal(expected, string.Join(",", PaintedFlames(coloured)), $"{n} candles");
@@ -228,10 +234,10 @@ namespace Candela.Tests
             string[] rainbow = FlameColours.All.Select(c => c.Code).ToArray();
             Shape bunch = Shape.TryGet(Sapi, "game:shapes/block/wax/bunch.json");
             string expected = string.Join(",", Enumerable.Range(0, 9).Select(i => rainbow[i % rainbow.Length]));
-            Assert.Equal(expected, string.Join(",", PaintedFlames(FlameMeshes.Recoloured(bunch, i => rainbow[i % rainbow.Length]))));
+            Assert.Equal(expected, string.Join(",", PaintedFlames(CandleMeshes.Recoloured(bunch, i => Flame(rainbow[i % rainbow.Length])))));
 
             Shape single = Shape.TryGet(Sapi, "game:shapes/block/wax/candle3.json");
-            Assert.Equal("violet", string.Join(",", PaintedFlames(FlameMeshes.Recoloured(single, _ => "violet"))));
+            Assert.Equal("violet", string.Join(",", PaintedFlames(CandleMeshes.Recoloured(single, _ => Flame("violet")))));
         }
 
         [VsTest]
@@ -242,11 +248,11 @@ namespace Candela.Tests
             {
                 Shape shape = Shape.TryGet(Sapi, $"game:shapes/block/metal/lantern/{size}/{hang}.json");
                 Assert.NotNull(shape, $"no {size} {hang} lantern");
-                Assert.Equal("teal", string.Join(",", PaintedFlames(FlameMeshes.Recoloured(shape, _ => "teal"))), $"{size} {hang}");
+                Assert.Equal("teal", string.Join(",", PaintedFlames(CandleMeshes.Recoloured(shape, _ => Flame("teal")))), $"{size} {hang}");
             }
         }
 
-        /// <summary>The colour of each element whose faces FlameMeshes repainted, in shape order.</summary>
+        /// <summary>The colour of each element whose faces CandleMeshes painted a flame, in shape order.</summary>
         static System.Collections.Generic.IEnumerable<string> PaintedFlames(Shape shape)
         {
             System.Collections.Generic.IEnumerable<string> Walk(ShapeElement element)
@@ -717,7 +723,7 @@ namespace Candela.Tests
         }
 
         /// <summary>What the client's block entity at <paramref name="pos"/> draws of its own, or null if it leaves it to the block.</summary>
-        static MeshData Drawn(BlockPos pos)
+        internal static MeshData Drawn(BlockPos pos)
         {
             var pool = new MeshRecorder();
             return Capi.World.BlockAccessor.GetBlockEntity(pos).OnTesselation(pool, Capi.Tesselator) ? pool.Mesh : null;
@@ -726,9 +732,9 @@ namespace Candela.Tests
         /// <summary>Whether any of <paramref name="mesh"/>'s texture coordinates fall in <paramref name="flame"/>'s flame texture.</summary>
         static bool Samples(MeshData mesh, string flame) => SamplesTexture(mesh, "candela:block/flame-" + flame);
 
-        static bool SamplesTexture(MeshData mesh, string texture)
+        internal static bool SamplesTexture(MeshData mesh, string texture, ITextureAtlasAPI atlas = null)
         {
-            TextureAtlasPosition at = Capi.BlockTextureAtlas[new AssetLocation(texture)];
+            TextureAtlasPosition at = (atlas ?? Capi.BlockTextureAtlas)[new AssetLocation(texture)];
             Assert.NotNull(at, $"{texture} is not in the block atlas");
             for (int i = 0; i + 1 < mesh.UvCount; i += 2)
             {
@@ -738,7 +744,7 @@ namespace Candela.Tests
             return false;
         }
 
-        private class MeshRecorder : ITerrainMeshPool
+        internal class MeshRecorder : ITerrainMeshPool
         {
             public MeshData Mesh;
             public void AddMeshData(MeshData data, int lodLevel = 1) => Mesh = data;
@@ -802,7 +808,7 @@ namespace Candela.Tests
         /// ground brighter than candles do, and their colour is lost in it. A pale floor,
         /// so the light's colour shows - grass greens everything.
         /// </summary>
-        static async Task DarkRoom()
+        internal static async Task DarkRoom()
         {
             await World.SetCalendarTo(500 * 24 + 22);
             World.Fill(P(1, 4, 1), P(14, 4, 14), "game:planks-oak-ud");
@@ -814,7 +820,7 @@ namespace Candela.Tests
         }
 
         /// <summary>SystemRenderParticles and its private renderParticles flag, reached through ClientMain.particleManager.</summary>
-        static (object system, System.Reflection.FieldInfo field) ParticleRenderer()
+        internal static (object system, System.Reflection.FieldInfo field) ParticleRenderer()
         {
             const System.Reflection.BindingFlags Any = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic;
             object manager = Capi.World.GetType().GetField("particleManager", Any).GetValue(Capi.World);

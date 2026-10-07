@@ -1,0 +1,42 @@
+{
+	// Flax fibres soaked in a mineral salt, so the candle they wick burns coloured.
+	// The colour goes with the wick rather than the wax: see FlameColours.cs.
+	code: "wick",
+	variantgroups: [
+		{ code: "flame", states: ["red", "green", "teal", "blue", "violet"] }
+	],
+	attributesByType: {
+		"*-red":    { candela: { flame: "red" } },
+		"*-green":  { candela: { flame: "green" } },
+		"*-teal":   { candela: { flame: "teal" } },
+		"*-blue":   { candela: { flame: "blue" } },
+		"*-violet": { candela: { flame: "violet" } }
+	},
+	shape: { base: "game:item/resource/flaxfibers" },
+	textures: { "fibers": { base: "candela:item/wick-{flame}" } },
+	creativeinventory: { "general": ["*"], "items": ["*"] },
+	maxstacksize: 64,
+	materialDensity: 120,
+	combustibleProps: {
+		burnTemperature: 600,
+		burnDuration: 4
+	},
+	// Vanilla's flax fibre transforms, for the same model.
+	guiTransform: {
+		rotation: { x: 105, y: 40, z: 9 },
+		origin: { x: 0.57, y: 0.37, z: 0.42 },
+		scale: 2.2
+	},
+	tpHandTransform: {
+		translation: { x: -0.66, y: 0, z: -0.63 },
+		rotation: { x: 70, y: 5, z: -5 },
+		origin: { x: 0.5, y: -0, z: 0.5 },
+		scale: 0.8
+	},
+	groundTransform: {
+		translation: { x: 0, y: 0.18, z: 0 },
+		rotation: { x: 1, y: 0, z: 0 },
+		origin: { x: 0.5, y: 0.22, z: 0.5299 },
+		scale: 4
+	}
+}

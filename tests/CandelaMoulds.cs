@@ -227,6 +227,34 @@ namespace Candela.Tests
             }
         }
 
+        /// <summary>Wicks treated for a coloured flame make candles that burn it.</summary>
+        [VsTest(TimeoutMs = 60000), RequiresClient]
+        public async Task TreatedWicksMakeColouredCandles()
+        {
+            await SetDown("candela:candlemould-blue-tallow", hoursAgo: ItemCandleMould.SetHours * 2);
+            EnumGameMode mode = Player.Me.WorldData.CurrentGameMode;
+            await Player.SetGameMode(EnumGameMode.Survival);
+            try
+            {
+                await Player.Hold("candela:wick-blue", 3);
+
+                await Interact.UseBlock(Ground);
+                await Ticks(4);
+
+                // Earlier tests leave plain tallow candles about the inventory; these are the
+                // only coloured ones.
+                var tallow = new[] { Player.Me.InventoryManager.GetHotbarInventory(), Player.Me.InventoryManager.GetOwnInventory("backpack") }
+                    .Where(inv => inv != null).SelectMany(inv => inv).Select(slot => slot?.Itemstack).Where(stack => stack?.Collectible.Code.ToString() == "candela:candle-tallow").ToList();
+                Assert.True(tallow.Any(stack => FlameColours.Of(stack) == "blue"),
+                    "no blue candles came out; tallow candles held: " + string.Join(", ", tallow.Select(stack => FlameColours.Of(stack) ?? "plain")));
+                Assert.Equal(1, Player.Held?.StackSize ?? 0, "two treated wicks should have gone in");
+            }
+            finally
+            {
+                await Player.SetGameMode(mode);
+            }
+        }
+
         /// <summary>A free hand on a set mould gets nothing, and does not walk off with it full.</summary>
         [VsTest(TimeoutMs = 60000), RequiresClient]
         public async Task NoCandlesWithoutWicks()

@@ -1,0 +1,57 @@
+[
+	{
+		ingredientPattern: "FS",
+		ingredients: {
+			"F": { type: "item", code: "game:flaxfibers", quantity: 4 },
+			"S": { type: "item", code: "game:powder-cinnabar" }
+		},
+		width: 2,
+		height: 1,
+		shapeless: true,
+		output: { type: "item", code: "candela:wick-red", quantity: 4 }
+	},
+	{
+		ingredientPattern: "FS",
+		ingredients: {
+			"F": { type: "item", code: "game:flaxfibers", quantity: 4 },
+			"S": { type: "item", code: "game:powder-borax" }
+		},
+		width: 2,
+		height: 1,
+		shapeless: true,
+		output: { type: "item", code: "candela:wick-green", quantity: 4 }
+	},
+	{
+		ingredientPattern: "FS",
+		ingredients: {
+			"F": { type: "item", code: "game:flaxfibers", quantity: 4 },
+			"S": { type: "item", code: "candela:powder-verdigris" }
+		},
+		width: 2,
+		height: 1,
+		shapeless: true,
+		output: { type: "item", code: "candela:wick-teal", quantity: 4 }
+	},
+	{
+		ingredientPattern: "FS",
+		ingredients: {
+			"F": { type: "item", code: "game:flaxfibers", quantity: 4 },
+			"S": { type: "item", code: "game:powder-lapislazuli" }
+		},
+		width: 2,
+		height: 1,
+		shapeless: true,
+		output: { type: "item", code: "candela:wick-blue", quantity: 4 }
+	},
+	{
+		ingredientPattern: "FS",
+		ingredients: {
+			"F": { type: "item", code: "game:flaxfibers", quantity: 4 },
+			"S": { type: "item", code: "game:powder-sylvite" }
+		},
+		width: 2,
+		height: 1,
+		shapeless: true,
+		output: { type: "item", code: "candela:wick-violet", quantity: 4 }
+	}
+]

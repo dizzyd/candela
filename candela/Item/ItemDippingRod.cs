@@ -41,14 +41,15 @@ public class ItemDippingRod : Item, IWaxWorker
     }
 
     /// <summary>
-    /// The rod as it is after one more coat, stamped with the time it was dipped.
+    /// <paramref name="rod"/> as it is after one more coat, stamped with the time it
+    /// was dipped. Its wicks' flame colour stays with it.
     /// </summary>
-    public ItemStack WithAnotherLayer(IWorldAccessor world)
+    public ItemStack WithAnotherLayer(IWorldAccessor world, ItemStack rod)
     {
         Item next = world.GetItem(CodeWithVariant("layers", (Layers + 1).ToString()));
         var stack = new ItemStack(next);
         stack.Attributes.SetDouble(LastDipAttr, world.Calendar.TotalHours);
-        return stack;
+        return FlameColours.Stamp(stack, FlameColours.Of(rod));
     }
 
     public override void OnLoaded(ICoreAPI api)
@@ -56,6 +57,15 @@ public class ItemDippingRod : Item, IWaxWorker
         base.OnLoaded(api);
         SettingBar.Register(api, this, (world, stack) => IsFinished ? 1 : SetProgress(world, stack));
     }
+
+    /// <summary>A rod made with treated wicks carries their flame colour.</summary>
+    public override void OnCreatedByCrafting(ItemSlot[] allInputSlots, ItemSlot outputSlot, IRecipeBase byRecipe)
+    {
+        base.OnCreatedByCrafting(allInputSlots, outputSlot, byRecipe);
+        FlameColours.Stamp(outputSlot.Itemstack, FlameColours.FromInputs(allInputSlots));
+    }
+
+    public override string GetHeldItemName(ItemStack itemStack) => FlameColours.Name(itemStack, base.GetHeldItemName(itemStack));
 
     public override void OnUnloaded(ICoreAPI api)
     {
@@ -75,7 +85,7 @@ public class ItemDippingRod : Item, IWaxWorker
         return null;
     }
 
-    public ItemStack Worked(IWorldAccessor world, ItemStack held, string wax) => WithAnotherLayer(world);
+    public ItemStack Worked(IWorldAccessor world, ItemStack held, string wax) => WithAnotherLayer(world, held);
 
     // Tallow only: beeswax is for moulds.
     public bool Takes(ItemStack held, string wax) => wax == "tallow" && !IsFinished;

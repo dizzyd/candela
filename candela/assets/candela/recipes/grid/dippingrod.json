@@ -12,6 +12,18 @@
 		output: { type: "item", code: "candela:dippingrod-0" }
 	},
 	{
+		ingredientPattern: "SF",
+		ingredients: {
+			"S": { type: "item", code: "game:stick" },
+			// Treated wicks: the rod takes their flame colour (ItemDippingRod.OnCreatedByCrafting).
+			"F": { type: "item", code: "candela:wick-*", quantity: 4 }
+		},
+		width: 2,
+		height: 1,
+		shapeless: true,
+		output: { type: "item", code: "candela:dippingrod-0" }
+	},
+	{
 		// Cutting the finished tapers free gives the stick back.
 		ingredientPattern: "KR",
 		ingredients: {

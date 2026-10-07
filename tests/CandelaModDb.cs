@@ -123,13 +123,13 @@ namespace Candela.Tests
             World.SetBlock("game:barrel", P(Hi, 1, Lo + 3));
             await Ticks(5);
 
-            World.BE<BECandles>(P(7, 2, 7))?.SetFuel(3 * 216 * 0.45);
+            World.BE<BECandles>(P(7, 2, 7))?.SetFuel(3 * 216 * 0.45, null);
 
             ItemStack lantern = World.Stack("game:lantern-large-up", 1);
             lantern.Attributes.SetString("material", "copper");
             lantern.Attributes.SetString("lining", "plain");
             lantern.Attributes.SetString("glass", "quartz");
-            LanternStack.Write(lantern, 216, "candela:tallowcandles", snuffed: false);
+            LanternStack.Write(lantern, 216, "candela:tallowcandles", snuffed: false, null);
             World.BE<BlockEntity>(P(11, 2, 4)).OnBlockPlaced(lantern);
             World.BE<BlockEntity>(P(11, 2, 4)).MarkDirty(true);
             await Ticks(10);

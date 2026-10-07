@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
@@ -122,11 +123,12 @@ public class BlockCandelaCandles : BlockBunchOCandles, ICandleHolder
         float height = be?.HeightFactor ?? 1f;
         Vec3f[] wicks = wicksByRotation[RotationIndex(pos)];
 
-        foreach (AdvancedParticleProperties bps in ParticleProperties)
+        for (int i = 0; i < ParticleProperties.Length; i++)
         {
-            bps.WindAffectednesAtPos = windAffectednessAtPos;
             for (int j = 0; j < Quantity; j++)
             {
+                AdvancedParticleProperties bps = Tinted(i, be?.ColourOf(j));
+                bps.WindAffectednesAtPos = windAffectednessAtPos;
                 Vec3f dp = wicks[j];
                 bps.basePos.X = pos.X + dp.X - 1 / 64f;
                 bps.basePos.Y = pos.InternalY + dp.Y * height;
@@ -134,6 +136,27 @@ public class BlockCandelaCandles : BlockBunchOCandles, ICandleHolder
                 manager.Spawn(bps);
             }
         }
+    }
+
+    // Only ever touched from the async particle thread.
+    private readonly Dictionary<(int, string), AdvancedParticleProperties> tintedParticles = new();
+
+    /// <summary>
+    /// Particle set <paramref name="index"/>, recoloured for a <paramref name="flameColour"/>
+    /// candle. Only the flames: anything unsaturated - the smoke - stays as it is.
+    /// </summary>
+    private AdvancedParticleProperties Tinted(int index, string flameColour)
+    {
+        AdvancedParticleProperties plain = ParticleProperties[index];
+        if (FlameColours.Get(flameColour) is not FlameColours.Colour colour || plain.HsvaColor == null || plain.HsvaColor[1].avg <= 0) return plain;
+
+        if (!tintedParticles.TryGetValue((index, colour.Code), out AdvancedParticleProperties tinted))
+        {
+            tinted = plain.Clone();
+            tinted.HsvaColor[0] = NatFloat.createUniform(colour.ParticleHue, 4);
+            tintedParticles[(index, colour.Code)] = tinted;
+        }
+        return tinted;
     }
 
     public override bool OnBlockInteractStart(IWorldAccessor world, IPlayer byPlayer, BlockSelection blockSel)
@@ -178,7 +201,8 @@ public class BlockCandelaCandles : BlockBunchOCandles, ICandleHolder
 
     private void TakeOneCandle(IWorldAccessor world, IPlayer byPlayer, BlockPos pos, BECandles be)
     {
-        ItemStack candle = CandleForHours(world, be.TakeShare());
+        double hours = be.TakeCandle(out string flameColour);
+        ItemStack candle = CandleForHours(world, hours, flameColour);
 
         Block fewer = Quantity > 1 ? world.GetBlock(CodeWithVariant("quantity", (Quantity - 1).ToString())) : null;
         if (fewer == null)
@@ -201,31 +225,49 @@ public class BlockCandelaCandles : BlockBunchOCandles, ICandleHolder
     {
         if (world.BlockAccessor.GetBlockEntity(pos) is not BECandles be) return base.GetDrops(world, pos, byPlayer, dropQuantityMultiplier);
         be.Settle();
-
-        ItemStack candle = CandleForHours(world, be.Fuel / Quantity);
-        if (candle == null) return [];
-        candle.StackSize = Quantity;
-        return [candle];
+        return CandlesOf(world, be, this);
     }
 
     /// <summary>
-    /// The candle a share of <paramref name="hours"/> comes back as: a whole one only
-    /// if it is untouched, otherwise the largest stub it still fills. Rounded down, so
-    /// taking candles off and putting them back never makes wax.
+    /// <paramref name="be"/>'s candles as <paramref name="kind"/>'s items, each an equal
+    /// share of the pool, a stack to each flame colour.
     /// </summary>
-    public ItemStack CandleForHours(IWorldAccessor world, double hours)
+    public static ItemStack[] CandlesOf(IWorldAccessor world, BECandles be, BlockCandelaCandles kind)
+    {
+        if (kind == null || be.Quantity <= 0) return [];
+        double share = be.Fuel / be.Quantity;
+        return be.Colours.GroupBy(c => c)
+            .Select(g =>
+            {
+                ItemStack candle = kind.CandleForHours(world, share, g.Key);
+                if (candle != null) candle.StackSize = g.Count();
+                return candle;
+            })
+            .Where(candle => candle != null)
+            .ToArray();
+    }
+
+    /// <summary>
+    /// The candle a share of <paramref name="hours"/> comes back as, burning
+    /// <paramref name="flameColour"/>: a whole one only if it is untouched, otherwise the
+    /// largest stub it still fills. Rounded down, so taking candles off and putting
+    /// them back never makes wax.
+    /// </summary>
+    public ItemStack CandleForHours(IWorldAccessor world, double hours, string flameColour)
     {
         if (BurnHours <= 0) return null;
         double fraction = hours / BurnHours;
 
-        if (fraction >= 0.999) return new ItemStack(world.GetItem(new AssetLocation(candleCode)));
+        if (fraction >= 0.999) return Candle(candleCode);
         if (stubPrefix == null) return null;
 
         foreach (int quarter in new[] { 75, 50, 25 })
         {
-            if (fraction >= quarter / 100.0) return new ItemStack(world.GetItem(new AssetLocation(stubPrefix + quarter)));
+            if (fraction >= quarter / 100.0) return Candle(stubPrefix + quarter);
         }
         return null;
+
+        ItemStack Candle(string code) => FlameColours.Stamp(new ItemStack(world.GetItem(new AssetLocation(code))), flameColour);
     }
 
     /// <summary>

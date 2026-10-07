@@ -88,7 +88,7 @@ public class BlockCandelaChandelier : Block, ICandleHolder
 
         if (add)
         {
-            be.AddFuel(CandleWax.HoursOf(held.Collectible) ?? 0);
+            be.AddCandle(CandleWax.HoursOf(held.Collectible) ?? 0, FlameColours.Of(held));
             if (byPlayer.WorldData.CurrentGameMode != EnumGameMode.Creative) slot.TakeOut(1);
             slot.MarkDirty();
             world.BlockAccessor.ExchangeBlock(WithCandles(world, Quantity + 1).BlockId, pos);
@@ -96,7 +96,8 @@ public class BlockCandelaChandelier : Block, ICandleHolder
         }
         else if (take)
         {
-            ItemStack candle = CandleForHours(world, be.TakeShare());
+            double hours = be.TakeCandle(out string flameColour);
+            ItemStack candle = Kind(world)?.CandleForHours(world, hours, flameColour);
             world.BlockAccessor.ExchangeBlock(WithCandles(world, Quantity - 1).BlockId, pos);
             if (candle != null && !byPlayer.InventoryManager.TryGiveItemstack(candle, slotNotifyEffect: true))
             {
@@ -117,9 +118,9 @@ public class BlockCandelaChandelier : Block, ICandleHolder
 
     private Block WithCandles(IWorldAccessor world, int count) => world.GetBlock(CodeWithVariant("type", "candle" + count));
 
-    /// <summary>What a share of the pool comes back as - the bunch of the same wax decides.</summary>
-    public ItemStack CandleForHours(IWorldAccessor world, double hours) =>
-        BlockCandelaCandles.KindOf(world, Attributes?["candela"]["bunch"].AsString("game:bunchocandles"))?.CandleForHours(world, hours);
+    /// <summary>The bunch of the same wax, which decides what a share of the pool comes back as.</summary>
+    private BlockCandelaCandles Kind(IWorldAccessor world) =>
+        BlockCandelaCandles.KindOf(world, Attributes?["candela"]["bunch"].AsString("game:bunchocandles"));
 
     public override ItemStack[] GetDrops(IWorldAccessor world, BlockPos pos, IPlayer byPlayer, float dropQuantityMultiplier = 1)
     {
@@ -127,11 +128,7 @@ public class BlockCandelaChandelier : Block, ICandleHolder
         be.Settle();
 
         var drops = new List<ItemStack> { new(WithCandles(world, 0)) };
-        if (Quantity > 0 && CandleForHours(world, be.Fuel / Quantity) is ItemStack candle)
-        {
-            candle.StackSize = Quantity;
-            drops.Add(candle);
-        }
+        drops.AddRange(BlockCandelaCandles.CandlesOf(world, be, Kind(world)));
         return drops.ToArray();
     }
 

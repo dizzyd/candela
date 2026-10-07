@@ -89,7 +89,7 @@ namespace Candela.Tests
             Log("shot: " + await Shot.Take("results/looks-tallow-pot.png"));
 
             var hotbar = Player.Me.InventoryManager.GetHotbarInventory();
-            hotbar[0].Itemstack = ((ItemDippingRod)Sapi.World.GetItem(new AssetLocation("candela:dippingrod-0"))).WithAnotherLayer(Sapi.World);
+            hotbar[0].Itemstack = ((ItemDippingRod)Sapi.World.GetItem(new AssetLocation("candela:dippingrod-0"))).WithAnotherLayer(Sapi.World, null);
             hotbar[0].MarkDirty();
             await OnClient();
             Capi.World.Player.InventoryManager.ActiveHotbarSlotNumber = 0;

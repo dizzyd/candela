@@ -280,8 +280,10 @@ namespace Candela.Tests
         [VsTest]
         public void ARodIsAStickAndFourFlaxFibres()
         {
+            // The plain one: treated wicks have a recipe of their own (CandelaFlames).
             GridRecipe rod = Sapi.World.GridRecipes.Single(r =>
-                r.Output.ResolvedItemStack?.Collectible.Code.ToString() == "candela:dippingrod-0");
+                r.Output.ResolvedItemStack?.Collectible.Code.ToString() == "candela:dippingrod-0" &&
+                r.ResolvedIngredients.Any(i => i?.Code?.ToString() == "game:flaxfibers"));
 
             var wicks = rod.ResolvedIngredients.Single(i => i?.Code?.ToString() == "game:flaxfibers");
             Assert.Equal(4, wicks.Quantity);

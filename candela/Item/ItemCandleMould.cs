@@ -78,8 +78,9 @@ public class ItemCandleMould : Item, IContainedInteractable, IGroundStoredPartic
 
         ItemStack[] pots = api.World.Blocks.Where(b => b is BlockCookingContainer).Select(b => new ItemStack(b)).ToArray();
         pourHelp = [new WorldInteraction { ActionLangCode = "candela:blockhelp-pourmould", MouseButton = EnumMouseButton.Right, Itemstacks = pots }];
-        Item wick = api.World.GetItem(Wick);
-        takeHelp = wick == null ? [] : [new WorldInteraction { ActionLangCode = "candela:blockhelp-takecandles", MouseButton = EnumMouseButton.Right, Itemstacks = [new ItemStack(wick, WicksPerFill)] }];
+        ItemStack[] wicks = api.World.Items.Where(item => item.Code != null && (item.Code.Equals(Wick) || FlameColours.IsTreatedWick(item)))
+            .Select(item => new ItemStack(item, WicksPerFill)).ToArray();
+        takeHelp = wicks.Length == 0 ? [] : [new WorldInteraction { ActionLangCode = "candela:blockhelp-takecandles", MouseButton = EnumMouseButton.Right, Itemstacks = wicks }];
     }
 
     public override void OnUnloaded(ICoreAPI api)
@@ -105,9 +106,9 @@ public class ItemCandleMould : Item, IContainedInteractable, IGroundStoredPartic
         return moved;
     }
 
-    /// <summary>The candles a full mould of <paramref name="wax"/> gives.</summary>
-    public static ItemStack Candles(IWorldAccessor world, string wax) =>
-        new(world.GetItem(new AssetLocation(wax == "beeswax" ? "game:candle" : "candela:candle-tallow")), CandlesPerFill);
+    /// <summary>The candles a full mould of <paramref name="wax"/> gives, on wicks burning <paramref name="flameColour"/>.</summary>
+    public static ItemStack Candles(IWorldAccessor world, string wax, string flameColour) =>
+        FlameColours.Stamp(new(world.GetItem(new AssetLocation(wax == "beeswax" ? "game:candle" : "candela:candle-tallow")), CandlesPerFill), flameColour);
 
     /// <summary>
     /// Why <paramref name="pot"/> cannot be poured into this mould now, as the suffix
@@ -150,7 +151,7 @@ public class ItemCandleMould : Item, IContainedInteractable, IGroundStoredPartic
             // Claimed from here on, or ground storage would hand over a full mould.
             if (!HasSet(world, slot.Itemstack)) Error(world, "mouldsetting");
             else if (!HasWicks(hand)) Error(world, "needwicks");
-            else if (world.Side == EnumAppSide.Server && TakeWicks(byPlayer.Entity, hand)) KnockOut(world, byPlayer.Entity, slot, be);
+            else if (world.Side == EnumAppSide.Server && TakeWicks(byPlayer.Entity, hand, out string flameColour)) KnockOut(world, byPlayer.Entity, slot, be, flameColour);
             return true;
         }
 
@@ -217,16 +218,19 @@ public class ItemCandleMould : Item, IContainedInteractable, IGroundStoredPartic
             Error(world, "needwicksoffhand");
             return;
         }
-        if (world.Side == EnumAppSide.Server && TakeWicks(byEntity, byEntity.LeftHandItemSlot)) KnockOut(world, byEntity, slot, null);
+        if (world.Side == EnumAppSide.Server && TakeWicks(byEntity, byEntity.LeftHandItemSlot, out string flameColour)) KnockOut(world, byEntity, slot, null, flameColour);
     }
 
-    private static bool IsWick(ItemSlot slot) => slot?.Itemstack?.Collectible.Code.Equals(Wick) == true;
+    /// <summary>Plain flax fibres, or wicks treated for a coloured flame.</summary>
+    private static bool IsWick(ItemSlot slot) =>
+        slot?.Itemstack?.Collectible is CollectibleObject wick && (wick.Code.Equals(Wick) || FlameColours.IsTreatedWick(wick));
 
     private static bool HasWicks(ItemSlot slot) => IsWick(slot) && slot.StackSize >= WicksPerFill;
 
-    /// <summary>The wicks out of <paramref name="slot"/> - none in creative. False if they are not there.</summary>
-    private static bool TakeWicks(EntityAgent byEntity, ItemSlot slot)
+    /// <summary>The wicks out of <paramref name="slot"/> - none in creative - and the flame colour they give. False if they are not there.</summary>
+    private static bool TakeWicks(EntityAgent byEntity, ItemSlot slot, out string flameColour)
     {
+        flameColour = FlameColours.OfWick(slot?.Itemstack?.Collectible);
         if (!HasWicks(slot)) return false;
         if ((byEntity as EntityPlayer)?.Player?.WorldData.CurrentGameMode == EnumGameMode.Creative) return true;
 
@@ -236,9 +240,9 @@ public class ItemCandleMould : Item, IContainedInteractable, IGroundStoredPartic
     }
 
     /// <summary>The candles out to <paramref name="byEntity"/>, and the mould left empty and a use more worn.</summary>
-    private void KnockOut(IWorldAccessor world, EntityAgent byEntity, ItemSlot slot, BlockEntityContainer be)
+    private void KnockOut(IWorldAccessor world, EntityAgent byEntity, ItemSlot slot, BlockEntityContainer be, string flameColour)
     {
-        ItemStack candles = Candles(world, State);
+        ItemStack candles = Candles(world, State, flameColour);
         if (!byEntity.TryGiveItemStack(candles)) world.SpawnItemEntity(candles, byEntity.Pos.XYZ);
 
         slot.Itemstack = InState(world, slot.Itemstack, "fired");

@@ -1,0 +1,10 @@
+[
+	{
+		// Malachite nuggets grind to verdigris in a quern. Vanilla's nuggets have no
+		// grinding props at all; addmerge rather than add, so another mod's grinding
+		// for some other nugget survives.
+		op: "addmerge", path: "/grindingPropsByType",
+		value: { "*-malachite": { groundStack: { type: "item", code: "candela:powder-verdigris" } } },
+		file: "game:itemtypes/resource/nugget.json"
+	}
+]

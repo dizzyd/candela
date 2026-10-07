@@ -55,7 +55,8 @@ public class BlockCandelaLantern : BlockLantern
         // The burnout mode lives on the server, so a spent one is shown guttering.
         if (stack != null && LanternStack.HasFuel(stack) && api != null)
         {
-            return LanternStack.Adjust(api.World, full, LanternStack.BunchCode(stack), !LanternStack.Snuffed(stack), LanternStack.Fuel(stack) <= 0);
+            return LanternStack.Adjust(api.World, full, LanternStack.BunchCode(stack), !LanternStack.Snuffed(stack), LanternStack.Fuel(stack) <= 0,
+                LanternStack.FlameColour(stack), stack.Attributes.GetString("glass"));
         }
         return full;
     }
@@ -78,7 +79,7 @@ public class BlockCandelaLantern : BlockLantern
             CollectibleObject candle = slot.Itemstack?.Collectible;
             if (CandleWax.HoursOf(candle) is not double hours) continue;
 
-            LanternStack.Write(outputSlot.Itemstack, hours, CandleWax.BunchOf(candle), snuffed: false);
+            LanternStack.Write(outputSlot.Itemstack, hours, CandleWax.BunchOf(candle), snuffed: false, FlameColours.Of(slot.Itemstack));
             return;
         }
     }
@@ -120,7 +121,7 @@ public class BlockCandelaLantern : BlockLantern
         if (!LanternStack.HasFuel(stack)) return;
 
         BlockCandelaCandles kind = BlockCandelaCandles.KindOf(world, LanternStack.BunchCode(stack));
-        string candleName = kind == null ? "?" : kind.CandleForHours(world, kind.BurnHours)?.GetName() ?? "?";
+        string candleName = kind == null ? "?" : kind.CandleForHours(world, kind.BurnHours, LanternStack.FlameColour(stack))?.GetName() ?? "?";
         double hours = LanternStack.Fuel(stack);
 
         dsc.AppendLine(hours > 0

@@ -20,6 +20,8 @@ public class ItemCandelaCandle : ItemCandle
     {
         if (CandlePlacement.TryPlace(slot, byEntity, blockSel)) handHandling = EnumHandHandling.PreventDefault;
     }
+
+    public override string GetHeldItemName(ItemStack itemStack) => FlameColours.Name(itemStack, base.GetHeldItemName(itemStack));
 }
 
 /// <summary>
@@ -48,6 +50,15 @@ public class ItemPlaceableCandle : Item
         base.GetHeldItemInfo(inSlot, dsc, world, withDebugInfo);
         if (CandleWax.HoursOf(this) is double hours) dsc.AppendLine(Lang.Get("candela:candle-hours", (int)Math.Round(hours)));
     }
+
+    public override string GetHeldItemName(ItemStack itemStack) => FlameColours.Name(itemStack, base.GetHeldItemName(itemStack));
+
+    /// <summary>Tapers cut from a rod of treated wicks burn the rod's colour.</summary>
+    public override void OnCreatedByCrafting(ItemSlot[] allInputSlots, ItemSlot outputSlot, IRecipeBase byRecipe)
+    {
+        base.OnCreatedByCrafting(allInputSlots, outputSlot, byRecipe);
+        FlameColours.Stamp(outputSlot.Itemstack, FlameColours.FromInputs(allInputSlots));
+    }
 }
 
 /// <summary>
@@ -71,6 +82,7 @@ public static class CandlePlacement
         IWorldAccessor world = byEntity.World;
         CollectibleObject candle = slot.Itemstack.Collectible;
         if (CandleWax.HoursOf(candle) is not double hours) return false;
+        string flameColour = FlameColours.Of(slot.Itemstack);
 
         JsonObject attrs = candle.Attributes["candela"];
         var bunch = new AssetLocation(CandleWax.BunchOf(candle));
@@ -95,7 +107,7 @@ public static class CandlePlacement
             if (world.Side == EnumAppSide.Server)
             {
                 BECandles be = existing.EnsureBlockEntity(world, blockSel.Position);
-                be?.AddFuel(hours);
+                be?.AddCandle(hours, flameColour);
                 world.BlockAccessor.ExchangeBlock(placed.BlockId, blockSel.Position);
             }
         }
@@ -113,7 +125,7 @@ public static class CandlePlacement
             if (!world.BlockAccessor.GetBlock(below).CanAttachBlockAt(world.BlockAccessor, placed, below, BlockFacing.UP, new Cuboidi(1, 14, 1, 14, 15, 14))) return false;
 
             world.BlockAccessor.SetBlock(placed.BlockId, at);
-            if (world.Side == EnumAppSide.Server) (world.BlockAccessor.GetBlockEntity(at) as BECandles)?.SetFuel(hours);
+            if (world.Side == EnumAppSide.Server) (world.BlockAccessor.GetBlockEntity(at) as BECandles)?.SetFuel(hours, flameColour);
         }
 
         if (player?.WorldData.CurrentGameMode != EnumGameMode.Creative) slot.TakeOut(1);

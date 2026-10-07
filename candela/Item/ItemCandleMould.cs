@@ -89,26 +89,30 @@ public class ItemCandleMould : Item, IContainedInteractable, IGroundStoredPartic
         SettingBar.Dispose();
     }
 
-    /// <summary><paramref name="empty"/> filled with <paramref name="wax"/> now.</summary>
-    public ItemStack Filled(IWorldAccessor world, ItemStack empty, string wax)
+    /// <summary><paramref name="empty"/> filled now with <paramref name="molten"/>'s wax, and its dye.</summary>
+    public ItemStack Filled(IWorldAccessor world, ItemStack empty, ItemStack molten)
     {
-        ItemStack filled = InState(world, empty, wax);
+        ItemStack filled = InState(world, empty, ((ItemMoltenWax)molten.Collectible).Wax);
         filled.Attributes.SetDouble(FilledAttr, world.Calendar.TotalHours);
-        return filled;
+        return WaxDyes.Stamp(filled, WaxDyes.Of(molten));
     }
 
-    /// <summary><paramref name="stack"/> as the same mould in another state, its wear kept.</summary>
+    /// <summary>
+    /// <paramref name="stack"/> as the same mould in another state, its wear kept - and
+    /// nothing of the wax it held.
+    /// </summary>
     private ItemStack InState(IWorldAccessor world, ItemStack stack, string state)
     {
         var moved = new ItemStack(world.GetItem(CodeWithVariant("state", state)));
         moved.Attributes = stack.Attributes.Clone();
         moved.Attributes.RemoveAttribute(FilledAttr);
+        moved.Attributes.RemoveAttribute(WaxDyes.Attr);
         return moved;
     }
 
-    /// <summary>The candles a full mould of <paramref name="wax"/> gives, on wicks burning <paramref name="flameColour"/>.</summary>
-    public static ItemStack Candles(IWorldAccessor world, string wax, string flameColour) =>
-        FlameColours.Stamp(new(world.GetItem(new AssetLocation(wax == "beeswax" ? "game:candle" : "candela:candle-tallow")), CandlesPerFill), flameColour);
+    /// <summary>The candles a full mould of <paramref name="wax"/> gives, looking <paramref name="look"/>.</summary>
+    public static ItemStack Candles(IWorldAccessor world, string wax, CandleLook look) =>
+        look.Stamp(new(world.GetItem(new AssetLocation(wax == "beeswax" ? "game:candle" : "candela:candle-tallow")), CandlesPerFill));
 
     /// <summary>
     /// Why <paramref name="pot"/> cannot be poured into this mould now, as the suffix
@@ -172,12 +176,14 @@ public class ItemCandleMould : Item, IContainedInteractable, IGroundStoredPartic
         if (secondsUsed < PourSeconds || world.Side != EnumAppSide.Server || !HoldingPot(byPlayer)) return;
 
         ItemSlot hand = byPlayer.InventoryManager.ActiveHotbarSlot;
-        if (CannotPour(world, hand.Itemstack, out string key, out ItemMoltenWax wax, out int portions) != null) return;
+        if (CannotPour(world, hand.Itemstack, out string key, out _, out int portions) != null) return;
 
+        // Read before taking: the pot's last portions leave nothing under the key.
+        ItemStack molten = CarriedWax.MoltenIn(world, hand.Itemstack, out _);
         CarriedWax.TakeFrom(world, hand.Itemstack, key, portions);
         hand.MarkDirty();
 
-        slot.Itemstack = Filled(world, slot.Itemstack, wax.Wax);
+        slot.Itemstack = Filled(world, slot.Itemstack, molten);
         slot.MarkDirty();
         be.MarkDirty(true);
 
@@ -242,7 +248,7 @@ public class ItemCandleMould : Item, IContainedInteractable, IGroundStoredPartic
     /// <summary>The candles out to <paramref name="byEntity"/>, and the mould left empty and a use more worn.</summary>
     private void KnockOut(IWorldAccessor world, EntityAgent byEntity, ItemSlot slot, BlockEntityContainer be, string flameColour)
     {
-        ItemStack candles = Candles(world, State, flameColour);
+        ItemStack candles = Candles(world, State, new CandleLook(flameColour, WaxDyes.Of(slot.Itemstack)));
         if (!byEntity.TryGiveItemStack(candles)) world.SpawnItemEntity(candles, byEntity.Pos.XYZ);
 
         slot.Itemstack = InState(world, slot.Itemstack, "fired");

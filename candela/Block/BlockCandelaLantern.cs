@@ -81,7 +81,7 @@ public class BlockCandelaLantern : BlockLantern, IContainedMeshSource
     MeshData IContainedMeshSource.GenMesh(ItemSlot slot, ITextureAtlasAPI targetAtlas, BlockPos atBlockPos)
     {
         ItemStack stack = slot.Itemstack;
-        string flameColour = LanternStack.FlameColour(stack);
+        string flameColour = LanternStack.Look(stack).Flame;
         MeshData coloured = flameColour == null || api is not ICoreClientAPI capi ? null
             : ColouredMesh(capi, capi.Tesselator, stack.Attributes.GetString("material"), stack.Attributes.GetString("lining"),
                 stack.Attributes.GetString("glass", "quartz"), flameColour);
@@ -91,11 +91,11 @@ public class BlockCandelaLantern : BlockLantern, IContainedMeshSource
 
     /// <summary>Vanilla's key, and the flame colour: without it a blue lantern and a plain one would share a mesh.</summary>
     string IContainedMeshSource.GetMeshCacheKey(ItemSlot slot) =>
-        LanternStack.FlameColour(slot.Itemstack) is string flameColour ? GetMeshCacheKey(slot) + "-" + flameColour : GetMeshCacheKey(slot);
+        LanternStack.Look(slot.Itemstack).Flame is string flameColour ? GetMeshCacheKey(slot) + "-" + flameColour : GetMeshCacheKey(slot);
 
     public override void OnBeforeRender(ICoreClientAPI capi, ItemStack itemstack, EnumItemRenderTarget target, ref ItemRenderInfo renderinfo)
     {
-        string flameColour = LanternStack.FlameColour(itemstack);
+        string flameColour = LanternStack.Look(itemstack).Flame;
         if (flameColour == null)
         {
             base.OnBeforeRender(capi, itemstack, target, ref renderinfo);
@@ -143,7 +143,7 @@ public class BlockCandelaLantern : BlockLantern, IContainedMeshSource
         if (stack != null && LanternStack.HasFuel(stack) && api != null)
         {
             return LanternStack.Adjust(api.World, full, LanternStack.BunchCode(stack), !LanternStack.Snuffed(stack), LanternStack.Fuel(stack) <= 0,
-                LanternStack.FlameColour(stack), stack.Attributes.GetString("glass"));
+                LanternStack.Look(stack).Flame, stack.Attributes.GetString("glass"));
         }
         return full;
     }
@@ -166,7 +166,7 @@ public class BlockCandelaLantern : BlockLantern, IContainedMeshSource
             CollectibleObject candle = slot.Itemstack?.Collectible;
             if (CandleWax.HoursOf(candle) is not double hours) continue;
 
-            LanternStack.Write(outputSlot.Itemstack, hours, CandleWax.BunchOf(candle), snuffed: false, FlameColours.Of(slot.Itemstack));
+            LanternStack.Write(outputSlot.Itemstack, hours, CandleWax.BunchOf(candle), snuffed: false, CandleLook.Of(slot.Itemstack));
             return;
         }
     }
@@ -208,7 +208,7 @@ public class BlockCandelaLantern : BlockLantern, IContainedMeshSource
         if (!LanternStack.HasFuel(stack)) return;
 
         BlockCandelaCandles kind = BlockCandelaCandles.KindOf(world, LanternStack.BunchCode(stack));
-        string candleName = kind == null ? "?" : kind.CandleForHours(world, kind.BurnHours, LanternStack.FlameColour(stack))?.GetName() ?? "?";
+        string candleName = kind == null ? "?" : kind.CandleForHours(world, kind.BurnHours, LanternStack.Look(stack))?.GetName() ?? "?";
         double hours = LanternStack.Fuel(stack);
 
         dsc.AppendLine(hours > 0

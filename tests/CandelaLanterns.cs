@@ -279,7 +279,7 @@ namespace Candela.Tests
             stack.Attributes.SetString("material", "copper");
             stack.Attributes.SetString("lining", "plain");
             stack.Attributes.SetString("glass", "quartz");
-            LanternStack.Write(stack, hours, candle, snuffed: false, null);
+            LanternStack.Write(stack, hours, candle, snuffed: false, CandleLook.Plain);
             return stack;
         }
 

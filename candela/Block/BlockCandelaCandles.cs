@@ -111,7 +111,7 @@ public class BlockCandelaCandles : BlockBunchOCandles, ICandleHolder
     /// their colours - the model lists its candles in the order of <see cref="BunchWicks"/>,
     /// as the particle flames are - or null while all are plain.
     /// </summary>
-    public MeshData ColouredMesh(ITesselatorAPI tesselator, BECandles be) => coloured?.For(tesselator, be.Colours.ToArray());
+    public MeshData ColouredMesh(ITesselatorAPI tesselator, BECandles be) => coloured?.For(tesselator, be.FlameColoursOfCandles.ToArray());
 
     public override byte[] GetLightHsv(IBlockAccessor blockAccessor, BlockPos pos, ItemStack stack = null)
     {
@@ -137,7 +137,7 @@ public class BlockCandelaCandles : BlockBunchOCandles, ICandleHolder
         {
             for (int j = 0; j < Quantity; j++)
             {
-                AdvancedParticleProperties bps = Tinted(i, be?.ColourOf(j));
+                AdvancedParticleProperties bps = Tinted(i, be?.LookOf(j).Flame);
                 bps.WindAffectednesAtPos = windAffectednessAtPos;
                 Vec3f dp = wicks[j];
                 bps.basePos.X = pos.X + dp.X - 1 / 64f;
@@ -211,8 +211,8 @@ public class BlockCandelaCandles : BlockBunchOCandles, ICandleHolder
 
     private void TakeOneCandle(IWorldAccessor world, IPlayer byPlayer, BlockPos pos, BECandles be)
     {
-        double hours = be.TakeCandle(out string flameColour);
-        ItemStack candle = CandleForHours(world, hours, flameColour);
+        double hours = be.TakeCandle(out CandleLook look);
+        ItemStack candle = CandleForHours(world, hours, look);
 
         Block fewer = Quantity > 1 ? world.GetBlock(CodeWithVariant("quantity", (Quantity - 1).ToString())) : null;
         if (fewer == null)
@@ -240,13 +240,13 @@ public class BlockCandelaCandles : BlockBunchOCandles, ICandleHolder
 
     /// <summary>
     /// <paramref name="be"/>'s candles as <paramref name="kind"/>'s items, each an equal
-    /// share of the pool, a stack to each flame colour.
+    /// share of the pool, a stack to each look.
     /// </summary>
     public static ItemStack[] CandlesOf(IWorldAccessor world, BECandles be, BlockCandelaCandles kind)
     {
         if (kind == null || be.Quantity <= 0) return [];
         double share = be.Fuel / be.Quantity;
-        return be.Colours.GroupBy(c => c)
+        return be.Looks.GroupBy(l => l)
             .Select(g =>
             {
                 ItemStack candle = kind.CandleForHours(world, share, g.Key);
@@ -259,11 +259,11 @@ public class BlockCandelaCandles : BlockBunchOCandles, ICandleHolder
 
     /// <summary>
     /// The candle a share of <paramref name="hours"/> comes back as, burning
-    /// <paramref name="flameColour"/>: a whole one only if it is untouched, otherwise the
+    /// <paramref name="look"/>: a whole one only if it is untouched, otherwise the
     /// largest stub it still fills. Rounded down, so taking candles off and putting
     /// them back never makes wax.
     /// </summary>
-    public ItemStack CandleForHours(IWorldAccessor world, double hours, string flameColour)
+    public ItemStack CandleForHours(IWorldAccessor world, double hours, CandleLook look)
     {
         if (BurnHours <= 0) return null;
         double fraction = hours / BurnHours;
@@ -277,7 +277,7 @@ public class BlockCandelaCandles : BlockBunchOCandles, ICandleHolder
         }
         return null;
 
-        ItemStack Candle(string code) => FlameColours.Stamp(new ItemStack(world.GetItem(new AssetLocation(code))), flameColour);
+        ItemStack Candle(string code) => look.Stamp(new ItemStack(world.GetItem(new AssetLocation(code))));
     }
 
     /// <summary>

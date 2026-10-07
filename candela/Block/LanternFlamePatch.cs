@@ -17,7 +17,7 @@ public static class LanternFlamePatch
     [HarmonyPrefix]
     private static bool Prefix(BELantern __instance, ITerrainMeshPool mesher, ITesselatorAPI tesselator, ref bool __result)
     {
-        string flameColour = __instance.GetBehavior<BEBehaviorLanternFuel>()?.FlameColour;
+        string flameColour = __instance.GetBehavior<BEBehaviorLanternFuel>()?.Look.Flame;
         if (flameColour == null || __instance.Block is not BlockCandelaLantern block || __instance.Api is not ICoreClientAPI capi) return true;
 
         MeshData mesh = block.ColouredMesh(capi, tesselator, __instance.material, __instance.lining, __instance.glass, flameColour);

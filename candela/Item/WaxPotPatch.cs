@@ -1,3 +1,4 @@
+using System.Linq;
 using HarmonyLib;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
@@ -41,30 +42,33 @@ public static class WaxPotPatch
     // patch time if they drift.
 
     /// <summary>
-    /// The ingredients' temperature, read before DoSmelt loses it: on the cooksInto
-    /// path it swaps them for a fresh clone of the output before reading them, so the
-    /// wax would come out at 20°C.
+    /// The ingredients' temperature and the dye among them, read before DoSmelt loses
+    /// them: on the cooksInto path it swaps them for a fresh clone of the output before
+    /// reading them, so the wax would come out at 20°C, and undyed.
     /// </summary>
     [HarmonyPrefix, HarmonyPatch(nameof(BlockCookingContainer.DoSmelt))]
-    private static void DoSmeltPrefix(BlockCookingContainer __instance, IWorldAccessor world, ISlotProvider cookingSlotsProvider, out float __state)
+    private static void DoSmeltPrefix(BlockCookingContainer __instance, IWorldAccessor world, ISlotProvider cookingSlotsProvider, out (float temperature, string dye) __state)
     {
-        __state = BlockCookingContainer.GetIngredientsTemperature(world, __instance.GetCookingStacks(cookingSlotsProvider, false));
+        ItemStack[] stacks = __instance.GetCookingStacks(cookingSlotsProvider, false);
+        __state = (BlockCookingContainer.GetIngredientsTemperature(world, stacks), stacks.Select(WaxDyes.OfLiquid).FirstOrDefault(d => d != null));
     }
 
     /// <summary>
-    /// The wax, and the pot, as hot as what was melted. The pot too because until it reverts
-    /// to the empty pot the firepit heats it rather than the tallow, and
-    /// <see cref="ItemMoltenWax.Temperature"/> judges the wax by it.
+    /// The wax, and the pot, as hot as what was melted, and the wax dyed with what was
+    /// cooked in with it - or undyed, which is how stubs remelt. The pot too because
+    /// until it reverts to the empty pot the firepit heats it rather than the tallow,
+    /// and <see cref="ItemMoltenWax.Temperature"/> judges the wax by it.
     /// </summary>
     [HarmonyPostfix, HarmonyPatch(nameof(BlockCookingContainer.DoSmelt))]
-    private static void DoSmelt(IWorldAccessor world, ISlotProvider cookingSlotsProvider, ItemSlot inputSlot, float __state)
+    private static void DoSmelt(IWorldAccessor world, ISlotProvider cookingSlotsProvider, ItemSlot inputSlot, (float temperature, string dye) __state)
     {
         foreach (ItemSlot slot in cookingSlotsProvider.Slots)
         {
             if (slot.Itemstack?.Collectible is not ItemMoltenWax wax) continue;
 
-            wax.SetTemperature(world, slot.Itemstack, __state);
-            if (inputSlot.Itemstack is ItemStack pot) pot.Collectible.SetTemperature(world, pot, __state);
+            wax.SetTemperature(world, slot.Itemstack, __state.temperature);
+            WaxDyes.Stamp(slot.Itemstack, __state.dye);
+            if (inputSlot.Itemstack is ItemStack pot) pot.Collectible.SetTemperature(world, pot, __state.temperature);
             return;
         }
     }

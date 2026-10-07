@@ -3,6 +3,10 @@
 		// Candle stubs melted back down, one portion of their own wax a stub whatever its
 		// size. Tallow here, beeswax in the second half; one recipe per number of pot
 		// slots used, and no comments between them.
+		//
+		// Each also takes an optional dye - any of vanilla's, a tenth of a litre a serving
+		// - which colours the wax (WaxPotPatch stamps it on). Stubs remelt undyed,
+		// whatever they were, and are dyed again here. A dye takes a pot slot.
 		"code": "molten tallow stubs1",
 		"isFood": true,
 		"perishableProps": {
@@ -34,6 +38,13 @@
 				"minQuantity": 1,
 				"maxQuantity": 1,
 				"portionSizeLitres": 0.5
+			},
+			{
+				"code": "dye",
+				"validStacks": [ { "type": "item", "code": "game:dye-*" } ],
+				"minQuantity": 0,
+				"maxQuantity": 1,
+				"portionSizeLitres": 0.1
 			}
 		],
 		"cooksInto": {
@@ -74,6 +85,13 @@
 				"minQuantity": 2,
 				"maxQuantity": 2,
 				"portionSizeLitres": 0.5
+			},
+			{
+				"code": "dye",
+				"validStacks": [ { "type": "item", "code": "game:dye-*" } ],
+				"minQuantity": 0,
+				"maxQuantity": 1,
+				"portionSizeLitres": 0.1
 			}
 		],
 		"cooksInto": {
@@ -114,6 +132,13 @@
 				"minQuantity": 3,
 				"maxQuantity": 3,
 				"portionSizeLitres": 0.5
+			},
+			{
+				"code": "dye",
+				"validStacks": [ { "type": "item", "code": "game:dye-*" } ],
+				"minQuantity": 0,
+				"maxQuantity": 1,
+				"portionSizeLitres": 0.1
 			}
 		],
 		"cooksInto": {
@@ -154,6 +179,13 @@
 				"minQuantity": 4,
 				"maxQuantity": 4,
 				"portionSizeLitres": 0.5
+			},
+			{
+				"code": "dye",
+				"validStacks": [ { "type": "item", "code": "game:dye-*" } ],
+				"minQuantity": 0,
+				"maxQuantity": 1,
+				"portionSizeLitres": 0.1
 			}
 		],
 		"cooksInto": {
@@ -196,6 +228,13 @@
 				"minQuantity": 1,
 				"maxQuantity": 1,
 				"portionSizeLitres": 0.5
+			},
+			{
+				"code": "dye",
+				"validStacks": [ { "type": "item", "code": "game:dye-*" } ],
+				"minQuantity": 0,
+				"maxQuantity": 1,
+				"portionSizeLitres": 0.1
 			}
 		],
 		"cooksInto": {
@@ -236,6 +275,13 @@
 				"minQuantity": 2,
 				"maxQuantity": 2,
 				"portionSizeLitres": 0.5
+			},
+			{
+				"code": "dye",
+				"validStacks": [ { "type": "item", "code": "game:dye-*" } ],
+				"minQuantity": 0,
+				"maxQuantity": 1,
+				"portionSizeLitres": 0.1
 			}
 		],
 		"cooksInto": {
@@ -276,6 +322,13 @@
 				"minQuantity": 3,
 				"maxQuantity": 3,
 				"portionSizeLitres": 0.5
+			},
+			{
+				"code": "dye",
+				"validStacks": [ { "type": "item", "code": "game:dye-*" } ],
+				"minQuantity": 0,
+				"maxQuantity": 1,
+				"portionSizeLitres": 0.1
 			}
 		],
 		"cooksInto": {
@@ -316,6 +369,13 @@
 				"minQuantity": 4,
 				"maxQuantity": 4,
 				"portionSizeLitres": 0.5
+			},
+			{
+				"code": "dye",
+				"validStacks": [ { "type": "item", "code": "game:dye-*" } ],
+				"minQuantity": 0,
+				"maxQuantity": 1,
+				"portionSizeLitres": 0.1
 			}
 		],
 		"cooksInto": {

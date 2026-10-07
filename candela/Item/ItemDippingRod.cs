@@ -41,15 +41,17 @@ public class ItemDippingRod : Item, IWaxWorker
     }
 
     /// <summary>
-    /// <paramref name="rod"/> as it is after one more coat, stamped with the time it
-    /// was dipped. Its wicks' flame colour stays with it.
+    /// <paramref name="rod"/> as it is after one more coat of <paramref name="molten"/>,
+    /// stamped with the time it was dipped. Its wicks' flame colour stays with it; its
+    /// dye is the new coat's, since the outermost coat is the one that shows - an undyed
+    /// coat over a dyed one leaves the candles plain.
     /// </summary>
-    public ItemStack WithAnotherLayer(IWorldAccessor world, ItemStack rod)
+    public ItemStack WithAnotherLayer(IWorldAccessor world, ItemStack rod, ItemStack molten)
     {
         Item next = world.GetItem(CodeWithVariant("layers", (Layers + 1).ToString()));
         var stack = new ItemStack(next);
         stack.Attributes.SetDouble(LastDipAttr, world.Calendar.TotalHours);
-        return FlameColours.Stamp(stack, FlameColours.Of(rod));
+        return new CandleLook(FlameColours.Of(rod), WaxDyes.Of(molten)).Stamp(stack);
     }
 
     public override void OnLoaded(ICoreAPI api)
@@ -65,7 +67,7 @@ public class ItemDippingRod : Item, IWaxWorker
         FlameColours.Stamp(outputSlot.Itemstack, FlameColours.FromInputs(allInputSlots));
     }
 
-    public override string GetHeldItemName(ItemStack itemStack) => FlameColours.Name(itemStack, base.GetHeldItemName(itemStack));
+    public override string GetHeldItemName(ItemStack itemStack) => CandleLook.Name(itemStack, base.GetHeldItemName(itemStack));
 
     public override void OnUnloaded(ICoreAPI api)
     {
@@ -85,7 +87,7 @@ public class ItemDippingRod : Item, IWaxWorker
         return null;
     }
 
-    public ItemStack Worked(IWorldAccessor world, ItemStack held, string wax) => WithAnotherLayer(world, held);
+    public ItemStack Worked(IWorldAccessor world, ItemStack held, ItemStack molten) => WithAnotherLayer(world, held, molten);
 
     // Tallow only: beeswax is for moulds.
     public bool Takes(ItemStack held, string wax) => wax == "tallow" && !IsFinished;

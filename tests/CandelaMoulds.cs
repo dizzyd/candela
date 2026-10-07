@@ -160,7 +160,7 @@ namespace Candela.Tests
         public async Task AMouldSteamsWhileItSets()
         {
             var mould = (ItemCandleMould)Sapi.World.GetItem(new AssetLocation("candela:candlemould-blue-tallow"));
-            ItemStack poured = mould.Filled(Sapi.World, World.Stack(Empty, 1), "tallow");
+            ItemStack poured = mould.Filled(Sapi.World, World.Stack(Empty, 1), World.Stack("candela:tallow-molten", 1));
             int Puffs(ItemStack stack) => Enumerable.Range(0, 2000).Count(_ => ((IGroundStoredParticleEmitter)stack.Collectible).ShouldSpawnGSParticles(Sapi.World, stack));
 
             int fresh = Puffs(poured);
@@ -185,7 +185,7 @@ namespace Candela.Tests
             World.SetBlock("game:air", P(9, 1, 8));
             ItemSlot hand = Player.Me.InventoryManager.ActiveHotbarSlot;
             var mould = (ItemCandleMould)Sapi.World.GetItem(new AssetLocation("candela:candlemould-blue-tallow"));
-            hand.Itemstack = mould.Filled(Sapi.World, World.Stack(Empty, 1), "tallow");
+            hand.Itemstack = mould.Filled(Sapi.World, World.Stack(Empty, 1), World.Stack("candela:tallow-molten", 1));
             hand.Itemstack.Attributes.SetDouble("candela:filledHours", Sapi.World.Calendar.TotalHours - 1);
             hand.MarkDirty();
             await Ticks(4);
@@ -248,6 +248,31 @@ namespace Candela.Tests
                 Assert.True(tallow.Any(stack => FlameColours.Of(stack) == "blue"),
                     "no blue candles came out; tallow candles held: " + string.Join(", ", tallow.Select(stack => FlameColours.Of(stack) ?? "plain")));
                 Assert.Equal(1, Player.Held?.StackSize ?? 0, "two treated wicks should have gone in");
+            }
+            finally
+            {
+                await Player.SetGameMode(mode);
+            }
+        }
+
+        /// <summary>Dyed wax and treated wicks: the candles out of the mould are both.</summary>
+        [VsTest(TimeoutMs = 60000), RequiresClient]
+        public async Task DyedWaxMakesDyedCandles()
+        {
+            await SetDown("candela:candlemould-blue-tallow", hoursAgo: ItemCandleMould.SetHours * 2, dye: "black");
+            EnumGameMode mode = Player.Me.WorldData.CurrentGameMode;
+            await Player.SetGameMode(EnumGameMode.Survival);
+            try
+            {
+                await Player.Hold("candela:wick-red", 2);
+                await Interact.UseBlock(Ground);
+                await Ticks(4);
+
+                var tallow = new[] { Player.Me.InventoryManager.GetHotbarInventory(), Player.Me.InventoryManager.GetOwnInventory("backpack") }
+                    .Where(inv => inv != null).SelectMany(inv => inv).Select(slot => slot?.Itemstack)
+                    .Where(stack => stack?.Collectible.Code.ToString() == "candela:candle-tallow").ToList();
+                Assert.True(tallow.Any(stack => CandleLook.Of(stack) == new CandleLook("red", "black")),
+                    "no black candles with red flames came out; tallow candles held: " + string.Join(", ", tallow.Select(stack => CandleLook.Of(stack).ToString())));
             }
             finally
             {
@@ -390,7 +415,7 @@ namespace Candela.Tests
         {
             var empty = (ItemCandleMould)Sapi.World.GetItem(new AssetLocation(Empty));
             await Hours(hoursAgo);   // nothing to wait for if zero
-            ItemStack filled = empty.Filled(Sapi.World, World.Stack(Empty, 1), wax);
+            ItemStack filled = empty.Filled(Sapi.World, World.Stack(Empty, 1), World.Stack($"candela:{wax}-molten", 1));
             filled.Attributes.SetDouble("candela:filledHours", Sapi.World.Calendar.TotalHours - hoursAgo);
 
             ItemSlot hand = Player.Me.InventoryManager.ActiveHotbarSlot;
@@ -428,13 +453,13 @@ namespace Candela.Tests
         /// <paramref name="code"/> set down on the ground the way a player does it -
         /// shift-right-click - filled <paramref name="hoursAgo"/> if it is a full one.
         /// </summary>
-        static async Task SetDown(string code, double hoursAgo = 0)
+        static async Task SetDown(string code, double hoursAgo = 0, string dye = null)
         {
             World.SetBlock("game:air", Ground);
             ItemStack stack = World.Stack(code, 1);
             if (stack.Collectible is ItemCandleMould { IsFilled: true } mould)
             {
-                stack = mould.Filled(Sapi.World, stack, mould.State);
+                stack = mould.Filled(Sapi.World, stack, WaxDyes.Stamp(World.Stack($"candela:{mould.State}-molten", 1), dye));
                 stack.Attributes.SetDouble("candela:filledHours", Sapi.World.Calendar.TotalHours - hoursAgo);
             }
             ItemSlot hand = Player.Me.InventoryManager.ActiveHotbarSlot;

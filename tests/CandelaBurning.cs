@@ -231,7 +231,7 @@ namespace Candela.Tests
             await World.TickNow(Bunch);
             await Hours(100);
 
-            be.AddCandle(BeeswaxHours, null);
+            be.AddCandle(BeeswaxHours, CandleLook.Plain);
             Sapi.World.BlockAccessor.ExchangeBlock(Sapi.World.GetBlock(new AssetLocation("game:bunchocandles-2")).BlockId, Bunch);
             await World.TickNow(Bunch);
 
@@ -269,11 +269,11 @@ namespace Candela.Tests
             var be = await PlaceBunch(3);
             var block = (BlockCandelaCandles)World.GetBlock(Bunch);
 
-            Assert.Equal("game:candle", block.CandleForHours(Sapi.World, BeeswaxHours, null)?.Collectible.Code.ToString());
-            Assert.Equal("candela:candlestub-beeswax-75", block.CandleForHours(Sapi.World, BeeswaxHours * 0.99, null)?.Collectible.Code.ToString());
-            Assert.Equal("candela:candlestub-beeswax-50", block.CandleForHours(Sapi.World, BeeswaxHours * 0.6, null)?.Collectible.Code.ToString());
-            Assert.Equal("candela:candlestub-beeswax-25", block.CandleForHours(Sapi.World, BeeswaxHours * 0.3, null)?.Collectible.Code.ToString());
-            Assert.Null(block.CandleForHours(Sapi.World, BeeswaxHours * 0.2, null));
+            Assert.Equal("game:candle", block.CandleForHours(Sapi.World, BeeswaxHours, CandleLook.Plain)?.Collectible.Code.ToString());
+            Assert.Equal("candela:candlestub-beeswax-75", block.CandleForHours(Sapi.World, BeeswaxHours * 0.99, CandleLook.Plain)?.Collectible.Code.ToString());
+            Assert.Equal("candela:candlestub-beeswax-50", block.CandleForHours(Sapi.World, BeeswaxHours * 0.6, CandleLook.Plain)?.Collectible.Code.ToString());
+            Assert.Equal("candela:candlestub-beeswax-25", block.CandleForHours(Sapi.World, BeeswaxHours * 0.3, CandleLook.Plain)?.Collectible.Code.ToString());
+            Assert.Null(block.CandleForHours(Sapi.World, BeeswaxHours * 0.2, CandleLook.Plain));
 
             await Burn(BeeswaxHours * 0.4);
             ItemStack[] drops = block.GetDrops(Sapi.World, Bunch, null);
@@ -391,7 +391,7 @@ namespace Candela.Tests
                 await Ticks(2);
                 var be = World.BE<BECandles>(pos);
                 double full = 9 * BeeswaxHours;
-                be.SetFuel(full * heights[i % 4] - 1, null);
+                be.SetFuel(full * heights[i % 4] - 1, CandleLook.Plain);
             }
             await Ticks(20);
             await Player.Teleport(new Vec3d(P(7, 3, 2).X + 0.5, P(7, 3, 2).Y, P(7, 3, 2).Z + 0.5));

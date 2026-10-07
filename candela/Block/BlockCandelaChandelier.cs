@@ -67,7 +67,7 @@ public class BlockCandelaChandelier : Block, ICandleHolder
         CandleWax.IsCandle(candle) && candle.Attributes["candela"]["wax"].AsString() == Wax;
 
     /// <summary>The chandelier with <paramref name="be"/>'s candles' flames in their colours, or null while all are plain.</summary>
-    public MeshData ColouredMesh(ITesselatorAPI tesselator, BECandles be) => coloured?.For(tesselator, be.Colours.ToArray());
+    public MeshData ColouredMesh(ITesselatorAPI tesselator, BECandles be) => coloured?.For(tesselator, be.FlameColoursOfCandles.ToArray());
 
     public override byte[] GetLightHsv(IBlockAccessor blockAccessor, BlockPos pos, ItemStack stack = null)
     {
@@ -97,7 +97,7 @@ public class BlockCandelaChandelier : Block, ICandleHolder
 
         if (add)
         {
-            be.AddCandle(CandleWax.HoursOf(held.Collectible) ?? 0, FlameColours.Of(held));
+            be.AddCandle(CandleWax.HoursOf(held.Collectible) ?? 0, CandleLook.Of(held));
             if (byPlayer.WorldData.CurrentGameMode != EnumGameMode.Creative) slot.TakeOut(1);
             slot.MarkDirty();
             world.BlockAccessor.ExchangeBlock(WithCandles(world, Quantity + 1).BlockId, pos);
@@ -105,8 +105,8 @@ public class BlockCandelaChandelier : Block, ICandleHolder
         }
         else if (take)
         {
-            double hours = be.TakeCandle(out string flameColour);
-            ItemStack candle = Kind(world)?.CandleForHours(world, hours, flameColour);
+            double hours = be.TakeCandle(out CandleLook look);
+            ItemStack candle = Kind(world)?.CandleForHours(world, hours, look);
             world.BlockAccessor.ExchangeBlock(WithCandles(world, Quantity - 1).BlockId, pos);
             if (candle != null && !byPlayer.InventoryManager.TryGiveItemstack(candle, slotNotifyEffect: true))
             {

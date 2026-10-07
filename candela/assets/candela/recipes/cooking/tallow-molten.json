@@ -8,6 +8,9 @@
 		// No comments between the recipes: the loader hands every element of this
 		// array to the recipe parser, a comment included, and the null that comes
 		// back aborts loading every cooking recipe in the game.
+		//
+		// Each also takes an optional dye - any of vanilla's, a tenth of a litre a serving
+		// - which colours the wax (WaxPotPatch stamps it on). A dye takes a pot slot.
 		code: "molten tallow1",
 		isFood: true,
 		perishableProps: {
@@ -25,6 +28,13 @@
 				minQuantity: 1,
 				maxQuantity: 1,
 				portionSizeLitres: 0.5
+			},
+			{
+				code: "dye",
+				validStacks: [ { type: "item", code: "game:dye-*" } ],
+				minQuantity: 0,
+				maxQuantity: 1,
+				portionSizeLitres: 0.1
 			}
 		],
 		cooksInto: { type: "item", code: "candela:tallow-molten", quantity: 2 }
@@ -47,6 +57,13 @@
 				minQuantity: 2,
 				maxQuantity: 2,
 				portionSizeLitres: 0.5
+			},
+			{
+				code: "dye",
+				validStacks: [ { type: "item", code: "game:dye-*" } ],
+				minQuantity: 0,
+				maxQuantity: 1,
+				portionSizeLitres: 0.1
 			}
 		],
 		cooksInto: { type: "item", code: "candela:tallow-molten", quantity: 4 }
@@ -69,6 +86,13 @@
 				minQuantity: 3,
 				maxQuantity: 3,
 				portionSizeLitres: 0.5
+			},
+			{
+				code: "dye",
+				validStacks: [ { type: "item", code: "game:dye-*" } ],
+				minQuantity: 0,
+				maxQuantity: 1,
+				portionSizeLitres: 0.1
 			}
 		],
 		cooksInto: { type: "item", code: "candela:tallow-molten", quantity: 6 }
@@ -91,6 +115,13 @@
 				minQuantity: 4,
 				maxQuantity: 4,
 				portionSizeLitres: 0.5
+			},
+			{
+				code: "dye",
+				validStacks: [ { type: "item", code: "game:dye-*" } ],
+				minQuantity: 0,
+				maxQuantity: 1,
+				portionSizeLitres: 0.1
 			}
 		],
 		cooksInto: { type: "item", code: "candela:tallow-molten", quantity: 8 }

@@ -77,8 +77,8 @@ namespace Candela.Tests
             await Ticks(2);
             var block = (BlockCandelaCandles)World.GetBlock(Bunch);
 
-            Assert.Equal("candela:candle-tallow", block.CandleForHours(Sapi.World, TallowHours, null)?.Collectible.Code.ToString());
-            Assert.Equal("candela:candlestub-tallow-50", block.CandleForHours(Sapi.World, TallowHours * 0.6, null)?.Collectible.Code.ToString());
+            Assert.Equal("candela:candle-tallow", block.CandleForHours(Sapi.World, TallowHours, CandleLook.Plain)?.Collectible.Code.ToString());
+            Assert.Equal("candela:candlestub-tallow-50", block.CandleForHours(Sapi.World, TallowHours * 0.6, CandleLook.Plain)?.Collectible.Code.ToString());
         }
 
         [VsTest(TimeoutMs = 60000), RequiresClient]

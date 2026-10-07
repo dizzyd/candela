@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Vintagestory.API.Common;
-using Vintagestory.API.Config;
 
 namespace candela;
 
@@ -68,10 +67,6 @@ public static class FlameColours
     /// <summary>The flame among crafting inputs - a treated wick, or something already carrying one.</summary>
     public static string FromInputs(ItemSlot[] slots) =>
         slots.Select(s => Of(s.Itemstack) ?? OfWick(s.Itemstack?.Collectible)).FirstOrDefault(f => f != null);
-
-    /// <summary>"Tallow candle (green flame)", from the name without.</summary>
-    public static string Name(ItemStack stack, string name) =>
-        Of(stack) is string flame ? Lang.Get("candela:with-flame", name, Lang.Get("candela:flame-" + flame)) : name;
 
     /// <summary>
     /// The flame a group of candles lights a room with: the commonest, plain ones

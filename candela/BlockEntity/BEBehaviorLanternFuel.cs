@@ -30,8 +30,8 @@ public class BEBehaviorLanternFuel : BlockEntityBehavior, IIgnitable
 
     public const string DefaultBunchCode = "game:bunchocandles";
 
-    /// <summary>The candle's flame colour, null for plain.</summary>
-    public string FlameColour { get; private set; }
+    /// <summary>How the candle looks: its flame colour and wax dye.</summary>
+    public CandleLook Look { get; private set; }
 
     public Flame Flame => flame;
 
@@ -60,7 +60,7 @@ public class BEBehaviorLanternFuel : BlockEntityBehavior, IIgnitable
 
         byte[] light = Relight.Capture(Blockentity);
         BunchCode = LanternStack.BunchCode(byItemStack);
-        FlameColour = LanternStack.FlameColour(byItemStack);
+        Look = CandleLook.Of(byItemStack);
         flame.SetFuel(LanternStack.Fuel(byItemStack), LanternStack.Snuffed(byItemStack));
         Changed(light);
     }
@@ -87,7 +87,7 @@ public class BEBehaviorLanternFuel : BlockEntityBehavior, IIgnitable
 
     /// <summary>The light the lantern gives, from what vanilla says it would.</summary>
     public byte[] LightHsv(byte[] full) =>
-        LanternStack.Adjust(Api.World, full, BunchCode, flame.Flaming, flame.Spent, FlameColour, (Blockentity as BELantern)?.glass);
+        LanternStack.Adjust(Api.World, full, BunchCode, flame.Flaming, flame.Spent, Look.Flame, (Blockentity as BELantern)?.glass);
 
     /// <summary>
     /// Puts <paramref name="slot"/>'s candle in, handing back what is left of the old
@@ -98,18 +98,18 @@ public class BEBehaviorLanternFuel : BlockEntityBehavior, IIgnitable
         CollectibleObject held = slot.Itemstack?.Collectible;
         if (CandleWax.HoursOf(held) is not double hours) return false;
         string bunchCode = CandleWax.BunchOf(held);
-        string flameColour = FlameColours.Of(slot.Itemstack);
+        CandleLook look = CandleLook.Of(slot.Itemstack);
 
         Settle();
         byte[] light = Relight.Capture(Blockentity);
-        ItemStack old = BlockCandelaCandles.KindOf(Api.World, BunchCode)?.CandleForHours(Api.World, flame.Fuel, FlameColour);
+        ItemStack old = BlockCandelaCandles.KindOf(Api.World, BunchCode)?.CandleForHours(Api.World, flame.Fuel, Look);
         if (old != null && !byPlayer.InventoryManager.TryGiveItemstack(old, slotNotifyEffect: true))
         {
             Api.World.SpawnItemEntity(old, Pos);
         }
 
         BunchCode = bunchCode;
-        FlameColour = flameColour;
+        Look = look;
         flame.SetFuel(hours);
         flame.TryIgnite(Api.World.Calendar.TotalHours);
 
@@ -140,7 +140,7 @@ public class BEBehaviorLanternFuel : BlockEntityBehavior, IIgnitable
     public void WriteTo(ItemStack stack)
     {
         Settle();
-        LanternStack.Write(stack, flame.Fuel, BunchCode, flame.Snuffed, FlameColour);
+        LanternStack.Write(stack, flame.Fuel, BunchCode, flame.Snuffed, Look);
     }
 
     /// <summary>State that affects the light has changed; <paramref name="lightBefore"/> is what it was.</summary>
@@ -164,20 +164,26 @@ public class BEBehaviorLanternFuel : BlockEntityBehavior, IIgnitable
         base.ToTreeAttributes(tree);
         flame.ToTreeAttributes(tree);
         tree.SetString("candela:candle", BunchCode);
-        if (FlameColour != null) tree.SetString(FlameColours.Attr, FlameColour);
-        else tree.RemoveAttribute(FlameColours.Attr);
+        SaveOrRemove(tree, FlameColours.Attr, Look.Flame);
+        SaveOrRemove(tree, WaxDyes.Attr, Look.Dye);
+    }
+
+    private static void SaveOrRemove(ITreeAttribute tree, string key, string value)
+    {
+        if (value != null) tree.SetString(key, value);
+        else tree.RemoveAttribute(key);
     }
 
     public override void FromTreeAttributes(ITreeAttribute tree, IWorldAccessor worldAccessForResolve)
     {
         base.FromTreeAttributes(tree, worldAccessForResolve);
         bool flamingBefore = flame.Flaming, spentBefore = flame.Spent;
-        string colourBefore = FlameColour;
+        CandleLook lookBefore = Look;
         byte[] lightBefore = Api != null && Blockentity.Block != null ? Relight.Capture(Blockentity) : null;
 
         flame.FromTreeAttributes(tree);
         BunchCode = tree.GetString("candela:candle", DefaultBunchCode);
-        FlameColour = FlameColours.Get(tree.GetString(FlameColours.Attr))?.Code;
+        Look = new CandleLook(FlameColours.Get(tree.GetString(FlameColours.Attr))?.Code, WaxDyes.Get(tree.GetString(WaxDyes.Attr)));
 
         if (Api?.Side == EnumAppSide.Client)
         {
@@ -187,7 +193,7 @@ public class BEBehaviorLanternFuel : BlockEntityBehavior, IIgnitable
 
         // State restored onto a running block entity - a schematic pasted - needs the
         // light recomputed; see BECandles.FromTreeAttributes.
-        if (lightBefore != null && (flame.Flaming != flamingBefore || flame.Spent != spentBefore || FlameColour != colourBefore))
+        if (lightBefore != null && (flame.Flaming != flamingBefore || flame.Spent != spentBefore || Look.Flame != lookBefore.Flame))
         {
             Blockentity.RegisterDelayedCallback(_ => Changed(lightBefore), 0);
         }
@@ -223,14 +229,15 @@ public static class LanternStack
 
     public static bool Snuffed(ItemStack stack) => stack.Attributes.GetBool(SnuffedKey);
 
-    public static string FlameColour(ItemStack stack) => FlameColours.Of(stack);
+    /// <summary>How the lantern's candle looks - on the lantern's stack, under the candle's own attributes.</summary>
+    public static CandleLook Look(ItemStack stack) => CandleLook.Of(stack);
 
-    public static void Write(ItemStack stack, double fuel, string bunchCode, bool snuffed, string flameColour)
+    public static void Write(ItemStack stack, double fuel, string bunchCode, bool snuffed, CandleLook look)
     {
         stack.Attributes.SetDouble(FuelKey, fuel);
         stack.Attributes.SetString(BunchCodeKey, bunchCode);
         stack.Attributes.SetBool(SnuffedKey, snuffed);
-        FlameColours.Stamp(stack, flameColour);
+        look.Stamp(stack);
     }
 
     /// <summary>

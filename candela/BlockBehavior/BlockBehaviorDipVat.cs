@@ -113,13 +113,14 @@ public class BlockBehaviorDipVat : BlockBehavior
         // client's view of the firepit as well as the server's.
         if (CannotWork(world, held, blockSel, out ItemSlot waxSlot, out int portions) != null) return;
 
-        string wax = ((ItemMoltenWax)waxSlot.Itemstack.Collectible).Wax;
+        // Read before taking: the last portion leaves the slot empty.
+        ItemStack molten = waxSlot.Itemstack.Clone();
         waxSlot.TakeOut(portions);
         waxSlot.MarkDirty();
         world.BlockAccessor.GetBlockEntity(blockSel.Position)?.MarkDirty(true);
 
         ItemSlot heldSlot = byPlayer.InventoryManager.ActiveHotbarSlot;
-        heldSlot.Itemstack = ((IWaxWorker)held.Collectible).Worked(world, held, wax);
+        heldSlot.Itemstack = ((IWaxWorker)held.Collectible).Worked(world, held, molten);
         heldSlot.MarkDirty();
 
         world.PlaySoundAt(new AssetLocation("game:sounds/effect/squish1"), blockSel.Position, 0, byPlayer);

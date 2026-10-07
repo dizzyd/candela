@@ -26,8 +26,8 @@ namespace candela;
 ///
 /// The burning itself is a <see cref="Flame"/>, shared with the lantern.
 ///
-/// Each candle keeps its own flame colour (<see cref="FlameColours"/>), in the order
-/// the candles went in, so a bunch or a chandelier can mix them. The last one in is
+/// Each candle keeps its own look - flame colour and wax dye (<see cref="CandleLook"/>) -
+/// in the order the candles went in, so a bunch or a chandelier can mix them. The last one in is
 /// the first taken off. Candles with no entry - a bunch from before colours, or one
 /// vanilla made - are plain.
 /// </summary>
@@ -36,14 +36,15 @@ public class BECandles : BlockEntity, IIgnitable
     private readonly Flame flame = new();
 
     // One entry a candle, empty for plain; left out altogether while all are plain.
-    private const string ColoursKey = "candela:flames";
+    private const string FlamesKey = "candela:flames";
+    private const string DyesKey = "candela:dyes";
 
     /// <summary>
-    /// Each candle's flame colour, null for plain, by the order they went in. Replaced
-    /// whole, never changed in place: the client's particle thread reads it while
-    /// state from the server is being applied.
+    /// Each candle's look, plain by default, by the order they went in. Replaced whole,
+    /// never changed in place: the client's particle thread reads it while state from
+    /// the server is being applied.
     /// </summary>
-    private string[] colours = [];
+    private CandleLook[] looks = [];
 
     /// <summary>Burn hours left across every candle in the bunch.</summary>
     public double Fuel => flame.Fuel;
@@ -60,15 +61,18 @@ public class BECandles : BlockEntity, IIgnitable
 
     public double FullHours => (Block as ICandleHolder)?.BurnHours ?? 48;
 
-    /// <summary>Candle <paramref name="index"/>'s flame colour, or null for plain.</summary>
-    public string ColourOf(int index)
+    /// <summary>Candle <paramref name="index"/>'s look, plain if it has none.</summary>
+    public CandleLook LookOf(int index)
     {
-        string[] current = colours;
-        return index >= 0 && index < current.Length ? current[index] : null;
+        CandleLook[] current = looks;
+        return index >= 0 && index < current.Length ? current[index] : CandleLook.Plain;
     }
 
+    /// <summary>Every candle's look.</summary>
+    public IEnumerable<CandleLook> Looks => Enumerable.Range(0, Quantity).Select(LookOf);
+
     /// <summary>Every candle's flame colour, null for plain.</summary>
-    public IEnumerable<string> Colours => Enumerable.Range(0, Quantity).Select(ColourOf);
+    public IEnumerable<string> FlameColoursOfCandles => Looks.Select(l => l.Flame);
 
     /// <summary>
     /// How tall the candles stand, as a fraction of new: quarters while there is fuel,
@@ -137,7 +141,7 @@ public class BECandles : BlockEntity, IIgnitable
     }
 
     /// <summary>The light this bunch gives, given what the block would give new and lit.</summary>
-    public byte[] LightHsv(byte[] full) => FlameColours.Tint(flame.LightHsv(full), FlameColours.Prevailing(Colours));
+    public byte[] LightHsv(byte[] full) => FlameColours.Tint(flame.LightHsv(full), FlameColours.Prevailing(FlameColoursOfCandles));
 
     public void Snuff()
     {
@@ -163,11 +167,11 @@ public class BECandles : BlockEntity, IIgnitable
     /// exchanging the block for one with one more candle, so the light update that
     /// exchange triggers sees them.
     /// </summary>
-    public void AddCandle(double hours, string flameColour)
+    public void AddCandle(double hours, CandleLook look)
     {
         Settle();
         flame.AddFuel(hours);
-        SetColours(Colours.Append(flameColour));
+        SetLooks(Looks.Append(look));
         Api.World.BlockAccessor.GetChunkAtBlockPos(Pos)?.MarkModified();
     }
 
@@ -175,28 +179,28 @@ public class BECandles : BlockEntity, IIgnitable
     /// Takes the last candle in: its share of the pool, returned, and its flame
     /// colour. Call before exchanging for one candle fewer.
     /// </summary>
-    public double TakeCandle(out string flameColour)
+    public double TakeCandle(out CandleLook look)
     {
         Settle();
-        flameColour = ColourOf(Quantity - 1);
-        SetColours(Colours.Take(Math.Max(0, Quantity - 1)));
+        look = LookOf(Quantity - 1);
+        SetLooks(Looks.Take(Math.Max(0, Quantity - 1)));
         return flame.TakeFuel(Fuel / Math.Max(1, Quantity));
     }
 
     /// <summary>
-    /// Sets the pool outright, all its candles burning <paramref name="flameColour"/> -
+    /// Sets the pool outright, all its candles looking <paramref name="look"/> -
     /// for a block just placed from a part-burned candle.
     /// </summary>
-    public void SetFuel(double hours, string flameColour)
+    public void SetFuel(double hours, CandleLook look)
     {
         Settle();
         byte[] light = Relight.Capture(this);
         flame.SetFuel(hours);
-        SetColours(Enumerable.Repeat(flameColour, Quantity));
+        SetLooks(Enumerable.Repeat(look, Quantity));
         Changed(light);
     }
 
-    private void SetColours(IEnumerable<string> next) => colours = next.ToArray();
+    private void SetLooks(IEnumerable<CandleLook> next) => looks = next.ToArray();
 
     public override void OnExchanged(Block block)
     {
@@ -239,16 +243,27 @@ public class BECandles : BlockEntity, IIgnitable
         base.GetBlockInfo(forPlayer, dsc);
         int count = Math.Max(1, Quantity);
         CandleInfo.Append(dsc, flame, flame.FuelAt(Api.World.Calendar.TotalHours, count) / count);
-        CandleInfo.AppendColours(dsc, Colours);
+        CandleInfo.AppendLooks(dsc, Looks.ToList());
     }
 
     public override void ToTreeAttributes(ITreeAttribute tree)
     {
         base.ToTreeAttributes(tree);
         flame.ToTreeAttributes(tree);
-        if (colours.Any(c => c != null)) tree.SetString(ColoursKey, string.Join(",", colours.Select(c => c ?? "")));
-        else tree.RemoveAttribute(ColoursKey);
+        // One entry a candle, empty for plain; each left out altogether while all are plain.
+        SaveList(tree, FlamesKey, looks.Select(l => l.Flame));
+        SaveList(tree, DyesKey, looks.Select(l => l.Dye));
     }
+
+    private static void SaveList(ITreeAttribute tree, string key, IEnumerable<string> entries)
+    {
+        string[] all = entries.ToArray();
+        if (all.Any(e => e != null)) tree.SetString(key, string.Join(",", all.Select(e => e ?? "")));
+        else tree.RemoveAttribute(key);
+    }
+
+    private static string[] LoadList(ITreeAttribute tree, string key) =>
+        tree.GetString(key) is string saved && saved.Length > 0 ? saved.Split(',') : [];
 
     public override void FromTreeAttributes(ITreeAttribute tree, IWorldAccessor worldAccessForResolve)
     {
@@ -256,18 +271,21 @@ public class BECandles : BlockEntity, IIgnitable
         float heightBefore = HeightFactor;
         bool flamingBefore = Flaming;
         bool spentBefore = Spent;
-        string lightColourBefore = FlameColours.Prevailing(Colours);
-        string candleColoursBefore = string.Join(",", Colours);
+        string lightColourBefore = FlameColours.Prevailing(FlameColoursOfCandles);
+        string looksBefore = string.Join(",", Looks);
         byte[] lightBefore = Api != null && Block != null ? Relight.Capture(this) : null;
 
         flame.FromTreeAttributes(tree);
-        string saved = tree.GetString(ColoursKey);
-        SetColours(string.IsNullOrEmpty(saved) ? [] : saved.Split(',').Select(c => FlameColours.Get(c)?.Code));
+        string[] flames = LoadList(tree, FlamesKey), dyes = LoadList(tree, DyesKey);
+        SetLooks(Enumerable.Range(0, Math.Max(flames.Length, dyes.Length)).Select(i => new CandleLook(
+            i < flames.Length ? FlameColours.Get(flames[i])?.Code : null,
+            i < dyes.Length ? WaxDyes.Get(dyes[i]) : null)));
 
         if (Api is ICoreClientAPI)
         {
-            // Redrawn for colours too: a chandelier's flames and a bunch's tips are in its mesh.
-            if (HeightFactor != heightBefore || Flaming != flamingBefore || string.Join(",", Colours) != candleColoursBefore) MarkDirty(true);
+            // Redrawn for looks too: a chandelier's flames, a bunch's tips and every
+            // candle's wax are in its mesh.
+            if (HeightFactor != heightBefore || Flaming != flamingBefore || string.Join(",", Looks) != looksBefore) MarkDirty(true);
             Relight.Synced(this, lightBefore);
             return;
         }
@@ -278,7 +296,7 @@ public class BECandles : BlockEntity, IIgnitable
         // full until something else changed. Deferred a tick rather than exchanging
         // the block from inside its own deserialisation. A coloured one was lit plain,
         // the same way.
-        if (lightBefore != null && (Flaming != flamingBefore || Spent != spentBefore || FlameColours.Prevailing(Colours) != lightColourBefore))
+        if (lightBefore != null && (Flaming != flamingBefore || Spent != spentBefore || FlameColours.Prevailing(FlameColoursOfCandles) != lightColourBefore))
         {
             RegisterDelayedCallback(_ => Changed(lightBefore), 0);
         }
@@ -310,12 +328,18 @@ public static class CandleInfo
         else dsc.AppendLine(Lang.Get(flame.Snuffed ? "candela:candles-snuffed" : "candela:candles-burning", Math.Max(1, (int)Math.Round(hoursPerCandle))));
     }
 
-    /// <summary>"Flames: 2 green, 1 plain", when any is coloured.</summary>
-    public static void AppendColours(StringBuilder dsc, IEnumerable<string> colours)
+    /// <summary>"Flames: 2 green, 1 plain" and "Wax: 1 black, 2 undyed", each when any is coloured.</summary>
+    public static void AppendLooks(StringBuilder dsc, IReadOnlyCollection<CandleLook> looks)
     {
-        var groups = colours.GroupBy(c => c).ToList();
+        AppendCounts(dsc, "candela:candles-flames", looks.Select(l => l.Flame), "candela:colour-", "plain");
+        AppendCounts(dsc, "candela:candles-dyes", looks.Select(l => l.Dye), "candela:dye-", "undyed");
+    }
+
+    private static void AppendCounts(StringBuilder dsc, string line, IEnumerable<string> entries, string prefix, string none)
+    {
+        var groups = entries.GroupBy(e => e).ToList();
         if (groups.All(g => g.Key == null)) return;
-        dsc.AppendLine(Lang.Get("candela:candles-flames",
-            string.Join(", ", groups.Select(g => Lang.Get("candela:candles-flames-count", g.Count(), Lang.Get("candela:colour-" + (g.Key ?? "plain")))))));
+        dsc.AppendLine(Lang.Get(line,
+            string.Join(", ", groups.Select(g => Lang.Get("candela:candles-flames-count", g.Count(), Lang.Get(prefix + (g.Key ?? none)))))));
     }
 }

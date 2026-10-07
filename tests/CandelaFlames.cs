@@ -102,7 +102,7 @@ namespace Candela.Tests
             Assert.Equal("green", FlameColours.Of(made.Itemstack));
 
             ItemStack rod = made.Itemstack;
-            for (int i = 0; i < ItemDippingRod.MaxLayers; i++) rod = ((ItemDippingRod)rod.Collectible).WithAnotherLayer(Sapi.World, rod);
+            for (int i = 0; i < ItemDippingRod.MaxLayers; i++) rod = ((ItemDippingRod)rod.Collectible).WithAnotherLayer(Sapi.World, rod, null);
             Assert.Equal("candela:dippingrod-6", rod.Collectible.Code.ToString());
             Assert.Equal("green", FlameColours.Of(rod), "a dip lost the colour");
 
@@ -167,7 +167,7 @@ namespace Candela.Tests
         {
             var be = await PlaceBunch("red");
             await AddCandle(be, "blue");
-            Assert.Equal("red,blue", Seq(be.Colours));
+            Assert.Equal("red,blue", Seq(be.FlameColoursOfCandles));
             Assert.Equal(7, BunchLight()[0], "a tie should light plain");
 
             await AddCandle(be, "blue");
@@ -175,7 +175,7 @@ namespace Candela.Tests
 
             await AddCandle(be, null);
             await AddCandle(be, null);
-            Assert.Equal("red,blue,blue,-,-", Seq(be.Colours));
+            Assert.Equal("red,blue,blue,-,-", Seq(be.FlameColoursOfCandles));
             Assert.Equal(7, BunchLight()[0], "two plain and two blue tie");
         }
 
@@ -349,12 +349,12 @@ namespace Candela.Tests
             var be = await PlaceBunch("red");
             await AddCandle(be, "violet");
 
-            double hours = be.TakeCandle(out string flame);
-            Assert.Equal("violet", flame);
+            double hours = be.TakeCandle(out CandleLook look);
+            Assert.Equal("violet", look.Flame);
             Assert.Close(hours, BeeswaxHours, 0.5);
             Sapi.World.BlockAccessor.ExchangeBlock(Sapi.World.GetBlock(new AssetLocation("game:bunchocandles-1")).BlockId, Bunch);
             await Ticks(2);
-            Assert.Equal("red", Seq(be.Colours));
+            Assert.Equal("red", Seq(be.FlameColoursOfCandles));
         }
 
         [VsTest]
@@ -424,7 +424,7 @@ namespace Candela.Tests
 
             saved.RemoveAttribute("candela:flames");
             be.FromTreeAttributes(saved, Sapi.World);
-            Assert.True(be.Colours.All(f => f == null), "an old save came back coloured");
+            Assert.True(be.FlameColoursOfCandles.All(f => f == null), "an old save came back coloured");
         }
 
         // ----- chandeliers -----
@@ -439,11 +439,11 @@ namespace Candela.Tests
             string[] rainbow = FlameColours.All.Select(c => c.Code).ToArray();
             for (int i = 0; i < rainbow.Length; i++)
             {
-                be.AddCandle(BeeswaxHours, rainbow[i]);
+                be.AddCandle(BeeswaxHours, Flame(rainbow[i]));
                 Sapi.World.BlockAccessor.ExchangeBlock(Sapi.World.GetBlock(new AssetLocation("game:chandelier-candle" + (i + 1))).BlockId, Chandelier);
                 await Ticks(1);
             }
-            Assert.Equal(string.Join(",", rainbow), Seq(be.Colours));
+            Assert.Equal(string.Join(",", rainbow), Seq(be.FlameColoursOfCandles));
             Assert.Equal(7, World.GetBlock(Chandelier).GetLightHsv(Sapi.World.BlockAccessor, Chandelier)[0], "one candle of each colour - a tie, so plain");
 
             ItemStack[] drops = World.GetBlock(Chandelier).GetDrops(Sapi.World, Chandelier, null);
@@ -456,7 +456,7 @@ namespace Candela.Tests
         public async Task ALanternBurnsItsCandlesColour()
         {
             var fuel = await PlaceLantern("red", glass: null);
-            Assert.Equal("red", fuel.FlameColour);
+            Assert.Equal("red", fuel.Look.Flame);
             Assert.Equal(0, LanternLight()[0]);
             Assert.Equal(CandelaConfig.Current.FlameLightSaturation, LanternLight()[1]);
         }
@@ -478,7 +478,7 @@ namespace Candela.Tests
 
             lantern.OnCreatedByCrafting(inputs, output, null);
 
-            Assert.Equal("violet", LanternStack.FlameColour(output.Itemstack));
+            Assert.Equal("violet", LanternStack.Look(output.Itemstack).Flame);
         }
 
         [VsTest]
@@ -486,7 +486,7 @@ namespace Candela.Tests
         {
             var fuel = await PlaceLantern("teal", glass: null);
             ItemStack picked = World.GetBlock(Lantern).OnPickBlock(Sapi.World, Lantern);
-            Assert.Equal("teal", LanternStack.FlameColour(picked));
+            Assert.Equal("teal", LanternStack.Look(picked).Flame);
         }
 
         // ----- with a player -----
@@ -503,12 +503,12 @@ namespace Candela.Tests
 
             await ShiftUse(Bunch);
             Assert.Equal("game:bunchocandles-2", World.BlockCode(Bunch));
-            Assert.Equal("red,green", Seq(be.Colours));
+            Assert.Equal("red,green", Seq(be.FlameColoursOfCandles));
 
             await EmptyHand();
             await Interact.UseBlock(Bunch);
             await Ticks(4);
-            Assert.Equal("red", Seq(be.Colours));
+            Assert.Equal("red", Seq(be.FlameColoursOfCandles));
             var taken = Player.Me.InventoryManager.Inventories.Values.SelectMany(inv => inv)
                 .Select(s => s.Itemstack).FirstOrDefault(s => s?.Collectible.Code.ToString() == "game:candle");
             Assert.Equal("green", FlameColours.Of(taken), "the candle taken off lost its colour");
@@ -525,17 +525,17 @@ namespace Candela.Tests
                 BlockPos at = P(3 + 2 * i, 1, 8);
                 World.SetBlock("game:bunchocandles-3", at);
                 await Ticks(2);
-                World.BE<BECandles>(at).SetFuel(3 * BeeswaxHours, rainbow[i]);
+                World.BE<BECandles>(at).SetFuel(3 * BeeswaxHours, Flame(rainbow[i]));
             }
             var mixed = P(8, 1, 11);
             World.SetBlock("game:bunchocandles-1", mixed);
             await Ticks(2);
             var be = World.BE<BECandles>(mixed);
-            be.SetFuel(BeeswaxHours, "red");
+            be.SetFuel(BeeswaxHours, Flame("red"));
             int n = 1;
             foreach (string flame in new[] { "yellow", "green", "teal", "blue", "violet", null })
             {
-                be.AddCandle(BeeswaxHours, flame);
+                be.AddCandle(BeeswaxHours, Flame(flame));
                 Sapi.World.BlockAccessor.ExchangeBlock(Sapi.World.GetBlock(new AssetLocation("game:bunchocandles-" + ++n)).BlockId, mixed);
             }
             // The client takes new blocks up for particles - the flames - on its rescan,
@@ -604,7 +604,7 @@ namespace Candela.Tests
             World.SetBlock("game:chandelier-candle0", chandelier);
             await Ticks(2);
             var be = World.BE<BECandles>(chandelier);
-            be.AddCandle(BeeswaxHours, null);
+            be.AddCandle(BeeswaxHours, CandleLook.Plain);
             Sapi.World.BlockAccessor.ExchangeBlock(Sapi.World.GetBlock(new AssetLocation("game:chandelier-candle1")).BlockId, chandelier);
             await Ticks(4);
 
@@ -612,15 +612,15 @@ namespace Candela.Tests
             Assert.Null(Drawn(chandelier), "an all-plain chandelier should be vanilla's mesh");
             await OnServer();
 
-            be.AddCandle(BeeswaxHours, "red");
+            be.AddCandle(BeeswaxHours, Flame("red"));
             Sapi.World.BlockAccessor.ExchangeBlock(Sapi.World.GetBlock(new AssetLocation("game:chandelier-candle2")).BlockId, chandelier);
             await PlaceLantern(lantern, "blue", glass: null);
 
             for (int i = 0; i < 100; i++)
             {
                 await OnClient();
-                bool synced = Capi.World.BlockAccessor.GetBlockEntity(chandelier) is BECandles client && Seq(client.Colours) == "-,red"
-                    && Capi.World.BlockAccessor.GetBlockEntity(lantern)?.GetBehavior<BEBehaviorLanternFuel>()?.FlameColour == "blue";
+                bool synced = Capi.World.BlockAccessor.GetBlockEntity(chandelier) is BECandles client && Seq(client.FlameColoursOfCandles) == "-,red"
+                    && Capi.World.BlockAccessor.GetBlockEntity(lantern)?.GetBehavior<BEBehaviorLanternFuel>()?.Look.Flame == "blue";
                 await OnServer();
                 if (synced) break;
                 await Ticks(1);
@@ -650,14 +650,14 @@ namespace Candela.Tests
             {
                 World.SetBlock(code, at);
                 await Ticks(2);
-                World.BE<BECandles>(at).SetFuel(2 * BeeswaxHours, at == plain ? null : "green");
+                World.BE<BECandles>(at).SetFuel(2 * BeeswaxHours, Flame(at == plain ? null : "green"));
             }
 
             for (int i = 0; i < 100; i++)
             {
                 await OnClient();
-                bool synced = Capi.World.BlockAccessor.GetBlockEntity(beeswax) is BECandles b && Seq(b.Colours) == "green,green"
-                    && Capi.World.BlockAccessor.GetBlockEntity(tallow) is BECandles t && Seq(t.Colours) == "green,green";
+                bool synced = Capi.World.BlockAccessor.GetBlockEntity(beeswax) is BECandles b && Seq(b.FlameColoursOfCandles) == "green,green"
+                    && Capi.World.BlockAccessor.GetBlockEntity(tallow) is BECandles t && Seq(t.FlameColoursOfCandles) == "green,green";
                 await OnServer();
                 if (synced) break;
                 await Ticks(1);
@@ -690,7 +690,7 @@ namespace Candela.Tests
                 stack.Attributes.SetString("lining", "plain");
                 stack.Attributes.SetString("glass", "quartz");
             }
-            LanternStack.Write(blue, BeeswaxHours, "game:bunchocandles", snuffed: false, "blue");
+            LanternStack.Write(blue, BeeswaxHours, "game:bunchocandles", snuffed: false, Flame("blue"));
 
             var source = (IContainedMeshSource)lantern;
             Assert.True(Samples(source.GenMesh(new DummySlot(blue), Capi.BlockTextureAtlas, null), "blue"), "a blue lantern on a shelf is not blue");
@@ -765,7 +765,7 @@ namespace Candela.Tests
             string[] candles = [.. rainbow, null, null];
             for (int i = 0; i < candles.Length; i++)
             {
-                be.AddCandle(BeeswaxHours, candles[i]);
+                be.AddCandle(BeeswaxHours, Flame(candles[i]));
                 Sapi.World.BlockAccessor.ExchangeBlock(Sapi.World.GetBlock(new AssetLocation("game:chandelier-candle" + (i + 1))).BlockId, chandelier);
             }
 
@@ -830,7 +830,7 @@ namespace Candela.Tests
             await Ticks(2);
             var be = World.BE<BECandles>(Bunch);
             Assert.NotNull(be, "the bunch has no block entity");
-            be.SetFuel(BeeswaxHours, flame);
+            be.SetFuel(BeeswaxHours, Flame(flame));
             await Ticks(2);
             return be;
         }
@@ -838,7 +838,7 @@ namespace Candela.Tests
         /// <summary>As CandlePlacement adds one: the candle into the pool, then the block exchanged for one more.</summary>
         static async Task AddCandle(BECandles be, string flame)
         {
-            be.AddCandle(BeeswaxHours, flame);
+            be.AddCandle(BeeswaxHours, Flame(flame));
             Sapi.World.BlockAccessor.ExchangeBlock(Sapi.World.GetBlock(new AssetLocation("game:bunchocandles-" + (be.Quantity + 1))).BlockId, Bunch);
             await Ticks(2);
         }
@@ -853,6 +853,9 @@ namespace Candela.Tests
         /// <summary>The grid recipe making <paramref name="output"/> from <paramref name="ingredient"/>.</summary>
         static IRecipeBase Recipe(string output, string ingredient) => Sapi.World.GridRecipes.First(r =>
             r.Output.ResolvedItemStack?.Collectible.Code.ToString() == output && (r.ResolvedIngredients ?? []).Any(i => i?.Code?.ToString() == ingredient));
+
+        /// <summary>A candle's look with only a flame colour.</summary>
+        static CandleLook Flame(string flame) => new(flame, null);
 
         /// <summary>"red,-,blue": the testkit's Equal compares sequences by reference.</summary>
         static string Seq(System.Collections.Generic.IEnumerable<string> colours) => string.Join(",", colours.Select(c => c ?? "-"));
@@ -869,7 +872,7 @@ namespace Candela.Tests
             if (glass != null) ((BELantern)be).DidPlace("copper", "plain", glass);
 
             ItemStack from = World.Stack(LanternCode, 1);
-            LanternStack.Write(from, BeeswaxHours, "game:bunchocandles", snuffed: false, flame);
+            LanternStack.Write(from, BeeswaxHours, "game:bunchocandles", snuffed: false, Flame(flame));
             foreach (var behavior in be.Behaviors) behavior.OnBlockPlaced(from);
             await Ticks(2);
             return be.GetBehavior<BEBehaviorLanternFuel>();

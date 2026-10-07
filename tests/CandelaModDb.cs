@@ -53,7 +53,7 @@ namespace Candela.Tests
             World.SetBlock("game:air", P(8, 2, 7));
             var mould = (ItemCandleMould)Sapi.World.GetItem(new AssetLocation("candela:candlemould-red-fired"));
             ItemSlot hand = Player.Me.InventoryManager.ActiveHotbarSlot;
-            hand.Itemstack = mould.Filled(Sapi.World, World.Stack("candela:candlemould-red-fired", 1), "tallow");
+            hand.Itemstack = mould.Filled(Sapi.World, World.Stack("candela:candlemould-red-fired", 1), World.Stack("candela:tallow-molten", 1));
             hand.MarkDirty();
             BlockPos o = P(0, 0, 0);
             await Player.Teleport(new Vec3d(o.X + 9.5, o.Y + 1, o.Z + 8.5));
@@ -123,13 +123,13 @@ namespace Candela.Tests
             World.SetBlock("game:barrel", P(Hi, 1, Lo + 3));
             await Ticks(5);
 
-            World.BE<BECandles>(P(7, 2, 7))?.SetFuel(3 * 216 * 0.45, null);
+            World.BE<BECandles>(P(7, 2, 7))?.SetFuel(3 * 216 * 0.45, CandleLook.Plain);
 
             ItemStack lantern = World.Stack("game:lantern-large-up", 1);
             lantern.Attributes.SetString("material", "copper");
             lantern.Attributes.SetString("lining", "plain");
             lantern.Attributes.SetString("glass", "quartz");
-            LanternStack.Write(lantern, 216, "candela:tallowcandles", snuffed: false, null);
+            LanternStack.Write(lantern, 216, "candela:tallowcandles", snuffed: false, CandleLook.Plain);
             World.BE<BlockEntity>(P(11, 2, 4)).OnBlockPlaced(lantern);
             World.BE<BlockEntity>(P(11, 2, 4)).MarkDirty(true);
             await Ticks(10);

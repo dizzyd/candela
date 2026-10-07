@@ -89,7 +89,7 @@ namespace Candela.Tests
             Log("shot: " + await Shot.Take("results/looks-tallow-pot.png"));
 
             var hotbar = Player.Me.InventoryManager.GetHotbarInventory();
-            hotbar[0].Itemstack = ((ItemDippingRod)Sapi.World.GetItem(new AssetLocation("candela:dippingrod-0"))).WithAnotherLayer(Sapi.World, null);
+            hotbar[0].Itemstack = ((ItemDippingRod)Sapi.World.GetItem(new AssetLocation("candela:dippingrod-0"))).WithAnotherLayer(Sapi.World, null, null);
             hotbar[0].MarkDirty();
             await OnClient();
             Capi.World.Player.InventoryManager.ActiveHotbarSlotNumber = 0;
@@ -263,7 +263,7 @@ namespace Candela.Tests
                 hotbar[i].MarkDirty();
             }
             var empty = (ItemCandleMould)Sapi.World.GetItem(new AssetLocation("candela:candlemould-blue-fired"));
-            hotbar[6].Itemstack = empty.Filled(Sapi.World, World.Stack("candela:candlemould-blue-fired", 1), "tallow");
+            hotbar[6].Itemstack = empty.Filled(Sapi.World, World.Stack("candela:candlemould-blue-fired", 1), World.Stack("candela:tallow-molten", 1));
             hotbar[6].MarkDirty();
             await OnClient();
             Capi.World.Player.InventoryManager.ActiveHotbarSlotNumber = 6;

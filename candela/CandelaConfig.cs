@@ -92,11 +92,22 @@ public class CandelaConfig
     [Range(0, 10000)]
     public double CatchUpCapHours = DefaultCatchUpCapHours;
 
+    /// <summary>
+    /// How strongly a coloured flame colours the light it gives, on the engine's 0-7
+    /// saturation scale. 4 is vanilla's coloured lantern glass; 0 lights the room as a
+    /// plain candle would, the flame itself still coloured.
+    /// </summary>
+    [Category("Lighting")]
+    [Description("How strongly a coloured flame colours the room's light: 0 not at all (the flame itself stays coloured), up to 7. 4 matches vanilla's coloured lantern glass. A light already burning takes a new value the next time it changes - lit, snuffed, or a candle added or taken.")]
+    [Range(0, 7)]
+    public int FlameLightSaturation = DefaultFlameLightSaturation;
+
     // Two months and one of a world with vanilla's nine-day months - in hours, so they
     // stay put on a world whose months are longer.
     private const double DefaultBeeswaxBurnHours = 432;
     private const double DefaultTallowBurnHours = 216;
     private const double DefaultCatchUpCapHours = 24;
+    private const int DefaultFlameLightSaturation = 4;
 
     /// <summary>
     /// What the rest of the mod reads. Starts as the defaults, so anything running
@@ -150,8 +161,8 @@ public class CandelaConfig
 
         if (isNew) api.Logger.Notification("[candela] Wrote default config to ModConfig/{0}", FileName);
 
-        api.Logger.Notification("[candela] Beeswax {0}h, tallow {1}h, BurnoutMode {2}, UnattendedMode {3}, CatchUpCapHours {4}, WeatherPutsOut {5}",
-            config.BeeswaxBurnHours, config.TallowBurnHours, config.BurnoutMode, config.UnattendedMode, config.CatchUpCapHours, config.WeatherPutsOut);
+        api.Logger.Notification("[candela] Beeswax {0}h, tallow {1}h, BurnoutMode {2}, UnattendedMode {3}, CatchUpCapHours {4}, WeatherPutsOut {5}, FlameLightSaturation {6}",
+            config.BeeswaxBurnHours, config.TallowBurnHours, config.BurnoutMode, config.UnattendedMode, config.CatchUpCapHours, config.WeatherPutsOut, config.FlameLightSaturation);
 
         Current.AssignFrom(config);
     }
@@ -185,6 +196,14 @@ public class CandelaConfig
         {
             api.Logger.Warning("[candela] CatchUpCapHours {0} is not usable, using the default {1}", CatchUpCapHours, DefaultCatchUpCapHours);
             CatchUpCapHours = DefaultCatchUpCapHours;
+        }
+
+        // The engine has eight saturation levels; anything past them would index off the end.
+        if (FlameLightSaturation is < 0 or > 7)
+        {
+            int clamped = Math.Clamp(FlameLightSaturation, 0, 7);
+            api.Logger.Warning("[candela] FlameLightSaturation {0} is outside 0-7, using {1}", FlameLightSaturation, clamped);
+            FlameLightSaturation = clamped;
         }
     }
 

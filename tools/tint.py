@@ -82,6 +82,7 @@ def turn(src, dest, hue):
 # The flame colours of FlameColours.cs, as a stain on the fibres.
 WICKS = {
     "red":    (200, 40, 30),
+    "yellow": (220, 195, 40),
     "green":  (60, 190, 50),
     "teal":   (40, 170, 160),
     "blue":   (50, 80, 210),
@@ -91,6 +92,7 @@ WICKS = {
 # FlameColours.cs's particle hues, 0-255, so the model's flames match the particles'.
 FLAMES = {
     "red":    4,
+    "yellow": 44,
     "green":  80,
     "teal":   120,
     "blue":   165,

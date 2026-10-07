@@ -36,7 +36,7 @@ namespace Candela.Tests
         [VsTest]
         public void WicksAndVerdigrisLoad()
         {
-            foreach (string flame in new[] { "red", "green", "teal", "blue", "violet" })
+            foreach (string flame in FlameColours.All.Select(c => c.Code))
             {
                 var wick = Sapi.World.GetItem(new AssetLocation("candela:wick-" + flame));
                 Assert.NotNull(wick, "wick-" + flame);
@@ -44,6 +44,40 @@ namespace Candela.Tests
                 Assert.True(Sapi.World.GridRecipes.Any(r => r.Output.ResolvedItemStack?.Collectible == wick), "no recipe for wick-" + flame);
             }
             Assert.NotNull(Sapi.World.GetItem(new AssetLocation("candela:powder-verdigris")));
+        }
+
+        /// <summary>
+        /// Every block that draws flames in its model declares every colour's flame
+        /// texture: a block missing one would draw that colour's flame untextured. The
+        /// list of places is in FlameColours. On the client: the server keeps no
+        /// textures.
+        /// </summary>
+        [VsTest, RequiresClient]
+        public async Task EveryFlameBlockHasEveryColoursTexture()
+        {
+            await OnClient();
+            string[] blocks = { "game:bunchocandles-*", "game:candle", "candela:tallowcandles-*", "candela:tallowcandle", "game:chandelier-*", "game:lantern-*" };
+            foreach (string pattern in blocks)
+            {
+                Block[] found = Capi.World.SearchBlocks(new AssetLocation(pattern));
+                Assert.True(found.Length > 0, "no blocks for " + pattern);
+                foreach (Block block in found)
+                foreach (FlameColours.Colour colour in FlameColours.All)
+                {
+                    Assert.True(block.Textures?.ContainsKey(FlameMeshes.TextureCode(colour.Code)) == true, $"{block.Code} does not declare the {colour.Code} flame");
+                }
+            }
+            await OnServer();
+        }
+
+        [VsTest]
+        public void EveryColourHasItsTextures()
+        {
+            foreach (FlameColours.Colour colour in FlameColours.All)
+            {
+                Assert.True(Sapi.Assets.Exists(new AssetLocation($"candela:textures/block/flame-{colour.Code}.png")), $"no flame-{colour.Code} texture");
+                Assert.True(Sapi.Assets.Exists(new AssetLocation($"candela:textures/item/wick-{colour.Code}.png")), $"no wick-{colour.Code} texture");
+            }
         }
 
         [VsTest]
@@ -104,7 +138,7 @@ namespace Candela.Tests
         {
             var be = await PlaceBunch("blue");
             Assert.Equal(42, BunchLight()[0], "blue's hue");
-            Assert.Equal(FlameColours.LightSaturation, BunchLight()[1]);
+            Assert.Equal(CandelaConfig.Current.FlameLightSaturation, BunchLight()[1]);
             Assert.Equal(7, BunchLight()[2], "brightness is the bunch's own");
         }
 
@@ -112,6 +146,22 @@ namespace Candela.Tests
         /// One light for the bunch: the colour most of them burn, plain on a tie - a red
         /// and a blue do not pick one at random.
         /// </summary>
+        /// <summary>How strongly the light is coloured is a setting: 7 the most, 0 lights plain.</summary>
+        [VsTest]
+        public async Task TheLightsSaturationIsASetting()
+        {
+            await PlaceBunch("blue");
+            byte[] plain = Sapi.World.GetBlock(new AssetLocation("game:bunchocandles-1")).LightHsv;
+
+            CandelaConfig.Current.FlameLightSaturation = 7;
+            Assert.Equal(7, BunchLight()[1]);
+            Assert.Equal(42, BunchLight()[0], "still blue");
+
+            CandelaConfig.Current.FlameLightSaturation = 0;
+            Assert.Equal(plain[0], BunchLight()[0], "0 lights plain: the hue");
+            Assert.Equal(plain[1], BunchLight()[1], "0 lights plain: the saturation");
+        }
+
         [VsTest]
         public async Task MixedBunchesTakeTheCommonestColour()
         {
@@ -158,7 +208,7 @@ namespace Candela.Tests
         [VsTest]
         public void EachChandelierCandleHasItsOwnFlame()
         {
-            string[] rainbow = { "red", "green", "teal", "blue", "violet" };
+            string[] rainbow = FlameColours.All.Select(c => c.Code).ToArray();
             for (int n = 1; n <= 8; n++)
             {
                 Shape shape = Shape.TryGet(Sapi, $"game:shapes/block/metal/chandelier/candle{n}.json");
@@ -175,7 +225,7 @@ namespace Candela.Tests
         [VsTest]
         public void EveryBunchCandleHasItsOwnTip()
         {
-            string[] rainbow = { "red", "green", "teal", "blue", "violet" };
+            string[] rainbow = FlameColours.All.Select(c => c.Code).ToArray();
             Shape bunch = Shape.TryGet(Sapi, "game:shapes/block/wax/bunch.json");
             string expected = string.Join(",", Enumerable.Range(0, 9).Select(i => rainbow[i % rainbow.Length]));
             Assert.Equal(expected, string.Join(",", PaintedFlames(FlameMeshes.Recoloured(bunch, i => rainbow[i % rainbow.Length]))));
@@ -266,7 +316,7 @@ namespace Candela.Tests
         {
             byte[] plain = World.GetBlock(pos).LightHsv;
             FlameColours.Colour colour = FlameColours.Get(flame);
-            int hue = colour?.LightHue ?? plain[0], sat = colour != null ? FlameColours.LightSaturation : plain[1];
+            int hue = colour?.LightHue ?? plain[0], sat = colour != null ? CandelaConfig.Current.FlameLightSaturation : plain[1];
 
             (int hue, int sat) seen = default;
             for (int i = 0; i < 40; i++)
@@ -386,7 +436,7 @@ namespace Candela.Tests
             World.SetBlock("game:chandelier-candle0", Chandelier);
             await Ticks(2);
             var be = CandleHolders.EnsureBlockEntity(Sapi.World, Chandelier, "CandelaCandles");
-            string[] rainbow = { "red", "green", "teal", "blue", "violet" };
+            string[] rainbow = FlameColours.All.Select(c => c.Code).ToArray();
             for (int i = 0; i < rainbow.Length; i++)
             {
                 be.AddCandle(BeeswaxHours, rainbow[i]);
@@ -394,7 +444,7 @@ namespace Candela.Tests
                 await Ticks(1);
             }
             Assert.Equal(string.Join(",", rainbow), Seq(be.Colours));
-            Assert.Equal(7, World.GetBlock(Chandelier).GetLightHsv(Sapi.World.BlockAccessor, Chandelier)[0], "five colours, one each - plain");
+            Assert.Equal(7, World.GetBlock(Chandelier).GetLightHsv(Sapi.World.BlockAccessor, Chandelier)[0], "one candle of each colour - a tie, so plain");
 
             ItemStack[] drops = World.GetBlock(Chandelier).GetDrops(Sapi.World, Chandelier, null);
             Assert.Equal(string.Join(",", rainbow), Seq(drops.Skip(1).Select(FlameColours.Of)));
@@ -408,7 +458,7 @@ namespace Candela.Tests
             var fuel = await PlaceLantern("red", glass: null);
             Assert.Equal("red", fuel.FlameColour);
             Assert.Equal(0, LanternLight()[0]);
-            Assert.Equal(FlameColours.LightSaturation, LanternLight()[1]);
+            Assert.Equal(CandelaConfig.Current.FlameLightSaturation, LanternLight()[1]);
         }
 
         /// <summary>Coloured glass colours the light whatever the candle burns.</summary>
@@ -469,10 +519,10 @@ namespace Candela.Tests
         public async Task ColouredFlamesForTheEye()
         {
             await DarkRoom();
-            string[] rainbow = { "red", "green", "teal", "blue", "violet" };
+            string[] rainbow = FlameColours.All.Select(c => c.Code).ToArray();
             for (int i = 0; i < rainbow.Length; i++)
             {
-                BlockPos at = P(4 + 2 * i, 1, 8);
+                BlockPos at = P(3 + 2 * i, 1, 8);
                 World.SetBlock("game:bunchocandles-3", at);
                 await Ticks(2);
                 World.BE<BECandles>(at).SetFuel(3 * BeeswaxHours, rainbow[i]);
@@ -483,7 +533,7 @@ namespace Candela.Tests
             var be = World.BE<BECandles>(mixed);
             be.SetFuel(BeeswaxHours, "red");
             int n = 1;
-            foreach (string flame in new[] { "green", "teal", "blue", "violet", null })
+            foreach (string flame in new[] { "yellow", "green", "teal", "blue", "violet", null })
             {
                 be.AddCandle(BeeswaxHours, flame);
                 Sapi.World.BlockAccessor.ExchangeBlock(Sapi.World.GetBlock(new AssetLocation("game:bunchocandles-" + ++n)).BlockId, mixed);
@@ -523,7 +573,7 @@ namespace Candela.Tests
                 // flicker, and a still catches some candles between flames.
                 for (int i = 0; i < rainbow.Length; i++)
                 {
-                    BlockPos at = P(4 + 2 * i, 1, 8);
+                    BlockPos at = P(3 + 2 * i, 1, 8);
                     await Player.Teleport(at.ToVec3d().Add(0.5, -0.6, -0.7));
                     await Interact.LookAt(at);
                     for (int f = 0; f < 2; f++)
@@ -704,15 +754,15 @@ namespace Candela.Tests
         public async Task ColouredModelFlamesForTheEye()
         {
             await DarkRoom();
-            string[] rainbow = { "red", "green", "teal", "blue", "violet" };
+            string[] rainbow = FlameColours.All.Select(c => c.Code).ToArray();
 
             // Stood on the floor, where its flames can be seen at eye level: every candle a
-            // different colour, the last three plain.
+            // different colour, the last two plain.
             BlockPos chandelier = P(4, 1, 8);
             World.SetBlock("game:chandelier-candle0", chandelier);
             await Ticks(2);
             var be = World.BE<BECandles>(chandelier);
-            string[] candles = [.. rainbow, null, null, null];
+            string[] candles = [.. rainbow, null, null];
             for (int i = 0; i < candles.Length; i++)
             {
                 be.AddCandle(BeeswaxHours, candles[i]);

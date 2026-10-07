@@ -3,10 +3,11 @@
 	// The colour goes with the wick rather than the wax: see FlameColours.cs.
 	code: "wick",
 	variantgroups: [
-		{ code: "flame", states: ["red", "green", "teal", "blue", "violet"] }
+		{ code: "flame", states: ["red", "yellow", "green", "teal", "blue", "violet"] }
 	],
 	attributesByType: {
 		"*-red":    { candela: { flame: "red" } },
+		"*-yellow": { candela: { flame: "yellow" } },
 		"*-green":  { candela: { flame: "green" } },
 		"*-teal":   { candela: { flame: "teal" } },
 		"*-blue":   { candela: { flame: "blue" } },

@@ -34,6 +34,15 @@ burns forever. Candela adds the candles people actually made and gives light a c
 - **Chandeliers burn too** - their candles are one pool like a bunch's, beeswax
   whole or stub as in vanilla, and can now be taken out again, which is how spent
   ones are cleared. One that falls lands with the candles it had
+- **Coloured flames** - four flax fibres and a mineral powder make four treated
+  wicks: cinnabar burns red, sulfur yellow, borax green, verdigris teal, lapis lazuli
+  blue and sylvite violet. Verdigris is new: grind a malachite nugget in a quern.
+  Dip a rod or fill a mould with treated wicks and the candles burn that colour -
+  the flames, the tips of the candles, and the light they cast. A bunch or a
+  chandelier can mix colours, a flame of its own to each candle; the room takes the
+  colour most of them burn, and a tie lights it plain. Lanterns burn their candle's
+  colour unless the glass is coloured, which wins. The colour is in the wick, so
+  stubs melt back into plain wax
 - Candles and lanterns placed before Candela was installed carry on as vanilla
   until first touched (candles) or loaded (lanterns), when they start out new
 
@@ -54,9 +63,12 @@ synced to its players; without it, each side reads its own file.
 | `UnattendedMode` | `LoadedOnly` | `LoadedOnly` - burns only while its chunk is loaded; `CappedCatchUp` - catches up unloaded time, up to `CatchUpCapHours`; `Always` - catches up all of it |
 | `CatchUpCapHours` | `24` | in-game hours |
 | `WeatherPutsOut` | `true` | rain and strong wind put out candles and chandeliers open to the sky |
+| `FlameLightSaturation` | `4` | how strongly a coloured flame colours the light, `0`-`7`: `4` matches vanilla's coloured lantern glass, `0` lights the room plain (the flame stays coloured) |
 
 A changed burn time applies to candles placed and lanterns crafted after the
-change; a candle already burning keeps the hours it was given.
+change; a candle already burning keeps the hours it was given. A changed
+`FlameLightSaturation` reaches a light already burning the next time it changes -
+lit, snuffed, or a candle added or taken.
 
 ## Building
 

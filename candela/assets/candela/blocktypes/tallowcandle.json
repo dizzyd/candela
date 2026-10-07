@@ -13,6 +13,7 @@
 		"candle": { base: "candela:block/candle-tallow" },
 		// The coloured tips FlameMeshes draws in place of the orange.
 		"candela-flame-red": { base: "candela:block/flame-red" },
+		"candela-flame-yellow": { base: "candela:block/flame-yellow" },
 		"candela-flame-green": { base: "candela:block/flame-green" },
 		"candela-flame-teal": { base: "candela:block/flame-teal" },
 		"candela-flame-blue": { base: "candela:block/flame-blue" },

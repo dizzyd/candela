@@ -20,13 +20,7 @@ public static class FlameColours
 {
     public const string Attr = "candela:flame";
 
-    /// <summary>
-    /// Light saturation for a coloured flame: vanilla's coloured lantern glass's, so a
-    /// green candle and green glass light a room alike.
-    /// </summary>
-    public const byte LightSaturation = 4;
-
-    /// <param name="LightHue">On the engine's 0-63 light scale; red, green, blue and violet are BELantern.setLightColor's glass hues.</param>
+    /// <param name="LightHue">On the engine's 0-63 light scale; red, yellow, green, blue and violet are BELantern.setLightColor's glass hues.</param>
     /// <param name="ParticleHue">On the 0-255 scale particle colours use, matching the light's.</param>
     public record Colour(string Code, byte LightHue, byte ParticleHue);
 
@@ -39,11 +33,15 @@ public static class FlameColours
     private static readonly Dictionary<string, Colour> byCode = new Colour[]
     {
         new("red", 0, 4),
+        new("yellow", 11, 44),
         new("green", 20, 80),
         new("teal", 30, 120),
         new("blue", 42, 165),
         new("violet", 48, 195),
     }.ToDictionary(c => c.Code);
+
+    /// <summary>Every colour, red to violet.</summary>
+    public static IEnumerable<Colour> All => byCode.Values;
 
     public static Colour Get(string code) => code != null && byCode.TryGetValue(code, out Colour c) ? c : null;
 
@@ -89,12 +87,14 @@ public static class FlameColours
 
     /// <summary>
     /// <paramref name="light"/> in <paramref name="flame"/>'s colour, its brightness kept,
-    /// as a new array - or <paramref name="light"/> itself, when it is plain or dark.
-    /// That is often a block's own LightHsv, so never change what comes back.
+    /// at the configured <see cref="CandelaConfig.FlameLightSaturation"/> - as a new
+    /// array, or <paramref name="light"/> itself when it is plain, dark, or the setting
+    /// is 0. That is often a block's own LightHsv, so never change what comes back.
     /// </summary>
     public static byte[] Tint(byte[] light, string flame)
     {
-        if (Get(flame) is not Colour colour || light[2] == 0) return light;
-        return [colour.LightHue, LightSaturation, light[2]];
+        int saturation = CandelaConfig.Current.FlameLightSaturation;
+        if (Get(flame) is not Colour colour || light[2] == 0 || saturation <= 0) return light;
+        return [colour.LightHue, (byte)saturation, light[2]];
     }
 }

@@ -31,8 +31,10 @@ public class CandelaModSystem : ModSystem
         api.RegisterBlockClass("CandelaChandelier", typeof(BlockCandelaChandelier));
         api.RegisterBlockClass("CandelaLantern", typeof(BlockCandelaLantern));
         api.RegisterBlockEntityBehaviorClass("CandelaLanternFuel", typeof(BEBehaviorLanternFuel));
+        api.RegisterBlockEntityBehaviorClass(BEBehaviorTorchHolderTime.Name, typeof(BEBehaviorTorchHolderTime));
 
         RegisterWithConfigKit(api);
+        TorchTime.Bind(api);
         WaxPotPatch.Install(api);
     }
 
@@ -40,7 +42,9 @@ public class CandelaModSystem : ModSystem
     {
         base.AssetsFinalize(api);
 
-        if (api.Side == EnumAppSide.Server) BlockBehaviorDipVat.AddToFirepits(api);
+        if (api.Side != EnumAppSide.Server) return;
+        BlockBehaviorDipVat.AddToFirepits(api);
+        TorchTime.AddToTorchHolders(api);
     }
 
     public override void Dispose()

@@ -259,16 +259,17 @@ public class BlockCandelaCandles : BlockBunchOCandles, ICandleHolder
 
     /// <summary>
     /// The candle a share of <paramref name="hours"/> comes back as, burning
-    /// <paramref name="look"/>: a whole one only if it is untouched, otherwise the
-    /// largest stub it still fills. Rounded down, so taking candles off and putting
-    /// them back never makes wax.
+    /// <paramref name="look"/>: a whole one if it has burned less than
+    /// <see cref="PartBurned"/>'s grace, otherwise the largest stub it still fills.
+    /// Rounded down after that grace, so taking candles off and putting them back gains
+    /// at most the grace each time.
     /// </summary>
     public ItemStack CandleForHours(IWorldAccessor world, double hours, CandleLook look)
     {
         if (BurnHours <= 0) return null;
-        double fraction = hours / BurnHours;
+        double fraction = PartBurned.Fraction(hours, BurnHours);
 
-        if (fraction >= 0.999) return Candle(candleCode);
+        if (fraction >= 1) return Candle(candleCode);
         if (stubPrefix == null) return null;
 
         foreach (int quarter in new[] { 75, 50, 25 })

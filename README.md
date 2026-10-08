@@ -18,7 +18,9 @@ burns forever. Candela adds the candles people actually made and gives light a c
   melt back into their own wax, a portion a stub
 - **Burn-down** - vanilla's beeswax candles burn for 432 game hours each (two months), shrinking
   in quarters as they go. A part-burned candle taken off a bunch comes back as a
-  stub carrying the hours it has left (rounded down)
+  stub carrying the hours it has left (rounded down). One picked straight back up -
+  within the hour, or a tenth of its burn time if that is shorter - comes back as it
+  went down, so a misplaced candle costs nothing
 - **Snuffing** - shift-right-click a bunch with a free hand to put it out and save
   it; light it again with a lit torch or a firestarter. A lit candle can light a torch
 - **Weather** - rain, and now and then a strong wind, puts out candles and
@@ -48,11 +50,17 @@ burns forever. Candela adds the candles people actually made and gives light a c
   included; a dipped candle is the colour of its last coat. Dyed wax and treated
   wicks go together - black candles with red flames. Stubs melt back undyed, and can
   be dyed again in the same cook
+- **Torches keep their time** - vanilla's torches already burn down once placed, but
+  picking one up gave back a new one. Now a lit torch comes back with what was left
+  of it, rounded down to the quarter like a stub - under a quarter, nothing - and
+  places again to burn only that. One picked straight back up, within the hour, comes
+  back as it went down, as a candle does. Torches with as much left stack together. A torch
+  holder gives back the torch it was given rather than a new one; it still does not
+  burn it. A torch in hand or on the ground does not burn, as in vanilla
 - Candles and lanterns placed before Candela was installed carry on as vanilla
   until first touched (candles) or loaded (lanterns), when they start out new
 
-Oil lamps are left to [Immersive Lighting](https://mods.vintagestory.at/techyimmersivelighting),
-and torches to vanilla.
+Oil lamps are left to [Immersive Lighting](https://mods.vintagestory.at/techyimmersivelighting).
 
 ## Configuration
 
@@ -69,6 +77,7 @@ synced to its players; without it, each side reads its own file.
 | `CatchUpCapHours` | `24` | in-game hours |
 | `WeatherPutsOut` | `true` | rain and strong wind put out candles and chandeliers open to the sky |
 | `FlameLightSaturation` | `4` | how strongly a coloured flame colours the light, `0`-`7`: `4` matches vanilla's coloured lantern glass, `0` lights the room plain (the flame stays coloured) |
+| `TorchesKeepTheirTime` | `true` | a lit torch picked up, or taken out of a holder, keeps what was left of it; `false` - every one comes back new, as in vanilla |
 
 A changed burn time applies to candles placed and lanterns crafted after the
 change; a candle already burning keeps the hours it was given. A changed

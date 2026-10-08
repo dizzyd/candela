@@ -282,6 +282,39 @@ namespace Candela.Tests
             Assert.Equal(3, drops[0].StackSize);
         }
 
+        /// <summary>A candle put down by mistake and picked straight back up comes back as it went down.</summary>
+        [VsTest]
+        public async Task ACandlePickedStraightBackUpIsWhole()
+        {
+            await PlaceBunch(1);
+            await World.TickNow(Bunch);
+            await Hours(0.5);
+
+            Assert.Equal("game:candle", World.GetBlock(Bunch).GetDrops(Sapi.World, Bunch, null).Single().Collectible.Code.ToString());
+        }
+
+        [VsTest]
+        public async Task AStubGetsTheSameGrace()
+        {
+            await PlaceBunch(1);
+            var block = (BlockCandelaCandles)World.GetBlock(Bunch);
+
+            Assert.Equal("candela:candlestub-beeswax-75", block.CandleForHours(Sapi.World, BeeswaxHours * 0.75 - 0.5, CandleLook.Plain)?.Collectible.Code.ToString());
+            Assert.Equal("candela:candlestub-beeswax-50", block.CandleForHours(Sapi.World, BeeswaxHours * 0.75 - 1.5, CandleLook.Plain)?.Collectible.Code.ToString());
+        }
+
+        [VsTest]
+        public async Task ACandleThatBurnsBrieflyGetsATenthOfItsTime()
+        {
+            await PlaceBunch(1);
+            var block = (BlockCandelaCandles)World.GetBlock(Bunch);
+
+            // Burning four hours, a tenth of that is all the grace there is.
+            CandelaConfig.Current.BeeswaxBurnHours = 4;
+            Assert.Equal("game:candle", block.CandleForHours(Sapi.World, 3.7, CandleLook.Plain)?.Collectible.Code.ToString());
+            Assert.Equal("candela:candlestub-beeswax-75", block.CandleForHours(Sapi.World, 3.5, CandleLook.Plain)?.Collectible.Code.ToString());
+        }
+
         /// <summary>
         /// A bunch placed before Candela was installed has no block entity. It gets one,
         /// new and full, the first time it is needed.

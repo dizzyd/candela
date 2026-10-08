@@ -102,6 +102,10 @@ public class CandelaConfig
     [Range(0, 7)]
     public int FlameLightSaturation = DefaultFlameLightSaturation;
 
+    [Category("Torches")]
+    [Description("Whether a lit torch keeps what is left of it when picked up, or taken out of a torch holder, rounded down to the quarter. Off, every torch picked up is new again, as in vanilla.")]
+    public bool TorchesKeepTheirTime = true;
+
     // Two months and one of a world with vanilla's nine-day months - in hours, so they
     // stay put on a world whose months are longer.
     private const double DefaultBeeswaxBurnHours = 432;
@@ -161,8 +165,8 @@ public class CandelaConfig
 
         if (isNew) api.Logger.Notification("[candela] Wrote default config to ModConfig/{0}", FileName);
 
-        api.Logger.Notification("[candela] Beeswax {0}h, tallow {1}h, BurnoutMode {2}, UnattendedMode {3}, CatchUpCapHours {4}, WeatherPutsOut {5}, FlameLightSaturation {6}",
-            config.BeeswaxBurnHours, config.TallowBurnHours, config.BurnoutMode, config.UnattendedMode, config.CatchUpCapHours, config.WeatherPutsOut, config.FlameLightSaturation);
+        api.Logger.Notification("[candela] Beeswax {0}h, tallow {1}h, BurnoutMode {2}, UnattendedMode {3}, CatchUpCapHours {4}, WeatherPutsOut {5}, FlameLightSaturation {6}, TorchesKeepTheirTime {7}",
+            config.BeeswaxBurnHours, config.TallowBurnHours, config.BurnoutMode, config.UnattendedMode, config.CatchUpCapHours, config.WeatherPutsOut, config.FlameLightSaturation, config.TorchesKeepTheirTime);
 
         Current.AssignFrom(config);
     }

@@ -19,10 +19,11 @@ namespace candela;
 /// all stay vanilla's. What it adds reads the candle from the lantern block entity's
 /// <see cref="BEBehaviorLanternFuel"/>, or from the item's attributes while it is an
 /// item: the light, the candle a crafted lantern starts with, carrying the candle
-/// through being picked up, and the interactions to refuel, snuff and light it.
+/// through being picked up, and the interactions to refuel, snuff and light it - and,
+/// with an oil burner in the candle's place, to fill it, empty it and turn its wick.
 ///
-/// Its candle and flame are part of the model, so a dyed or coloured candle gets a
-/// copy of it in its look (<see cref="CandleMeshes"/>): placed, through <see cref="LanternFlamePatch"/>;
+/// Its candle and flame are part of the model, so a dyed or coloured candle, or a
+/// burner, gets a copy of it in its look (<see cref="CandleMeshes"/>): placed, through <see cref="LanternFlamePatch"/>;
 /// in hand, through <see cref="OnBeforeRender"/>; and on a shelf or in a display case,
 /// through <see cref="IContainedMeshSource"/>. A plain one is vanilla's mesh.
 ///
@@ -52,35 +53,66 @@ public class BlockCandelaLantern : BlockLantern, IContainedMeshSource
         {
             ItemStack[] candles = api.World.Collectibles.Where(CandleWax.IsCandle).Select(c => new ItemStack(c)).ToArray();
             ItemStack[] torches = api.World.SearchBlocks(new AssetLocation("game:torch-*-lit-*")).Select(b => new ItemStack(b)).ToArray();
+            ItemStack[] burners = api.World.GetItem(new AssetLocation(BurnerStack.Code)) is Item burner ? [new ItemStack(burner)] : [];
+
+            // A bucket of each lamp oil to pour in, and an empty one to pour it back out.
+            var bucket = api.World.GetBlock(new AssetLocation("game:woodbucket")) as BlockLiquidContainerBase;
+            ItemStack[] oils = bucket == null ? [] : api.World.Items.Where(LampOil.Is).Select(oil =>
+            {
+                var stack = new ItemStack(bucket);
+                bucket.SetContent(stack, new ItemStack(oil, (int)(LampOil.BurnerLitres * LampOil.PortionsPerLitre(new ItemStack(oil)))));
+                return stack;
+            }).ToArray();
+            ItemStack[] empty = bucket == null ? [] : [new ItemStack(bucket)];
 
             return new WorldInteraction[]
             {
                 new() { ActionLangCode = "candela:blockhelp-refuel", MouseButton = EnumMouseButton.Right, Itemstacks = candles },
+                new() { ActionLangCode = "candela:blockhelp-putburner", MouseButton = EnumMouseButton.Right, Itemstacks = burners },
+                new() { ActionLangCode = "candela:blockhelp-filloil", MouseButton = EnumMouseButton.Right, Itemstacks = oils,
+                    GetMatchingStacks = (wi, bs, _) => Fuel(bs)?.HasBurner == true ? wi.Itemstacks : null },
+                new() { ActionLangCode = "candela:blockhelp-emptyoil", MouseButton = EnumMouseButton.Right, Itemstacks = empty,
+                    GetMatchingStacks = (wi, bs, _) => Fuel(bs) is { HasBurner: true, Oil: not null } ? wi.Itemstacks : null },
+                new() { ActionLangCode = "candela:blockhelp-wick", MouseButton = EnumMouseButton.Right, HotKeyCode = "ctrl", RequireFreeHand = true,
+                    ShouldApply = (_, bs, _) => Fuel(bs)?.HasBurner == true },
                 new() { ActionLangCode = "candela:blockhelp-snuff", MouseButton = EnumMouseButton.Right, HotKeyCode = "shift", RequireFreeHand = true },
                 new() { ActionLangCode = "candela:blockhelp-light", MouseButton = EnumMouseButton.Right, Itemstacks = torches },
             };
         });
     }
 
-    /// <summary>The lantern with its candle looking <paramref name="look"/>, or null for a plain one.</summary>
-    public MeshData ColouredMesh(ICoreClientAPI capi, ITesselatorAPI tesselator, string material, string lining, string glass, CandleLook look)
+    private BEBehaviorLanternFuel Fuel(BlockSelection sel) =>
+        sel == null ? null : api.World.BlockAccessor.GetBlockEntity(sel.Position)?.GetBehavior<BEBehaviorLanternFuel>();
+
+    /// <summary>
+    /// The lantern with its candle looking <paramref name="look"/>, or with an oil burner
+    /// in its place; null for a plain candle.
+    /// </summary>
+    public MeshData ColouredMesh(ICoreClientAPI capi, ITesselatorAPI tesselator, string material, string lining, string glass, CandleLook look, bool burner)
     {
-        if (look.IsPlain || flameShape?.Value is not Shape shape) return null;
-        return colouredMeshes.GetOrAdd($"{material}-{lining}-{glass}-{look.Flame}-{look.Dye}", _ =>
+        if ((look.IsPlain && !burner) || flameShape?.Value is not Shape shape) return null;
+        return colouredMeshes.GetOrAdd($"{material}-{lining}-{glass}-{MeshKey(look, burner)}", _ =>
         {
             // GenMesh keeps the metal, lining and glass it is making in fields on the
             // block while it works, and this runs on the tesselation thread for placed
             // lanterns and the main thread for held ones: one at a time, or a lantern
             // could be made with another's metal and kept so. Vanilla's own two callers
             // share the hazard, but not one cache.
-            lock (this) return GenMesh(capi, material, lining, glass, CandleMeshes.Recoloured(shape, _ => look), tesselator);
+            Shape fuelled = burner ? CandleMeshes.AsBurner(shape) : CandleMeshes.Recoloured(shape, _ => look);
+            lock (this) return GenMesh(capi, material, lining, glass, fuelled, tesselator);
         });
     }
 
-    /// <summary>The lantern a stack is, its candle in its look, or null for a plain one.</summary>
+    /// <summary>What a lantern's mesh varies by beyond vanilla's materials.</summary>
+    private static string MeshKey(CandleLook look, bool burner) => burner ? "burner" : $"{look.Flame}-{look.Dye}";
+
+    /// <summary>The lantern a stack is, its candle in its look or its burner in, or null for a plain candle.</summary>
     private MeshData ColouredMesh(ICoreClientAPI capi, ItemStack stack) =>
         ColouredMesh(capi, capi.Tesselator, stack.Attributes.GetString("material"), stack.Attributes.GetString("lining"),
-            stack.Attributes.GetString("glass", "quartz"), LanternStack.Look(stack));
+            stack.Attributes.GetString("glass", "quartz"), LanternStack.Look(stack), LanternStack.HasBurner(stack));
+
+    /// <summary>Whether a stack draws as vanilla's lantern: a plain candle in it.</summary>
+    private static bool DrawsPlain(ItemStack stack) => LanternStack.Look(stack).IsPlain && !LanternStack.HasBurner(stack);
 
     /// <summary>A lantern on a shelf, in a display case or on the ground: its candle in its look.</summary>
     MeshData IContainedMeshSource.GenMesh(ItemSlot slot, ITextureAtlasAPI targetAtlas, BlockPos atBlockPos)
@@ -90,20 +122,21 @@ public class BlockCandelaLantern : BlockLantern, IContainedMeshSource
         return coloured?.Clone() ?? GenMesh(slot, targetAtlas, atBlockPos);
     }
 
-    /// <summary>Vanilla's key, and the candle's look: without it a blue lantern and a plain one would share a mesh.</summary>
-    string IContainedMeshSource.GetMeshCacheKey(ItemSlot slot) =>
-        LanternStack.Look(slot.Itemstack) is { IsPlain: false } look ? $"{GetMeshCacheKey(slot)}-{look.Flame}-{look.Dye}" : GetMeshCacheKey(slot);
+    /// <summary>Vanilla's key, and the candle's look or the burner: without it a blue lantern and a plain one would share a mesh.</summary>
+    string IContainedMeshSource.GetMeshCacheKey(ItemSlot slot) => DrawsPlain(slot.Itemstack)
+        ? GetMeshCacheKey(slot)
+        : $"{GetMeshCacheKey(slot)}-{MeshKey(LanternStack.Look(slot.Itemstack), LanternStack.HasBurner(slot.Itemstack))}";
 
     public override void OnBeforeRender(ICoreClientAPI capi, ItemStack itemstack, EnumItemRenderTarget target, ref ItemRenderInfo renderinfo)
     {
-        CandleLook look = LanternStack.Look(itemstack);
-        if (look.IsPlain)
+        if (DrawsPlain(itemstack))
         {
             base.OnBeforeRender(capi, itemstack, target, ref renderinfo);
             return;
         }
 
-        string key = $"{itemstack.Attributes.GetString("material")}-{itemstack.Attributes.GetString("lining")}-{itemstack.Attributes.GetString("glass", "quartz")}-{look.Flame}-{look.Dye}";
+        string key = $"{itemstack.Attributes.GetString("material")}-{itemstack.Attributes.GetString("lining")}-{itemstack.Attributes.GetString("glass", "quartz")}-" +
+            MeshKey(LanternStack.Look(itemstack), LanternStack.HasBurner(itemstack));
         if (!colouredMeshRefs.TryGetValue(key, out MultiTextureMeshRef meshRef))
         {
             if (ColouredMesh(capi, itemstack) is not MeshData mesh)
@@ -139,8 +172,9 @@ public class BlockCandelaLantern : BlockLantern, IContainedMeshSource
         // The burnout mode lives on the server, so a spent one is shown guttering.
         if (stack != null && LanternStack.HasFuel(stack) && api != null)
         {
-            return LanternStack.Adjust(api.World, full, LanternStack.BunchCode(stack), !LanternStack.Snuffed(stack), LanternStack.Fuel(stack) <= 0,
-                LanternStack.Look(stack).Flame, stack.Attributes.GetString("glass"));
+            bool burner = LanternStack.HasBurner(stack);
+            return LanternStack.Adjust(full, LanternStack.Dim(api.World, stack), burner && BurnerStack.WickLow(stack), !LanternStack.Snuffed(stack),
+                LanternStack.Fuel(stack) <= 0, LanternStack.Look(stack).Flame, stack.Attributes.GetString("glass"));
         }
         return full;
     }
@@ -170,31 +204,56 @@ public class BlockCandelaLantern : BlockLantern, IContainedMeshSource
 
     public override bool OnBlockInteractStart(IWorldAccessor world, IPlayer byPlayer, BlockSelection blockSel)
     {
-        ItemStack held = byPlayer.InventoryManager.ActiveHotbarSlot?.Itemstack;
+        ItemSlot slot = byPlayer.InventoryManager.ActiveHotbarSlot;
+        ItemStack held = slot?.Itemstack;
         bool shift = byPlayer.Entity.Controls.ShiftKey;
-
-        bool snuff = held == null && shift;
-        bool light = held?.Block is BlockTorch && held.Block.Variant["state"] == "lit";
-        bool refuel = !shift && CandleWax.HoursOf(held?.Collectible) != null;
-
-        if (!snuff && !light && !refuel) return base.OnBlockInteractStart(world, byPlayer, blockSel);
-        if (!world.Claims.TryAccess(byPlayer, blockSel.Position, EnumBlockAccessFlags.Use)) return false;
-        if (world.Side != EnumAppSide.Server) return true;
-
         var fuel = world.BlockAccessor.GetBlockEntity(blockSel.Position)?.GetBehavior<BEBehaviorLanternFuel>();
-        if (fuel == null) return true;
+
+        // Both sides decide alike - the client has the burner's state too - so that
+        // a click the server will take is not also a vanilla pick-up on the client.
+        bool snuff = held == null && shift;
+        bool wick = held == null && !shift && byPlayer.Entity.Controls.CtrlKey && fuel?.HasBurner == true;
+        bool light = held?.Block is BlockTorch && held.Block.Variant["state"] == "lit";
+        bool refuel = !shift && (CandleWax.HoursOf(held?.Collectible) != null || BurnerStack.Is(held));
+        Pour pour = shift || fuel?.HasBurner != true ? Pour.None : PourFor(held, fuel);
+
+        if (!snuff && !wick && !light && !refuel && pour == Pour.None) return base.OnBlockInteractStart(world, byPlayer, blockSel);
+        if (!world.Claims.TryAccess(byPlayer, blockSel.Position, EnumBlockAccessFlags.Use)) return false;
+        if (world.Side != EnumAppSide.Server || fuel == null) return true;
 
         if (snuff) fuel.Snuff();
+        else if (wick)
+        {
+            if (fuel.TryTurnWick()) world.PlaySoundAt(new AssetLocation("game:sounds/effect/latch"), blockSel.Position, -0.4, byPlayer, randomizePitch: true, range: 8, volume: 0.5f);
+        }
         else if (light)
         {
             if (fuel.TryIgnite()) world.PlaySoundAt(new AssetLocation("game:sounds/torch-ignite"), blockSel.Position, 0, byPlayer);
         }
-        else if (fuel.TryRefuel(byPlayer, byPlayer.InventoryManager.ActiveHotbarSlot))
+        else if (refuel)
         {
-            world.PlaySoundAt(new AssetLocation("game:sounds/block/plate"), blockSel.Position, -0.4, byPlayer);
+            if (fuel.TryRefuel(byPlayer, slot)) world.PlaySoundAt(new AssetLocation("game:sounds/block/plate"), blockSel.Position, -0.4, byPlayer);
+        }
+        else if (pour == Pour.In ? fuel.TryFill(byPlayer, slot) : fuel.TryEmpty(byPlayer, slot))
+        {
+            world.PlaySoundAt(new AssetLocation(pour == Pour.In ? "game:sounds/effect/water-pour" : "game:sounds/effect/water-fill"), blockSel.Position, -0.4, byPlayer);
         }
 
         return true;
+    }
+
+    private enum Pour { None, In, Out }
+
+    /// <summary>
+    /// Which way <paramref name="held"/> pours with a burner's lantern: lamp oil in, an
+    /// empty container takes the oil out, and anything else is not this mod's.
+    /// </summary>
+    private static Pour PourFor(ItemStack held, BEBehaviorLanternFuel fuel)
+    {
+        if (held?.Collectible is not BlockLiquidContainerBase container) return Pour.None;
+        ItemStack content = container.GetContent(held);
+        if (LampOil.Is(content?.Collectible)) return Pour.In;
+        return content == null && fuel.Oil != null ? Pour.Out : Pour.None;
     }
 
     public override void GetHeldItemInfo(ItemSlot inSlot, StringBuilder dsc, IWorldAccessor world, bool withDebugInfo)
@@ -203,6 +262,13 @@ public class BlockCandelaLantern : BlockLantern, IContainedMeshSource
 
         ItemStack stack = inSlot.Itemstack;
         if (!LanternStack.HasFuel(stack)) return;
+
+        if (LanternStack.HasBurner(stack))
+        {
+            dsc.AppendLine(Lang.Get("candela:lantern-burner"));
+            BurnerStack.AppendInfo(world, dsc, BurnerStack.Oil(stack), LanternStack.Fuel(stack), BurnerStack.WickLow(stack));
+            return;
+        }
 
         BlockCandelaCandles kind = BlockCandelaCandles.KindOf(world, LanternStack.BunchCode(stack));
         string candleName = kind == null ? "?" : kind.CandleForHours(world, kind.BurnHours, LanternStack.Look(stack))?.GetName() ?? "?";

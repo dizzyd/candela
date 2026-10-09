@@ -1,6 +1,8 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Vintagestory.API.Client;
+using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
 using VsTestkit.Testing;
 using static VsTestkit.Testing.Vs;
@@ -41,6 +43,26 @@ namespace Candela.Tests
             }
             await Ticks(4);
         }
+
+        /// <summary>
+        /// Empty pockets, since the harness keeps the player's inventory from one test to
+        /// the next: a stack one test got back would otherwise be found by the next, and a
+        /// test that fills the pockets would leave the next nowhere to put anything.
+        /// Not the bag slots, which hold the backpacks themselves.
+        /// </summary>
+        public static void EmptyPockets()
+        {
+            if (Player.Me == null) return;
+            foreach (ItemSlot slot in Carried().Where(s => s is not ItemSlotBackpack && !s.Empty))
+            {
+                slot.Itemstack = null;
+                slot.MarkDirty();
+            }
+        }
+
+        /// <summary>The hotbar's and the backpack's slots - not the creative inventory, which throws when walked outside creative mode.</summary>
+        public static IEnumerable<ItemSlot> Carried() => Player.Me.InventoryManager.Inventories.Values
+            .Where(i => i.ClassName is "hotbar" or "backpack").SelectMany(i => i);
 
         /// <summary>Whether <paramref name="code"/> is anywhere in the player's inventories.</summary>
         public static bool PlayerHas(string code) =>

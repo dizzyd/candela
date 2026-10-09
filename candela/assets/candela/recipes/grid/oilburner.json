@@ -1,0 +1,14 @@
+[
+	{
+		// A fount beaten from two copper plates, and a wick of flax twine.
+		ingredientPattern: "PPT",
+		ingredients: {
+			"P": { type: "item", code: "game:metalplate-copper" },
+			"T": { type: "item", code: "game:flaxtwine" }
+		},
+		width: 3,
+		height: 1,
+		shapeless: true,
+		output: { type: "item", code: "candela:oilburner" }
+	}
+]

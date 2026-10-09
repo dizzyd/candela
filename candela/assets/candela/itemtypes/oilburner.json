@@ -1,0 +1,35 @@
+{
+	// A fount and wick that takes the candle's place in a lantern, and burns lamp oil:
+	// see ItemOilBurner and BEBehaviorLanternFuel. Drawn in the lantern by reshaping its
+	// candle (CandleMeshes.AsBurner); this shape is the item's own.
+	code: "oilburner",
+	class: "CandelaOilBurner",
+	shape: { base: "candela:item/oilburner" },
+	textures: {
+		"metal": { base: "game:block/metal/lantern/copper" },
+		"wick": { base: "game:block/coal/charcoal" }
+	},
+	creativeinventory: { "general": ["*"], "items": ["*"] },
+	maxstacksize: 4,
+	materialDensity: 4000,
+	guiTransform: {
+		rotation: { x: -22, y: -45, z: 0 },
+		origin: { x: 0.5, y: 0.15, z: 0.5 },
+		scale: 2.6
+	},
+	fpHandTransform: {
+		translation: { x: 0, y: 0.1, z: 0 },
+		rotation: { x: 0, y: -30, z: 0 },
+		scale: 1.8
+	},
+	tpHandTransform: {
+		translation: { x: -0.8, y: -0.1, z: -0.55 },
+		rotation: { x: 0, y: 0, z: 0 },
+		origin: { x: 0.5, y: 0.1, z: 0.5 },
+		scale: 0.7
+	},
+	groundTransform: {
+		origin: { x: 0.5, y: 0, z: 0.5 },
+		scale: 2.5
+	}
+}

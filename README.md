@@ -33,6 +33,14 @@ burns forever. Candela adds the candles people actually made and gives light a c
   the old one comes back. Tallow soots the glass: two light levels less. Picking a
   lantern up keeps what is left of its candle. Shift-click snuffs it, a torch or
   firestarter relights it, and lanterns still hang from ceilings
+- **Oil burners** - two copper plates and a flax twine make an oil burner, which
+  takes a lantern's candle's place: right-click a lantern with one and the candle
+  comes out, and a candle put back returns the burner with its oil. Fill it in the
+  lantern from a bowl, jug or bucket of olive or linseed oil - half a litre, about four
+  months' burning, two beeswax candles' worth - and top it up whenever you like.
+  Linseed smokes like tallow, two light levels less. Ctrl-right-click with a free hand
+  turns the wick down: half the light for twice the time. An empty container takes
+  the oil back out. A lantern picked up keeps its burner, oil and wick setting
 - **Chandeliers burn too** - their candles are one pool like a bunch's, beeswax
   whole or stub as in vanilla, and can now be taken out again, which is how spent
   ones are cleared. One that falls lands with the candles it had
@@ -60,7 +68,10 @@ burns forever. Candela adds the candles people actually made and gives light a c
 - Candles and lanterns placed before Candela was installed carry on as vanilla
   until first touched (candles) or loaded (lanterns), when they start out new
 
-Oil lamps are left to [Immersive Lighting](https://mods.vintagestory.at/techyimmersivelighting).
+Placed oil lamps are left to [Immersive Lighting](https://mods.vintagestory.at/techyimmersivelighting),
+whose lamp is its own block and burns on its own scale. Candela marks lamp oil with an
+attribute of its own rather than the `combustibleProps` Immersive Lighting gives the
+same oils, so the two install together. Vanilla's clay oil lamp is left as it is.
 
 ## Configuration
 
@@ -72,6 +83,7 @@ synced to its players; without it, each side reads its own file.
 |---|---|---|
 | `BeeswaxBurnHours` | `432` | game hours a new beeswax candle burns; stubs burn their share |
 | `TallowBurnHours` | `216` | the same for tallow |
+| `OilBurnHoursPerLitre` | `1728` | game hours a litre of lamp oil burns in an oil burner, wick up; a burner holds half a litre, and turned down burns half as fast |
 | `BurnoutMode` | `Dim` | `Dim` - a spent light gutters to a dim glow; `Dark` - it goes out; `None` - lights never burn down |
 | `UnattendedMode` | `LoadedOnly` | `LoadedOnly` - burns only while its chunk is loaded; `CappedCatchUp` - catches up unloaded time, up to `CatchUpCapHours`; `Always` - catches up all of it |
 | `CatchUpCapHours` | `24` | in-game hours |

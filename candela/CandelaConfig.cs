@@ -71,6 +71,15 @@ public class CandelaConfig
     [Range(1, 10000)]
     public double TallowBurnHours = DefaultTallowBurnHours;
 
+    /// <summary>
+    /// Game hours a litre of lamp oil burns for in a lantern's oil burner with its wick
+    /// up. A burner holds half a litre; turned down, it burns half as fast.
+    /// </summary>
+    [Category("Burning")]
+    [Description("Game hours one litre of lamp oil burns for in a lantern's oil burner, with the wick up. A burner holds half a litre; with the wick turned down it gives half the light and lasts twice as long.")]
+    [Range(1, 100000)]
+    public double OilBurnHoursPerLitre = DefaultOilBurnHoursPerLitre;
+
     [Category("Upkeep")]
     [Description("What a light that has burned down does: Dim gutters to a faint glow, Dark goes out, None never burns down at all.")]
     public BurnoutMode BurnoutMode = BurnoutMode.Dim;
@@ -110,6 +119,9 @@ public class CandelaConfig
     // stay put on a world whose months are longer.
     private const double DefaultBeeswaxBurnHours = 432;
     private const double DefaultTallowBurnHours = 216;
+    // A burner's half litre: four months, or two beeswax candles - for a burner that
+    // costs two copper plates on top of the lantern, and oil pressed or cooked to fill it.
+    private const double DefaultOilBurnHoursPerLitre = 1728;
     private const double DefaultCatchUpCapHours = 24;
     private const int DefaultFlameLightSaturation = 4;
 
@@ -165,8 +177,8 @@ public class CandelaConfig
 
         if (isNew) api.Logger.Notification("[candela] Wrote default config to ModConfig/{0}", FileName);
 
-        api.Logger.Notification("[candela] Beeswax {0}h, tallow {1}h, BurnoutMode {2}, UnattendedMode {3}, CatchUpCapHours {4}, WeatherPutsOut {5}, FlameLightSaturation {6}, TorchesKeepTheirTime {7}",
-            config.BeeswaxBurnHours, config.TallowBurnHours, config.BurnoutMode, config.UnattendedMode, config.CatchUpCapHours, config.WeatherPutsOut, config.FlameLightSaturation, config.TorchesKeepTheirTime);
+        api.Logger.Notification("[candela] Beeswax {0}h, tallow {1}h, oil {2}h/L, BurnoutMode {3}, UnattendedMode {4}, CatchUpCapHours {5}, WeatherPutsOut {6}, FlameLightSaturation {7}, TorchesKeepTheirTime {8}",
+            config.BeeswaxBurnHours, config.TallowBurnHours, config.OilBurnHoursPerLitre, config.BurnoutMode, config.UnattendedMode, config.CatchUpCapHours, config.WeatherPutsOut, config.FlameLightSaturation, config.TorchesKeepTheirTime);
 
         Current.AssignFrom(config);
     }
@@ -194,6 +206,7 @@ public class CandelaConfig
     {
         BeeswaxBurnHours = Positive(api, nameof(BeeswaxBurnHours), BeeswaxBurnHours, DefaultBeeswaxBurnHours);
         TallowBurnHours = Positive(api, nameof(TallowBurnHours), TallowBurnHours, DefaultTallowBurnHours);
+        OilBurnHoursPerLitre = Positive(api, nameof(OilBurnHoursPerLitre), OilBurnHoursPerLitre, DefaultOilBurnHoursPerLitre);
 
         // Zero is a legitimate cap here: CappedCatchUp with nothing to catch up.
         if (double.IsNaN(CatchUpCapHours) || double.IsInfinity(CatchUpCapHours) || CatchUpCapHours < 0)

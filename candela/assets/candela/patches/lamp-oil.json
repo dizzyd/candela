@@ -1,0 +1,12 @@
+[
+	{
+		// The oils an oil burner takes, and the light levels their soot costs: linseed
+		// smokes as tallow does. Candela's own attribute, not combustibleProps, which
+		// Immersive Lighting adds to these same oils - see LampOil.cs.
+		op: "add", path: "/attributes/candelaLampOilByType", value: {
+			"*-olive": { dim: 0 },
+			"*-flax": { dim: 2 }
+		},
+		file: "game:itemtypes/liquid/oilportion.json"
+	}
+]

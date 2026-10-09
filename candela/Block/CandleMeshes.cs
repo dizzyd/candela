@@ -42,6 +42,84 @@ public static class CandleMeshes
     }
 
     /// <summary>
+    /// A copy of a lantern's <paramref name="shape"/> with its candle made an oil
+    /// burner: a squat fount of the lantern's own metal, twice the candle's width and
+    /// three-eighths its height, standing where it stood, with a flame half as big
+    /// again on top. Reshaped from the candle rather than drawn from a shape file of
+    /// its own, so it fits each of vanilla's lanterns - the large and the small, whose
+    /// candles differ - and any a mod adds in the same pattern.
+    /// </summary>
+    public static Shape AsBurner(Shape shape)
+    {
+        Shape copy = shape.Clone();
+        foreach (ShapeElement element in copy.Elements)
+        {
+            if (MakeBurner(element)) break;
+        }
+        return copy;
+    }
+
+    private static bool MakeBurner(ShapeElement element)
+    {
+        if (UsesCandle(element) && element.Children?.FirstOrDefault(IsFlame) is ShapeElement flame)
+        {
+            double width = element.To[0] - element.From[0], height = element.To[1] - element.From[1];
+            double cx = (element.From[0] + element.To[0]) / 2, cz = (element.From[2] + element.To[2]) / 2;
+            double fountHeight = height * 3 / 8;
+            element.From = [cx - width, element.From[1], cz - width];
+            element.To = [cx + width, element.From[1] + fountHeight, cz + width];
+            element.FacesResolved = Metal(element.FacesResolved, 2 * width, fountHeight, 2 * width);
+
+            // Children sit relative to their parent's corner, which has moved out by
+            // half the candle's width: the small lantern's candle holder stays where it
+            // was, inside the fount, rather than poking out of its corner.
+            double shift = width / 2;
+            foreach (ShapeElement child in element.Children)
+            {
+                if (child == flame) continue;
+                child.From = [child.From[0] + shift, child.From[1], child.From[2] + shift];
+                child.To = [child.To[0] + shift, child.To[1], child.To[2] + shift];
+            }
+
+            double flameWidth = (flame.To[0] - flame.From[0]) * 1.5, flameHeight = (flame.To[1] - flame.From[1]) * 1.5;
+            double inset = width - flameWidth / 2;
+            flame.From = [inset, fountHeight, inset];
+            flame.To = [inset + flameWidth, fountHeight + flameHeight, inset + flameWidth];
+            return true;
+        }
+        if (element.Children == null) return false;
+        foreach (ShapeElement child in element.Children)
+        {
+            if (MakeBurner(child)) return true;
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// The candle's faces, in the order <see cref="BlockFacing"/> numbers them, as the
+    /// lantern's metal - UVs sized to the new box, so the texture is not stretched.
+    /// Faces the candle did not draw stay undrawn.
+    /// </summary>
+    private static ShapeElementFace[] Metal(ShapeElementFace[] faces, double dx, double dy, double dz)
+    {
+        var metal = new ShapeElementFace[faces.Length];
+        for (int i = 0; i < faces.Length; i++)
+        {
+            ShapeElementFace face = faces[i];
+            if (face?.Texture != "candle")
+            {
+                metal[i] = face;
+                continue;
+            }
+
+            // North, east, south, west, up, down.
+            (double u, double v) = i switch { 0 or 2 => (dx, dy), 1 or 3 => (dz, dy), _ => (dx, dz) };
+            metal[i] = new ShapeElementFace { Texture = "material", Uv = [0, 0, (float)u, (float)v], Enabled = face.Enabled };
+        }
+        return metal;
+    }
+
+    /// <summary>
     /// A candle is an element textured with the candle that has a flame among its
     /// children. Every candle is counted, plain or not, so each keeps its place.
     /// </summary>

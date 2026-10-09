@@ -24,24 +24,16 @@ namespace Candela.Tests
         const string LitTorch = "game:torch-basic-lit-up";
         const double TorchHours = 48;
 
-        [BeforeEach, AfterEach]
-        public void DefaultConfig() => CandelaConfig.Current.AssignFrom(new CandelaConfig());
-
-        /// <summary>
-        /// Empty pockets, since the harness keeps the player's inventory from one test to
-        /// the next: a torch one test got back would otherwise be found by the next.
-        /// Not the bag slots, which hold the backpacks themselves.
-        /// </summary>
+        // One hook: the harness runs only the first [BeforeEach] a class has.
         [BeforeEach]
-        public void EmptyPockets()
+        public void BeforeEach()
         {
-            if (Player.Me == null) return;
-            foreach (ItemSlot slot in Carried().Where(s => s is not ItemSlotBackpack && !s.Empty))
-            {
-                slot.Itemstack = null;
-                slot.MarkDirty();
-            }
+            DefaultConfig();
+            EmptyPockets();
         }
+
+        [AfterEach]
+        public void DefaultConfig() => CandelaConfig.Current.AssignFrom(new CandelaConfig());
 
         [VsTest]
         public async Task ABrokenTorchComesBackWithWhatIsLeft()
@@ -271,9 +263,6 @@ namespace Candela.Tests
         // ----- helpers -----
 
         /// <summary>The hotbar and backpack. Not every inventory: the creative one throws when walked.</summary>
-        static IEnumerable<ItemSlot> Carried() => Player.Me.InventoryManager.Inventories.Values
-            .Where(i => i.ClassName is "hotbar" or "backpack").SelectMany(i => i);
-
         /// <summary>The holder's torch time, once <see cref="PlaceHolder"/> has put one up.</summary>
         static BEBehaviorTorchHolderTime HolderTime() => World.BE<BlockEntity>(Holder).GetBehavior<BEBehaviorTorchHolderTime>();
 

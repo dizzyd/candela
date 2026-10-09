@@ -1,0 +1,61 @@
+{
+	"textureWidth": 16,
+	"textureHeight": 16,
+	"textures": {
+		"metal": "game:block/metal/lantern/copper",
+		"wick": "game:block/coal/charcoal"
+	},
+	"elements": [
+		{
+			"name": "fount",
+			"from": [ 5, 0, 5 ],
+			"to": [ 11, 2.5, 11 ],
+			"faces": {
+				"north": { "texture": "#metal", "uv": [ 0, 0, 6, 2.5 ] },
+				"east": { "texture": "#metal", "uv": [ 0, 0, 6, 2.5 ] },
+				"south": { "texture": "#metal", "uv": [ 0, 0, 6, 2.5 ] },
+				"west": { "texture": "#metal", "uv": [ 0, 0, 6, 2.5 ] },
+				"up": { "texture": "#metal", "uv": [ 0, 0, 6, 6 ] },
+				"down": { "texture": "#metal", "uv": [ 0, 0, 6, 6 ] }
+			},
+			"children": [
+				{
+					"name": "collar",
+					"from": [ 2, 2.5, 2 ],
+					"to": [ 4, 3.5, 4 ],
+					"faces": {
+						"north": { "texture": "#metal", "uv": [ 6, 0, 8, 1 ] },
+						"east": { "texture": "#metal", "uv": [ 6, 0, 8, 1 ] },
+						"south": { "texture": "#metal", "uv": [ 6, 0, 8, 1 ] },
+						"west": { "texture": "#metal", "uv": [ 6, 0, 8, 1 ] },
+						"up": { "texture": "#metal", "uv": [ 6, 0, 8, 2 ] }
+					}
+				},
+				{
+					"name": "key",
+					"from": [ 4, 2.75, 2.75 ],
+					"to": [ 5, 3.25, 3.25 ],
+					"faces": {
+						"north": { "texture": "#metal", "uv": [ 8, 0, 9, 0.5 ] },
+						"east": { "texture": "#metal", "uv": [ 8, 0, 8.5, 0.5 ] },
+						"south": { "texture": "#metal", "uv": [ 8, 0, 9, 0.5 ] },
+						"up": { "texture": "#metal", "uv": [ 8, 0, 9, 0.5 ] },
+						"down": { "texture": "#metal", "uv": [ 8, 0, 9, 0.5 ] }
+					}
+				},
+				{
+					"name": "wick",
+					"from": [ 2.6, 3.5, 2.6 ],
+					"to": [ 3.4, 4.25, 3.4 ],
+					"faces": {
+						"north": { "texture": "#wick", "uv": [ 0, 0, 1, 1 ] },
+						"east": { "texture": "#wick", "uv": [ 0, 0, 1, 1 ] },
+						"south": { "texture": "#wick", "uv": [ 0, 0, 1, 1 ] },
+						"west": { "texture": "#wick", "uv": [ 0, 0, 1, 1 ] },
+						"up": { "texture": "#wick", "uv": [ 0, 0, 1, 1 ] }
+					}
+				}
+			]
+		}
+	]
+}

@@ -20,6 +20,7 @@ public class CandelaModSystem : ModSystem
         api.RegisterItemClass("CandelaMoltenWax", typeof(ItemMoltenWax));
         api.RegisterItemClass("CandelaDippingRod", typeof(ItemDippingRod));
         api.RegisterItemClass("CandelaCandleMould", typeof(ItemCandleMould));
+        api.RegisterItemClass("CandelaOilBurner", typeof(ItemOilBurner));
         api.RegisterBlockBehaviorClass("CandelaDipVat", typeof(BlockBehaviorDipVat));
         api.RegisterCollectibleBehaviorClass("CandelaPotOfWax", typeof(CollectibleBehaviorPotOfWax));
 

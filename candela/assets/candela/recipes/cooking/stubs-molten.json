@@ -7,6 +7,10 @@
 		// Each also takes an optional dye - any of vanilla's, a tenth of a litre a serving
 		// - which colours the wax (WaxPotPatch stamps it on). Stubs remelt undyed,
 		// whatever they were, and are dyed again here. A dye takes a pot slot.
+		//
+		// The dyes are named one by one, not as game:dye-*: the handbook's
+		// "created by" section dereferences a null for a wildcard that matches
+		// liquids, and crashes the client on the molten wax pages.
 		"code": "molten tallow stubs1",
 		"isFood": true,
 		"perishableProps": {
@@ -41,7 +45,19 @@
 			},
 			{
 				"code": "dye",
-				"validStacks": [ { "type": "item", "code": "game:dye-*" } ],
+				"validStacks": [
+					{ "type": "item", "code": "game:dye-blue" },
+					{ "type": "item", "code": "game:dye-red" },
+					{ "type": "item", "code": "game:dye-yellow" },
+					{ "type": "item", "code": "game:dye-purple" },
+					{ "type": "item", "code": "game:dye-woad" },
+					{ "type": "item", "code": "game:dye-green" },
+					{ "type": "item", "code": "game:dye-orange" },
+					{ "type": "item", "code": "game:dye-black" },
+					{ "type": "item", "code": "game:dye-gray" },
+					{ "type": "item", "code": "game:dye-pink" },
+					{ "type": "item", "code": "game:dye-white" }
+				],
 				"minQuantity": 0,
 				"maxQuantity": 1,
 				"portionSizeLitres": 0.1
@@ -88,7 +104,19 @@
 			},
 			{
 				"code": "dye",
-				"validStacks": [ { "type": "item", "code": "game:dye-*" } ],
+				"validStacks": [
+					{ "type": "item", "code": "game:dye-blue" },
+					{ "type": "item", "code": "game:dye-red" },
+					{ "type": "item", "code": "game:dye-yellow" },
+					{ "type": "item", "code": "game:dye-purple" },
+					{ "type": "item", "code": "game:dye-woad" },
+					{ "type": "item", "code": "game:dye-green" },
+					{ "type": "item", "code": "game:dye-orange" },
+					{ "type": "item", "code": "game:dye-black" },
+					{ "type": "item", "code": "game:dye-gray" },
+					{ "type": "item", "code": "game:dye-pink" },
+					{ "type": "item", "code": "game:dye-white" }
+				],
 				"minQuantity": 0,
 				"maxQuantity": 1,
 				"portionSizeLitres": 0.1
@@ -135,7 +163,19 @@
 			},
 			{
 				"code": "dye",
-				"validStacks": [ { "type": "item", "code": "game:dye-*" } ],
+				"validStacks": [
+					{ "type": "item", "code": "game:dye-blue" },
+					{ "type": "item", "code": "game:dye-red" },
+					{ "type": "item", "code": "game:dye-yellow" },
+					{ "type": "item", "code": "game:dye-purple" },
+					{ "type": "item", "code": "game:dye-woad" },
+					{ "type": "item", "code": "game:dye-green" },
+					{ "type": "item", "code": "game:dye-orange" },
+					{ "type": "item", "code": "game:dye-black" },
+					{ "type": "item", "code": "game:dye-gray" },
+					{ "type": "item", "code": "game:dye-pink" },
+					{ "type": "item", "code": "game:dye-white" }
+				],
 				"minQuantity": 0,
 				"maxQuantity": 1,
 				"portionSizeLitres": 0.1
@@ -182,7 +222,19 @@
 			},
 			{
 				"code": "dye",
-				"validStacks": [ { "type": "item", "code": "game:dye-*" } ],
+				"validStacks": [
+					{ "type": "item", "code": "game:dye-blue" },
+					{ "type": "item", "code": "game:dye-red" },
+					{ "type": "item", "code": "game:dye-yellow" },
+					{ "type": "item", "code": "game:dye-purple" },
+					{ "type": "item", "code": "game:dye-woad" },
+					{ "type": "item", "code": "game:dye-green" },
+					{ "type": "item", "code": "game:dye-orange" },
+					{ "type": "item", "code": "game:dye-black" },
+					{ "type": "item", "code": "game:dye-gray" },
+					{ "type": "item", "code": "game:dye-pink" },
+					{ "type": "item", "code": "game:dye-white" }
+				],
 				"minQuantity": 0,
 				"maxQuantity": 1,
 				"portionSizeLitres": 0.1
@@ -231,7 +283,19 @@
 			},
 			{
 				"code": "dye",
-				"validStacks": [ { "type": "item", "code": "game:dye-*" } ],
+				"validStacks": [
+					{ "type": "item", "code": "game:dye-blue" },
+					{ "type": "item", "code": "game:dye-red" },
+					{ "type": "item", "code": "game:dye-yellow" },
+					{ "type": "item", "code": "game:dye-purple" },
+					{ "type": "item", "code": "game:dye-woad" },
+					{ "type": "item", "code": "game:dye-green" },
+					{ "type": "item", "code": "game:dye-orange" },
+					{ "type": "item", "code": "game:dye-black" },
+					{ "type": "item", "code": "game:dye-gray" },
+					{ "type": "item", "code": "game:dye-pink" },
+					{ "type": "item", "code": "game:dye-white" }
+				],
 				"minQuantity": 0,
 				"maxQuantity": 1,
 				"portionSizeLitres": 0.1
@@ -278,7 +342,19 @@
 			},
 			{
 				"code": "dye",
-				"validStacks": [ { "type": "item", "code": "game:dye-*" } ],
+				"validStacks": [
+					{ "type": "item", "code": "game:dye-blue" },
+					{ "type": "item", "code": "game:dye-red" },
+					{ "type": "item", "code": "game:dye-yellow" },
+					{ "type": "item", "code": "game:dye-purple" },
+					{ "type": "item", "code": "game:dye-woad" },
+					{ "type": "item", "code": "game:dye-green" },
+					{ "type": "item", "code": "game:dye-orange" },
+					{ "type": "item", "code": "game:dye-black" },
+					{ "type": "item", "code": "game:dye-gray" },
+					{ "type": "item", "code": "game:dye-pink" },
+					{ "type": "item", "code": "game:dye-white" }
+				],
 				"minQuantity": 0,
 				"maxQuantity": 1,
 				"portionSizeLitres": 0.1
@@ -325,7 +401,19 @@
 			},
 			{
 				"code": "dye",
-				"validStacks": [ { "type": "item", "code": "game:dye-*" } ],
+				"validStacks": [
+					{ "type": "item", "code": "game:dye-blue" },
+					{ "type": "item", "code": "game:dye-red" },
+					{ "type": "item", "code": "game:dye-yellow" },
+					{ "type": "item", "code": "game:dye-purple" },
+					{ "type": "item", "code": "game:dye-woad" },
+					{ "type": "item", "code": "game:dye-green" },
+					{ "type": "item", "code": "game:dye-orange" },
+					{ "type": "item", "code": "game:dye-black" },
+					{ "type": "item", "code": "game:dye-gray" },
+					{ "type": "item", "code": "game:dye-pink" },
+					{ "type": "item", "code": "game:dye-white" }
+				],
 				"minQuantity": 0,
 				"maxQuantity": 1,
 				"portionSizeLitres": 0.1
@@ -372,7 +460,19 @@
 			},
 			{
 				"code": "dye",
-				"validStacks": [ { "type": "item", "code": "game:dye-*" } ],
+				"validStacks": [
+					{ "type": "item", "code": "game:dye-blue" },
+					{ "type": "item", "code": "game:dye-red" },
+					{ "type": "item", "code": "game:dye-yellow" },
+					{ "type": "item", "code": "game:dye-purple" },
+					{ "type": "item", "code": "game:dye-woad" },
+					{ "type": "item", "code": "game:dye-green" },
+					{ "type": "item", "code": "game:dye-orange" },
+					{ "type": "item", "code": "game:dye-black" },
+					{ "type": "item", "code": "game:dye-gray" },
+					{ "type": "item", "code": "game:dye-pink" },
+					{ "type": "item", "code": "game:dye-white" }
+				],
 				"minQuantity": 0,
 				"maxQuantity": 1,
 				"portionSizeLitres": 0.1

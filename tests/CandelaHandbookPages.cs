@@ -17,7 +17,7 @@ namespace Candela.Tests
     /// </summary>
     public class CandelaHandbookPages
     {
-        private static readonly string[] Patched = { "game:candle", "game:bunchocandles-*", "game:chandelier-*", "game:lantern-*", "game:torch-*", "game:torchholder-*" };
+        private static readonly string[] Patched = { "game:candle", "game:bunchocandles-*", "game:chandelier-*", "game:lantern-*", "game:torch-*", "game:torchholder-*", "game:oilportion-*" };
 
         [VsTest(TimeoutMs = 600000)]
         [RequiresClient]

@@ -13,6 +13,7 @@
 	"itemdesc-powder-verdigris": "Sumaltas malachitas. Juo apdoroti dagčiai dega žalsvai melsva liepsna.",
 
 	"with-look": "{0} ({1})",
+	"list-separator": ", ",
 	"flame-red": "raudona liepsna",
 	"flame-yellow": "geltona liepsna",
 	"flame-green": "žalia liepsna",
@@ -86,13 +87,13 @@
 	"item-candlestub-tallow-*": "Lajaus žvakigalis",
 	"block-tallowcandles-*": "Lajaus žvakės",
 	"block-tallowcandle": "Lajaus žvakė",
-	"candle-hours": "Dega apie {0} val.",
-	"torch-left": "Iš dalies sudegęs: liko apie {0} val.",
+	"candle-hours": "Dega apie {p0:# valandų|# valandą|# valandas|# valandas|# valandas|# valandas|# valandas|# valandas|# valandas|# valandas|# valandų}",
+	"torch-left": "Iš dalies sudegęs: liko apie {p0:# valandų|# valandą|# valandas|# valandas|# valandas|# valandas|# valandas|# valandas|# valandas|# valandas|# valandų}",
 
 	"blockhelp-snuff": "Užgesinti",
 	"blockhelp-refuel": "Įdėti naują žvakę",
 	"blockhelp-takecandle": "Išimti žvakę",
-	"lantern-candle": "{0}: liko apie {1} val.",
+	"lantern-candle": "{0}: liko apie {p1:# valandų|# valandą|# valandas|# valandas|# valandas|# valandas|# valandas|# valandas|# valandas|# valandas|# valandų}",
 	"lantern-candle-spent": "{0}: sudegė",
 	"blockhelp-light": "Uždegti",
 	"blockhelp-putburner": "Įdėti aliejinį degiklį",
@@ -106,16 +107,18 @@
 	"chandelier-wax-beeswax": "Bičių vaško žvakės",
 	"chandelier-wax-tallow": "Lajaus žvakės",
 	"burner-dry": "{0}: išdegė",
-	"burner-oil": "{0}: {1} l, apie {2} val.",
+	"burner-oil": "{0}: {1} l, apie {p2:# valandų|# valandą|# valandas|# valandas|# valandas|# valandas|# valandas|# valandas|# valandas|# valandas|# valandų}",
 	"burner-litres": "{0}: {1} l",
 	"burner-wick-low": "Dagtis pasuktas žemyn",
 
-	"candles-burning": "Dega – liko apie {0} val.",
-	"candles-snuffed": "Užgesinta – liko apie {0} val.",
+	"candles-burning": "Dega – liko apie {p0:# valandų|# valandą|# valandas|# valandas|# valandas|# valandas|# valandas|# valandas|# valandas|# valandas|# valandų}",
+	"candles-snuffed": "{p1:Užgesintos|Užgesinta|Užgesintos} – liko apie {p0:# valandų|# valandą|# valandas|# valandas|# valandas|# valandas|# valandas|# valandas|# valandas|# valandas|# valandų}",
 	"candles-guttering": "Sudegė – rusena",
 	"candles-out": "Sudegė",
 
 	"craftinginfo-candela-dipping-title": "Žvakių merkimas",
+	"craftinginfo-candela-dipping-text": "<strong>Žvakių merkimas</strong><br><i>Lajus: kasdienė žvakė, pagaminta iš to, ką palieka mėsininkas.</i><br><br>Bičių vaško žvakės gimsta puode. Lajaus žvakės merkiamos sluoksnis po sluoksnio į išlydytus gyvulinius riebalus.<br><br><strong>1. Išlydykite riebalus.</strong> Puode išvirkite <a href=\"handbooksearch://riebalų\">žalius riebalus</a> į lydytus riebalus, kaip aliejinei lempai.<br><br><strong>2. Išlydykite juos.</strong> Puode dar kartą virkite lydytus riebalus, ir jie išsilydo į <a href=\"handbooksearch://išlydytas lajus\">išlydytą lajų</a>, dvi porcijas iš gabalo. Palikite puodą ant degančios laužavietės: ugnis palaiko lajų išlydytą. Nuo ugnies nuimtas jis greitai atvėsta ir vėl sustingsta į lydytus riebalus, po gabalą iš kiekvienų dviejų porcijų.<br><br><strong>3. Pasidarykite merkimo lazdelę.</strong> <a href=\"handbooksearch://pagaliukas\">Pagaliukas</a> ir keturi <a href=\"handbooksearch://linų pluoštai\">linų pluoštai</a> dagčiams.<br><br><strong>4. Merkite.</strong> Su lazdele laikykite nuspaudę dešinįjį pelės mygtuką ant laužavietės, kad jos dagčiai pasidengtų sluoksniu; tam sunaudojama viena lajaus porcija. Leiskite kiekvienam sluoksniui akimirką sustingti prieš kitą, kitaip jis neprilips. Po šešių sluoksnių žvakės baigtos.<br><br><strong>5. Nupjaukite jas.</strong> Baigta lazdelė ir <a href=\"handbooksearch://peilis\">peilis</a> gamybos tinklelyje duoda keturias <a href=\"handbooksearch://lajaus žvakė\">lajaus žvakes</a> ir grąžina pagaliuką. <br><br><strong>Arba naudokite formą.</strong> Iš molio nulipdykite <a href=\"handbooksearch://žvakių forma\">žvakių formą</a> ir išdekite ją molio degimo duobėje. Padėkite tuščią formą ant žemės, nukelkite vaško puodą nuo ugnies ir laikykite nuspaudę dešinįjį pelės mygtuką ant formos, kad ją pripildytumėte – šešios lajaus porcijos arba dvylika išlydyto bičių vaško porcijų keturioms žvakėms. Iš nuo ugnies nukelto puodo galima pilti kelias valandas. Leiskite formai sustingti, tada spustelėkite ją dešiniuoju pelės mygtuku laikydami du <a href=\"handbooksearch://linų pluoštai\">linų pluoštus</a> dagčiams, kad išimtumėte žvakes. Kiekvienas naudojimas dėvi formą; po dešimties ji suskyla.<br><br><strong>Bičių vaškas.</strong> Bičių vaškas taip pat lydosi puode, porcija iš gabalo, formoms – jis per kietas merkti.<br><br><strong>Žvakigaliai.</strong> Sudegę žvakigaliai vėl išsilydo į savo vašką, porcija iš žvakigalio.<br><br><strong>Spalvotos liepsnos.</strong> Keturi <a href=\"handbooksearch://linų pluoštai\">linų pluoštai</a> ir mineralų milteliai gamybos tinklelyje duoda keturis apdorotus dagčius, kurie dega spalvotai: <a href=\"handbooksearch://cinabaras\">cinabaras</a> – raudonai, <a href=\"handbooksearch://siera\">siera</a> – geltonai, <a href=\"handbooksearch://boraksas\">boraksas</a> – žaliai, <a href=\"handbooksearch://vario žalis\">vario žalis</a> – žalsvai melsvai, <a href=\"handbooksearch://lazuritas\">lazuritas</a> – mėlynai ir <a href=\"handbooksearch://silvitas\">silvitas</a> – violetiškai. Miltelius sumalkite girnomis; vario žalis yra sumaltas malachitas. Naudokite apdorotus dagčius merkimo lazdelei arba formai, ir žvakės degs ta spalva bei ja apšvies kambarį. Spalva yra dagtyje, todėl žvakigaliai vėl išsilydo į paprastą vašką.<br><br><strong>Dažytas vaškas.</strong> Kartu su vašku išvirkite bet kokius <a href=\"handbooksearch://dažai\">dažus</a> – dešimtadalį litro kiekvienam gabalui, atskirame puodo lizde – ir vaškas įgaus jų spalvą, kaip ir iš jo išlietos ar išmerktos žvakės. Merkta žvakė yra paskutinio savo sluoksnio spalvos. Žvakigaliai išsilydo nedažyti ir gali būti vėl dažomi tame pačiame virime. Apdoroti dagčiai ir dažytas vaškas dera kartu: juodos žvakės su raudonomis liepsnomis.",
 
-	"gamemechanicinfo-candela-upkeep-title": "Žvakės ir priežiūra"
+	"gamemechanicinfo-candela-upkeep-title": "Žvakės ir priežiūra",
+	"gamemechanicinfo-candela-upkeep-text": "<strong>Žvakės ir priežiūra</strong><br><br>Žvakės sudega. Bičių vaško žvakė dega apie du žaidimo laiko mėnesius, lajaus – apie vieną (nebent jūsų serveris tai pakeitė), ir abi degdamos matomai trumpėja. Lajus dar ir šviečia kiek blankiau, ir labiau rūksta.<br><br><strong>Puokštės.</strong> Spustelėkite Shift + dešinįjį pelės mygtuką, kad padėtumėte žvakę arba pridėtumėte ją prie puokštės, iki devynių. Visos puokštės žvakės dega kartu. Spustelėkite dešiniuoju pelės mygtuku tuščia ranka, kad nuimtumėte vieną – paskutinę uždėtą: iš dalies sudegusi žvakė grįžta kaip žvakigalis, kuris dega tiek, kiek jam liko, ir dedamas kaip žvakė. Bičių vaškas ir lajus nebūna vienoje puokštėje, o skirtingų liepsnų spalvų žvakės – būna; kambarys įgauna tą spalvą, kuria dega dauguma jų.<br><br><strong>Gesinimas.</strong> Spustelėkite Shift + dešinįjį pelės mygtuką tuščia ranka ant puokštės, žibinto ar sietyno, kad užgesintumėte ir išsaugotumėte tai, kas liko. Vėl uždekite degančiu deglu arba ugnies įskeltuvu. Deganti žvakė uždega ir deglą.<br><br><strong>Sudegusi.</strong> Pagal numatytuosius nustatymus sudegusi žvakė rusena silpnai švytėdama. Jūsų serveris gali nustatyti, kad ji užgęstų arba visai nesudegtų.<br><br><strong>Žibintai</strong> degina po vieną žvakę – pradžioje tą, su kuria buvo pagaminti, bičių vaško arba lajaus. Spustelėkite žibintą dešiniuoju pelės mygtuku laikydami žvakę arba žvakigalį, kad jį įdėtumėte; tai, kas liko iš senosios, grįžta. Lajus aprūkina stiklą ir šiek tiek sumažina šviesą. Spalvotas stiklas nuspalvina šviesą, kad ir iš ko būtų žvakė. Paimtas žibintas išsaugo tai, kas liko iš jo žvakės.<br><br><strong>Aliejiniai degikliai.</strong> Dvi vario plokštės ir <a href=\"handbooksearch://linų siūlas\">linų siūlas</a> duoda <a href=\"handbooksearch://aliejinis degiklis\">aliejinį degiklį</a>, kuris užima žibinto žvakės vietą: spustelėkite žibintą dešiniuoju pelės mygtuku laikydami degiklį, kad jį įdėtumėte, ir žvakė išeina – o atgal įdėta žvakė grąžina degiklį su jo aliejumi. Pripildykite jį iš dubens, ąsočio arba kibiro su alyvuogių arba sėmenų aliejumi; jame telpa pusė litro, kurio užtenka maždaug keturiems mėnesiams, dvigubai ilgiau nei bičių vaško žvakei, ir jį galima papildyti kada tik norite. Sėmenų aliejus rūksta kaip lajus. Ctrl + dešinysis pelės mygtukas tuščia ranka pasuka dagtį žemyn: perpus mažiau šviesos, o aliejaus užtenka dvigubai ilgiau. Spustelėkite dešiniuoju pelės mygtuku su tuščiu indu, kad išpiltumėte aliejų atgal. Tuščias degiklis neužsidega.<br><br><strong>Sietynai</strong> priima žvakes arba žvakigalius, iki aštuonių, ir degina juos kaip puokštę: bičių vaško arba lajaus, bet ne abiejų kartu – tuščias sietynas priima bet kurias, o jo pirmoji žvakė nulemia. Spustelėkite dešiniuoju pelės mygtuku tuščia ranka, kad išimtumėte vieną; taip pašalinamos sudegusios žvakės.<br><br><strong>Deglai</strong> padėti sudega, kaip visada, bet dabar išsaugo tai, kas iš jų liko, kai vieną paimate arba išimate iš deglo laikiklio – suapvalinus žemyn iki ketvirčio, o mažiau nei ketvirtis – nieko. Vėl padėtas jis dega tik tiek, kiek turėjo. Laikiklis nedegina jame laikomo deglo.<br><br><strong>Iškart paimta atgal.</strong> Žvakė ar deglas, padėti ne vietoje ir vėl paimti per valandą, grįžta tokie, kokie buvo padėti."
 }

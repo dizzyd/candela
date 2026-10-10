@@ -13,6 +13,7 @@
 	"itemdesc-powder-verdigris": "Gemahlener Malachit. Damit behandelte Dochte brennen türkis.",
 
 	"with-look": "{0} ({1})",
+	"list-separator": ", ",
 	"flame-red": "rote Flamme",
 	"flame-yellow": "gelbe Flamme",
 	"flame-green": "grüne Flamme",
@@ -86,13 +87,13 @@
 	"item-candlestub-tallow-*": "Talgkerzenstummel",
 	"block-tallowcandles-*": "Talgkerzen",
 	"block-tallowcandle": "Talgkerze",
-	"candle-hours": "Brennt etwa {0} Stunden",
-	"torch-left": "Angebrannt: noch etwa {0} Stunden",
+	"candle-hours": "Brennt etwa {p0:# Stunden|# Stunde|# Stunden}",
+	"torch-left": "Angebrannt: noch etwa {p0:# Stunden|# Stunde|# Stunden}",
 
 	"blockhelp-snuff": "Löschen",
 	"blockhelp-refuel": "Neue Kerze einsetzen",
 	"blockhelp-takecandle": "Kerze herausnehmen",
-	"lantern-candle": "{0}: noch etwa {1} Stunden",
+	"lantern-candle": "{0}: noch etwa {p1:# Stunden|# Stunde|# Stunden}",
 	"lantern-candle-spent": "{0}: heruntergebrannt",
 	"blockhelp-light": "Anzünden",
 	"blockhelp-putburner": "Ölbrenner einsetzen",
@@ -106,16 +107,18 @@
 	"chandelier-wax-beeswax": "Bienenwachskerzen",
 	"chandelier-wax-tallow": "Talgkerzen",
 	"burner-dry": "{0}: leer gebrannt",
-	"burner-oil": "{0}: {1} L, etwa {2} Stunden",
+	"burner-oil": "{0}: {1} L, etwa {p2:# Stunden|# Stunde|# Stunden}",
 	"burner-litres": "{0}: {1} L",
 	"burner-wick-low": "Docht heruntergedreht",
 
-	"candles-burning": "Brennt – noch etwa {0} Stunden",
-	"candles-snuffed": "Gelöscht – noch etwa {0} Stunden",
-	"candles-guttering": "Heruntergebrannt – flackert aus",
+	"candles-burning": "{p1:Brennen|Brennt|Brennen} – noch etwa {p0:# Stunden|# Stunde|# Stunden}",
+	"candles-snuffed": "Gelöscht – noch etwa {p0:# Stunden|# Stunde|# Stunden}",
+	"candles-guttering": "Heruntergebrannt – {p0:flackern|flackert|flackern} aus",
 	"candles-out": "Heruntergebrannt",
 
 	"craftinginfo-candela-dipping-title": "Kerzen ziehen",
+	"craftinginfo-candela-dipping-text": "<strong>Kerzen ziehen</strong><br><i>Talg: die Kerze für jeden Tag, gemacht aus dem, was der Metzger übrig lässt.</i><br><br>Bienenwachskerzen kommen aus dem Kochtopf. Talgkerzen werden Schicht für Schicht aus geschmolzenem Tierfett gezogen.<br><br><strong>1. Lass das Fett aus.</strong> Koche <a href=\"handbooksearch://Fettklumpen\">rohes Fett</a> in einem Kochtopf zu ausgelassenem Fett, wie für eine Öllampe.<br><br><strong>2. Schmelze es.</strong> Koche ausgelassenes Fett noch einmal in einem Kochtopf, und es schmilzt zu <a href=\"handbooksearch://Geschmolzener Talg\">geschmolzenem Talg</a>, zwei Portionen pro Stück. Lass den Topf auf einer brennenden Feuerstelle stehen: Das Feuer hält den Talg flüssig. Vom Feuer genommen, kühlt er bald ab und wird wieder zu ausgelassenem Fett, ein Stück für je zwei Portionen.<br><br><strong>3. Mach einen Tauchstab.</strong> Ein <a href=\"handbooksearch://Stock\">Stock</a> und vier <a href=\"handbooksearch://Flachsfasern\">Flachsfasern</a> als Dochte.<br><br><strong>4. Tauche.</strong> Halte mit dem Stab die rechte Maustaste auf der Feuerstelle gedrückt, um seinen Dochten eine Schicht zu geben; das kostet eine Portion Talg. Lass jede Schicht einen Moment fest werden, bevor die nächste kommt, sonst hält sie nicht. Sechs Schichten ergeben fertige Kerzen.<br><br><strong>5. Schneide sie ab.</strong> Ein fertiger Stab und ein <a href=\"handbooksearch://Messer\">Messer</a> im Handwerksraster ergeben vier <a href=\"handbooksearch://Talgkerze\">Talgkerzen</a>, und du bekommst den Stock zurück. <br><br><strong>Oder nimm eine Form.</strong> Forme eine <a href=\"handbooksearch://Kerzenform\">Kerzenform</a> aus Ton und brenne sie in einem Grubenofen. Stelle die leere Form auf den Boden, nimm den Topf mit Wachs vom Feuer und halte die rechte Maustaste auf der Form gedrückt, um sie vollzugießen – sechs Portionen Talg oder zwölf geschmolzenes Bienenwachs für vier Kerzen. Ein Topf, der vom Feuer genommen ist, bleibt ein paar Stunden lang gießbar. Lass die Form fest werden und rechtsklicke sie dann mit zwei <a href=\"handbooksearch://Flachsfasern\">Flachsfasern</a> in der Hand, als Dochte, um die Kerzen herauszunehmen. Jede Benutzung nutzt die Form ab; nach zehn zerspringt sie.<br><br><strong>Bienenwachs.</strong> Auch Bienenwachs schmilzt im Topf, eine Portion pro Stück, für Formen – zum Ziehen ist es zu zäh.<br><br><strong>Stummel.</strong> Heruntergebrannte Stummel schmelzen wieder zu ihrem eigenen Wachs, eine Portion pro Stummel.<br><br><strong>Farbige Flammen.</strong> Vier <a href=\"handbooksearch://Flachsfasern\">Flachsfasern</a> und ein Mineralpulver im Handwerksraster ergeben vier behandelte Dochte, die farbig brennen: Rot mit <a href=\"handbooksearch://Zinnober\">Zinnober</a>, Gelb mit <a href=\"handbooksearch://Schwefel\">Schwefel</a>, Grün mit <a href=\"handbooksearch://Borax\">Borax</a>, Türkis mit <a href=\"handbooksearch://Grünspan\">Grünspan</a>, Blau mit <a href=\"handbooksearch://Lapislazuli\">Lapislazuli</a> und Violett mit <a href=\"handbooksearch://Sylvin\">Sylvin</a>. Mahle die Pulver in einer Handmühle; Grünspan ist gemahlener Malachit. Nimm behandelte Dochte für einen Tauchstab oder eine Form, und die Kerzen brennen in dieser Farbe und tauchen den Raum in ihr Licht. Die Farbe steckt im Docht, deshalb schmelzen Stummel wieder zu normalem Wachs.<br><br><strong>Gefärbtes Wachs.</strong> Koche einen beliebigen <a href=\"handbooksearch://Farbstoff\">Farbstoff</a> mit dem Wachs – einen Zehntelliter pro Stück, in einem eigenen Platz im Topf – und das Wachs nimmt seine Farbe an, ebenso die daraus gegossenen oder gezogenen Kerzen. Eine gezogene Kerze hat die Farbe ihrer letzten Schicht. Stummel schmelzen ungefärbt zurück und können beim selben Kochen neu gefärbt werden. Behandelte Dochte und gefärbtes Wachs passen zusammen: schwarze Kerzen mit roten Flammen.",
 
-	"gamemechanicinfo-candela-upkeep-title": "Kerzen und Unterhalt"
+	"gamemechanicinfo-candela-upkeep-title": "Kerzen und Unterhalt",
+	"gamemechanicinfo-candela-upkeep-text": "<strong>Kerzen und Unterhalt</strong><br><br>Kerzen brennen herunter. Eine Bienenwachskerze hält etwa zwei Monate Spielzeit, eine Talgkerze etwa einen – sofern dein Server das nicht geändert hat –, und beide werden dabei sichtbar kürzer. Talg ist außerdem etwas dunkler und rußiger.<br><br><strong>Kerzenbunde.</strong> Shift-Rechtsklick stellt eine Kerze auf oder fügt sie einem Bund hinzu, bis zu neun. Alle Kerzen eines Bundes brennen zusammen. Rechtsklick mit freier Hand nimmt eine ab – die zuletzt aufgesetzte: Eine angebrannte Kerze kommt als Stummel zurück, der noch so lange brennt, wie er übrig hat, und sich wie eine Kerze aufstellen lässt. Bienenwachs und Talg teilen sich keinen Bund, Kerzen mit verschiedenen Flammenfarben aber schon; der Raum nimmt die Farbe an, in der die meisten von ihnen brennen.<br><br><strong>Löschen.</strong> Shift-Rechtsklicke einen Bund, eine Laterne oder einen Leuchter mit freier Hand, um ihn zu löschen und den Rest aufzusparen. Zünde ihn mit einer brennenden Fackel oder einem Feueranzünder wieder an. Eine brennende Kerze zündet auch eine Fackel an.<br><br><strong>Heruntergebrannt.</strong> Eine verbrauchte Kerze flackert standardmäßig mit schwachem Schein aus. Dein Server kann sie stattdessen dunkel werden oder gar nicht herunterbrennen lassen.<br><br><strong>Laternen</strong> brennen jeweils eine Kerze – zu Beginn die, mit der sie hergestellt wurden, Bienenwachs oder Talg. Rechtsklicke eine mit einer Kerze oder einem Stummel, um sie einzusetzen; was von der alten übrig war, bekommst du zurück. Talg verrußt das Glas und kostet etwas Licht. Farbiges Glas färbt das Licht, ganz gleich, welche Kerze brennt. Eine aufgehobene Laterne behält, was von ihrer Kerze übrig ist.<br><br><strong>Ölbrenner.</strong> Zwei Kupferplatten und eine <a href=\"handbooksearch://Flachsschnur\">Flachsschnur</a> ergeben einen <a href=\"handbooksearch://Ölbrenner\">Ölbrenner</a>, der den Platz der Kerze einer Laterne einnimmt: Rechtsklicke eine Laterne mit ihm, um ihn einzusetzen, und die Kerze kommt heraus – und eine wieder eingesetzte Kerze gibt den Brenner mitsamt seinem Öl zurück. Fülle ihn aus einer Schüssel, einem Krug oder einem Eimer mit Olivenöl oder Leinöl; er fasst einen halben Liter, der etwa vier Monate brennt, doppelt so lange wie eine Bienenwachskerze, und kann jederzeit nachgefüllt werden. Leinöl rußt wie Talg. Strg-Rechtsklick mit freier Hand dreht den Docht herunter: halbes Licht, und das Öl hält doppelt so lange. Rechtsklick mit einem leeren Behälter gießt das Öl wieder aus. Ein leerer Brenner lässt sich nicht anzünden.<br><br><strong>Leuchter</strong> nehmen Kerzen oder Stummel auf, bis zu acht, und brennen sie wie einen Bund ab: Bienenwachs oder Talg, aber nicht beides zugleich – ein leerer Leuchter nimmt beides, und seine erste Kerze entscheidet. Rechtsklick mit freier Hand nimmt eine heraus; so werden verbrauchte Kerzen entfernt.<br><br><strong>Fackeln</strong> brennen herunter, sobald sie platziert sind, wie schon immer, behalten aber jetzt, was von ihnen übrig ist, wenn du eine aufhebst oder aus einem Fackelhalter nimmst – abgerundet auf ein Viertel, und nichts unter einem Viertel. Wieder platziert, brennt sie nur noch, was sie hatte. Ein Fackelhalter brennt die Fackel, die er hält, nicht ab.<br><br><strong>Gleich wieder aufgehoben.</strong> Eine Kerze oder Fackel, die am falschen Ort abgestellt und innerhalb einer Stunde wieder aufgehoben wird, kommt so zurück, wie sie abgestellt wurde."
 }

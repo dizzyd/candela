@@ -13,6 +13,7 @@
 	"itemdesc-powder-verdigris": "Malen malakit. Vekar behandlade med den brinner blågrönt.",
 
 	"with-look": "{0} ({1})",
+	"list-separator": ", ",
 	"flame-red": "röd låga",
 	"flame-yellow": "gul låga",
 	"flame-green": "grön låga",
@@ -86,13 +87,13 @@
 	"item-candlestub-tallow-*": "Talgljusstump",
 	"block-tallowcandles-*": "Talgljus",
 	"block-tallowcandle": "Talgljus",
-	"candle-hours": "Brinner i ungefär {0} timmar",
-	"torch-left": "Delvis bränd: ungefär {0} timmar kvar",
+	"candle-hours": "Brinner i ungefär {p0:# timmar|# timme|# timmar}",
+	"torch-left": "Delvis bränd: ungefär {p0:# timmar|# timme|# timmar} kvar",
 
 	"blockhelp-snuff": "Släck",
 	"blockhelp-refuel": "Sätt i ett nytt ljus",
 	"blockhelp-takecandle": "Ta ut ett ljus",
-	"lantern-candle": "{0}: ungefär {1} timmar kvar",
+	"lantern-candle": "{0}: ungefär {p1:# timmar|# timme|# timmar} kvar",
 	"lantern-candle-spent": "{0}: nedbrunnet",
 	"blockhelp-light": "Tänd",
 	"blockhelp-putburner": "Sätt i en oljebrännare",
@@ -106,16 +107,18 @@
 	"chandelier-wax-beeswax": "Bivaxljus",
 	"chandelier-wax-tallow": "Talgljus",
 	"burner-dry": "{0}: slut",
-	"burner-oil": "{0}: {1} L, ungefär {2} timmar",
+	"burner-oil": "{0}: {1} L, ungefär {p2:# timmar|# timme|# timmar}",
 	"burner-litres": "{0}: {1} L",
 	"burner-wick-low": "Veken nedskruvad",
 
-	"candles-burning": "Brinner – ungefär {0} timmar kvar",
-	"candles-snuffed": "Släckt – ungefär {0} timmar kvar",
-	"candles-guttering": "Nedbrunnet – fladdrar",
-	"candles-out": "Nedbrunnet",
+	"candles-burning": "Brinner – ungefär {p0:# timmar|# timme|# timmar} kvar",
+	"candles-snuffed": "{p1:Släckta|Släckt|Släckta} – ungefär {p0:# timmar|# timme|# timmar} kvar",
+	"candles-guttering": "{p0:Nedbrunna|Nedbrunnet|Nedbrunna} – fladdrar",
+	"candles-out": "{p0:Nedbrunna|Nedbrunnet|Nedbrunna}",
 
 	"craftinginfo-candela-dipping-title": "Doppa ljus",
+	"craftinginfo-candela-dipping-text": "<strong>Doppa ljus</strong><br><i>Talg: vardagsljuset, gjort av det slaktaren lämnar kvar.</i><br><br>Bivaxljus kommer från kokkärlet. Talgljus doppas, ett lager i taget, i smält djurfett.<br><br><strong>1. Smält ut fettet.</strong> Koka <a href=\"handbooksearch://fett\">rått fett</a> i ett kokkärl till utsmält fett, som för en oljelampa.<br><br><strong>2. Smält det.</strong> Koka utsmält fett i ett kokkärl igen, så smälter det till <a href=\"handbooksearch://smält talg\">smält talg</a>, två portioner per klump. Låt kokkärlet stå på en brinnande eldstad: elden håller talgen smält. Utanför elden svalnar den snart och stelnar tillbaka till utsmält fett, en klump för varannan portion.<br><br><strong>3. Gör en doppstav.</strong> En <a href=\"handbooksearch://pinne\">pinne</a> och fyra <a href=\"handbooksearch://linfiber\">linfiber</a> till vekar.<br><br><strong>4. Doppa.</strong> Håll inne högerklick på eldstaden med staven för att ge dess vekar ett lager, vilket tar en portion talg. Låt varje lager stelna en stund innan nästa, annars fäster det inte. Sex lager ger färdiga ljus.<br><br><strong>5. Skär loss dem.</strong> En färdig stav och en <a href=\"handbooksearch://kniv\">kniv</a> i tillverkningsrutnätet ger fyra <a href=\"handbooksearch://talgljus\">talgljus</a>, och pinnen tillbaka. <br><br><strong>Eller använd en form.</strong> Forma en <a href=\"handbooksearch://ljusform\">ljusform</a> av lera och bränn den i en gropugn. Ställ den tomma formen på marken, lyft kokkärlet med vax av elden och håll inne högerklick på formen för att fylla den – sex portioner talg, eller tolv smält bivax, till fyra ljus. Ett kokkärl utanför elden går att hälla ur i några timmar. Låt formen stelna och högerklicka sedan på den med två <a href=\"handbooksearch://linfiber\">linfiber</a> i handen, till vekarna, för att ta ut ljusen. Varje användning sliter på formen; efter tio spricker den.<br><br><strong>Bivax.</strong> Bivax smälter också i ett kokkärl, en portion per klump, för formar – det är för styvt för att doppa.<br><br><strong>Stumpar.</strong> Nedbrunna stumpar smälter tillbaka till sitt eget vax, en portion per stump.<br><br><strong>Färgade lågor.</strong> Fyra <a href=\"handbooksearch://linfiber\">linfiber</a> och ett mineralpulver i tillverkningsrutnätet ger fyra behandlade vekar, som brinner i färg: <a href=\"handbooksearch://cinnober\">cinnober</a> rött, <a href=\"handbooksearch://svavel\">svavel</a> gult, <a href=\"handbooksearch://borax\">borax</a> grönt, <a href=\"handbooksearch://ärg\">ärg</a> blågrönt, <a href=\"handbooksearch://lapis lazuli\">lapis lazuli</a> blått och <a href=\"handbooksearch://sylvin\">sylvin</a> violett. Mal pulver i en kvarnsten; ärg är malen malakit. Använd behandlade vekar till en doppstav eller en form, så brinner ljusen i den färgen och lyser upp rummet med den. Färgen sitter i veken, så stumparna smälter tillbaka till vanligt vax.<br><br><strong>Färgat vax.</strong> Koka valfri <a href=\"handbooksearch://färg\">färg</a> tillsammans med vaxet – en tiondels liter per klump, på en egen plats i kokkärlet – så tar vaxet dess färg, och likaså ljusen som hälls eller doppas av det. Ett doppat ljus har färgen av sitt sista lager. Stumpar smälter tillbaka ofärgade och kan färgas igen i samma kokning. Behandlade vekar och färgat vax går att kombinera: svarta ljus med röda lågor.",
 
-	"gamemechanicinfo-candela-upkeep-title": "Ljus och underhåll"
+	"gamemechanicinfo-candela-upkeep-title": "Ljus och underhåll",
+	"gamemechanicinfo-candela-upkeep-text": "<strong>Ljus och underhåll</strong><br><br>Ljus brinner ned. Ett bivaxljus räcker ungefär två månader speltid, ett talgljus ungefär en – om inte din server har ändrat det – och båda blir synbart kortare medan de brinner. Talg lyser också lite svagare, och osar mer.<br><br><strong>Knippen.</strong> Shift-högerklicka för att placera ett ljus, eller för att lägga till ett i ett knippe, upp till nio. Alla ljus i ett knippe brinner tillsammans. Högerklicka med tom hand för att ta bort ett – det som sattes dit sist: ett delvis bränt ljus kommer tillbaka som en stump, som brinner så länge den har kvar och placeras som ett ljus. Bivax och talg delar inte knippe, men ljus med olika lågfärger gör det; rummet får den färg som flest av dem brinner med.<br><br><strong>Släcka.</strong> Shift-högerklicka på ett knippe, en lykta eller en takkrona med tom hand för att släcka den och spara det som är kvar. Tänd igen med en brinnande fackla eller tändved. Ett tänt ljus tänder också en fackla.<br><br><strong>Nedbrunnet.</strong> Ett förbrukat ljus fladdrar som standard ned till ett svagt sken. Din server kan låta det slockna i stället, eller inte brinna ned alls.<br><br><strong>Lyktor</strong> bränner ett ljus i taget – till att börja med ljuset de tillverkades med, bivax eller talg. Högerklicka på en med ett ljus eller en stump för att sätta i det; det som var kvar av det gamla kommer tillbaka. Talg sotar glaset och kostar lite ljus. Färgat glas färgar ljuset vad ljuset än är gjort av. En upplockad lykta behåller det som är kvar av sitt ljus.<br><br><strong>Oljebrännare.</strong> Två kopparskivor och ett <a href=\"handbooksearch://lingarn\">lingarn</a> ger en <a href=\"handbooksearch://oljebrännare\">oljebrännare</a>, som ersätter lyktans ljus: högerklicka på en lykta med den för att sätta i den, så kommer ljuset ut – och ett ljus som byts tillbaka in lämnar tillbaka brännaren med sin olja. Fyll den från en skål, kanna eller hink med olivolja eller linolja; den rymmer en halv liter, som brinner ungefär fyra månader, dubbelt så länge som ett bivaxljus, och kan fyllas på när du vill. Linolja osar som talg. Ctrl-högerklick med tom hand skruvar ned veken: hälften så mycket ljus, och oljan räcker dubbelt så länge. Högerklicka med ett tomt kärl för att hälla ut oljan igen. En tom brännare går inte att tända.<br><br><strong>Takkronor</strong> tar ljus eller stumpar, upp till åtta, och bränner dem som ett knippe: bivax eller talg, men inte båda samtidigt – en tom takkrona tar vilket som helst, och dess första ljus avgör. Högerklicka med tom hand för att ta ut ett; så rensar man bort förbrukade ljus.<br><br><strong>Facklor</strong> brinner ned när de placerats, som de alltid har gjort, men behåller nu det som är kvar av dem när du plockar upp en eller tar ut den ur en fackelhållare – avrundat nedåt till närmaste fjärdedel, och ingenting under en fjärdedel. Placerad igen bränner den bara det den hade kvar. En hållare bränner inte facklan den håller.<br><br><strong>Genast upplockat igen.</strong> Ett ljus eller en fackla som ställs ned på fel ställe och plockas upp igen inom en timme kommer tillbaka som det var när det ställdes ned."
 }

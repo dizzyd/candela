@@ -13,6 +13,7 @@
 	"itemdesc-powder-verdigris": "Zmielony malachit. Nasączone nim knoty płoną turkusowym płomieniem.",
 
 	"with-look": "{0} ({1})",
+	"list-separator": ", ",
 	"flame-red": "czerwony płomień",
 	"flame-yellow": "żółty płomień",
 	"flame-green": "zielony płomień",
@@ -86,13 +87,13 @@
 	"item-candlestub-tallow-*": "Ogarek świecy z łoju",
 	"block-tallowcandles-*": "Świece z łoju",
 	"block-tallowcandle": "Świeca z łoju",
-	"candle-hours": "Pali się około {0} godz.",
-	"torch-left": "Częściowo wypalona: zostało około {0} godz.",
+	"candle-hours": "Czas palenia: mniej więcej {p0:# godzin|# godzina|# godziny|# godziny|# godziny|# godzin}",
+	"torch-left": "Częściowo wypalona: jeszcze mniej więcej {p0:# godzin|# godzina|# godziny|# godziny|# godziny|# godzin}",
 
 	"blockhelp-snuff": "Zgaś",
 	"blockhelp-refuel": "Włóż nową świecę",
 	"blockhelp-takecandle": "Wyjmij świecę",
-	"lantern-candle": "{0}: zostało około {1} godz.",
+	"lantern-candle": "{0}: jeszcze mniej więcej {p1:# godzin|# godzina|# godziny|# godziny|# godziny|# godzin}",
 	"lantern-candle-spent": "{0}: wypalona",
 	"blockhelp-light": "Zapal",
 	"blockhelp-putburner": "Włóż palnik olejowy",
@@ -106,16 +107,18 @@
 	"chandelier-wax-beeswax": "Świece z wosku pszczelego",
 	"chandelier-wax-tallow": "Świece z łoju",
 	"burner-dry": "{0}: brak",
-	"burner-oil": "{0}: {1} l, około {2} godz.",
+	"burner-oil": "{0}: {1} l, mniej więcej {p2:# godzin|# godzina|# godziny|# godziny|# godziny|# godzin}",
 	"burner-litres": "{0}: {1} l",
 	"burner-wick-low": "Knot skręcony",
 
-	"candles-burning": "Płoną — zostało około {0} godz.",
-	"candles-snuffed": "Zgaszone — zostało około {0} godz.",
-	"candles-guttering": "Wypalone — ledwo się tlą",
-	"candles-out": "Wypalone",
+	"candles-burning": "{p1:Płoną|Płonie|Płoną} — jeszcze mniej więcej {p0:# godzin|# godzina|# godziny|# godziny|# godziny|# godzin}",
+	"candles-snuffed": "{p1:Zgaszone|Zgaszona|Zgaszone} — jeszcze mniej więcej {p0:# godzin|# godzina|# godziny|# godziny|# godziny|# godzin}",
+	"candles-guttering": "{p0:Wypalone — ledwo się tlą|Wypalona — ledwo się tli|Wypalone — ledwo się tlą}",
+	"candles-out": "{p0:Wypalone|Wypalona|Wypalone}",
 
 	"craftinginfo-candela-dipping-title": "Maczanie świec",
+	"craftinginfo-candela-dipping-text": "<strong>Maczanie świec</strong><br><i>Łój: świeca na co dzień, z tego, co zostaje po rzeźniku.</i><br><br>Świece z wosku pszczelego powstają w garnku. Świece z łoju macza się, warstwa po warstwie, w roztopionym tłuszczu zwierzęcym.<br><br><strong>1. Wytop tłuszcz.</strong> Ugotuj <a href=\"handbooksearch://surowego tłuszczu\">surowy tłuszcz</a> w garnku na wytopiony tłuszcz, tak jak do lampy oliwnej.<br><br><strong>2. Roztop go.</strong> Ugotuj wytopiony tłuszcz w garnku jeszcze raz, a roztopi się w <a href=\"handbooksearch://roztopiony łój\">roztopiony łój</a>, dwie porcje z bryłki. Zostaw garnek na płonącym ognisku: ogień utrzymuje łój w stanie płynnym. Z dala od ognia łój szybko stygnie i zastyga z powrotem w wytopiony tłuszcz, bryłkę na każde dwie porcje.<br><br><strong>3. Zrób patyk do maczania.</strong> <a href=\"handbooksearch://patyk\">Patyk</a> i cztery <a href=\"handbooksearch://włókna lniane\">włókna lniane</a> na knoty.<br><br><strong>4. Maczaj.</strong> Przytrzymaj prawy przycisk myszy na ognisku z patykiem, by pokryć jego knoty warstwą; zużywa to jedną porcję łoju. Pozwól każdej warstwie chwilę zastygnąć przed następną, inaczej nie chwyci. Sześć warstw daje gotowe świece.<br><br><strong>5. Odetnij je.</strong> Gotowy patyk i <a href=\"handbooksearch://nóż\">nóż</a> w siatce wytwarzania dają cztery <a href=\"handbooksearch://świeca z łoju\">świece z łoju</a> i zwracają patyk. <br><br><strong>Albo użyj formy.</strong> Ulep <a href=\"handbooksearch://forma na świece\">formę na świece</a> z gliny i wypal ją w piecu jamowym. Postaw pustą formę na ziemi, zdejmij garnek z woskiem z ognia i przytrzymaj prawy przycisk myszy na formie, by napełnić ją do pełna — sześć porcji łoju albo dwanaście roztopionego wosku pszczelego na cztery świece. Garnek zdjęty z ognia nadaje się do wylewania przez kilka godzin. Pozwól formie zastygnąć, potem kliknij ją prawym przyciskiem, trzymając dwa <a href=\"handbooksearch://włókna lniane\">włókna lniane</a> na knoty, by wyjąć świece. Każde użycie zużywa formę; po dziesięciu pęka.<br><br><strong>Wosk pszczeli.</strong> Wosk pszczeli też topi się w garnku, porcja z bryłki, do form — jest zbyt sztywny do maczania.<br><br><strong>Ogarki.</strong> Wypalone ogarki topią się z powrotem w swój wosk, porcja z ogarka.<br><br><strong>Kolorowe płomienie.</strong> Cztery <a href=\"handbooksearch://włókna lniane\">włókna lniane</a> i proszek mineralny w siatce wytwarzania dają cztery nasączone knoty, które płoną kolorowo: <a href=\"handbooksearch://cynober\">cynober</a> na czerwono, <a href=\"handbooksearch://siarka\">siarka</a> na żółto, <a href=\"handbooksearch://boraks\">boraks</a> na zielono, <a href=\"handbooksearch://grynszpan\">grynszpan</a> na turkusowo, <a href=\"handbooksearch://lazuryt\">lazuryt</a> na niebiesko i <a href=\"handbooksearch://sylwin\">sylwin</a> na fioletowo. Proszki mieli się w żarnach; grynszpan to zmielony malachit. Użyj nasączonych knotów do patyka do maczania albo do formy, a świece będą płonąć tym kolorem i oświetlać nim pomieszczenie. Kolor jest w knocie, więc ogarki topią się w zwykły wosk.<br><br><strong>Barwiony wosk.</strong> Ugotuj dowolny <a href=\"handbooksearch://barwnik\">barwnik</a> razem z woskiem — jedną dziesiątą litra na każdą bryłkę, w osobnym miejscu w garnku — a wosk przyjmie jego kolor, a wraz z nim świece z niego wylane lub maczane. Maczana świeca ma kolor swojej ostatniej warstwy. Ogarki topią się z powrotem niebarwione i można je ponownie zabarwić w tym samym gotowaniu. Nasączone knoty i barwiony wosk idą w parze: czarne świece z czerwonym płomieniem.",
 
-	"gamemechanicinfo-candela-upkeep-title": "Świece i ich utrzymanie"
+	"gamemechanicinfo-candela-upkeep-title": "Świece i ich utrzymanie",
+	"gamemechanicinfo-candela-upkeep-text": "<strong>Świece i ich utrzymanie</strong><br><br>Świece się wypalają. Świeca z wosku pszczelego wystarcza na mniej więcej dwa miesiące czasu gry, a z łoju na mniej więcej jeden — chyba że twój serwer to zmienił — i obie wyraźnie się skracają w miarę palenia. Łój przy tym świeci nieco słabiej i bardziej kopci.<br><br><strong>Pęczki.</strong> Shift + prawy klik stawia świecę albo dokłada ją do pęczka, do dziewięciu. Wszystkie świece w pęczku płoną razem. Prawy klik wolną ręką zdejmuje jedną — tę postawioną jako ostatnią: częściowo wypalona świeca wraca jako ogarek, który pali się tyle, ile mu zostało, i stawia się go jak świecę. Świece z wosku pszczelego i z łoju nie stoją w jednym pęczku, ale świece o różnych kolorach płomienia — tak; pomieszczenie przyjmuje kolor, którym płonie większość z nich.<br><br><strong>Gaszenie.</strong> Shift + prawy klik wolną ręką na pęczek, latarnię albo żyrandol gasi je i zachowuje to, co zostało. Zapal ponownie płonącą pochodnią albo rozpałką. Płonąca świeca też zapali pochodnię.<br><br><strong>Wypalone.</strong> Domyślnie wypalona świeca tli się słabym blaskiem. Twój serwer może zamiast tego ją całkiem gasić albo w ogóle nie pozwalać świecom się wypalać.<br><br><strong>Latarnie</strong> palą po jednej świecy naraz — na początek tę, z którą je wytworzono, z wosku pszczelego albo z łoju. Kliknij latarnię prawym przyciskiem ze świecą albo ogarkiem, by go włożyć; to, co zostało ze starej, wraca do ciebie. Łój okopca szkło i zabiera trochę światła. Kolorowe szkło barwi światło, cokolwiek w środku płonie. Podniesiona latarnia zachowuje resztę swojej świecy.<br><br><strong>Palniki olejowe.</strong> Dwie płyty z miedzi i <a href=\"handbooksearch://lniany sznurek\">lniany sznurek</a> dają <a href=\"handbooksearch://palnik olejowy\">palnik olejowy</a>, który zajmuje miejsce świecy w latarni: kliknij latarnię prawym przyciskiem z palnikiem, by go włożyć, a świeca wróci do ciebie — a świeca włożona z powrotem zwraca palnik razem z jego olejem. Napełniaj go z miski, dzbanka albo wiadra z oliwą z oliwek albo olejem lnianym; mieści pół litra, które pali się mniej więcej cztery miesiące, dwa razy dłużej niż świeca z wosku pszczelego, i można go dolewać, kiedy tylko chcesz. Olej lniany kopci tak jak łój. Ctrl + prawy klik wolną ręką skręca knot: połowa światła, a olej starcza na dwa razy dłużej. Prawy klik pustym naczyniem wylewa olej z powrotem. Pusty palnik się nie zapali.<br><br><strong>Żyrandole</strong> mieszczą świece albo ogarki, do ośmiu, i palą je jak pęczek: z wosku pszczelego albo z łoju, ale nie jedne i drugie naraz — pusty żyrandol przyjmie każde, a decyduje pierwsza świeca. Prawy klik wolną ręką wyjmuje jedną — tak usuwa się wypalone świece.<br><br><strong>Pochodnie</strong> po postawieniu wypalają się, jak zawsze, ale teraz zachowują swoją resztę, gdy podnosisz pochodnię albo wyjmujesz ją z uchwytu na pochodnię — zaokrągloną w dół do ćwiartki, a poniżej ćwiartki nic. Postawiona ponownie pali się tylko tyle, ile miała. Uchwyt nie wypala pochodni, którą trzyma.<br><br><strong>Od razu podniesione.</strong> Świeca albo pochodnia postawiona w złym miejscu i podniesiona w ciągu godziny wraca taka, jaka była postawiona."
 }

@@ -13,6 +13,7 @@
 	"itemdesc-powder-verdigris": "Mletý malachit. Knoty jí napuštěné hoří tyrkysovým plamenem.",
 
 	"with-look": "{0} ({1})",
+	"list-separator": ", ",
 	"flame-red": "červený plamen",
 	"flame-yellow": "žlutý plamen",
 	"flame-green": "zelený plamen",
@@ -86,13 +87,13 @@
 	"item-candlestub-tallow-*": "Oharek svíčky z loje",
 	"block-tallowcandles-*": "Svíčky z loje",
 	"block-tallowcandle": "Svíčka z loje",
-	"candle-hours": "Hoří asi {0} h",
-	"torch-left": "Částečně ohořelá: zbývá asi {0} h",
+	"candle-hours": "Doba hoření: asi {p0:# hodin|# hodina|# hodiny|# hodiny|# hodiny|# hodin}",
+	"torch-left": "Částečně ohořelá: ještě asi {p0:# hodin|# hodina|# hodiny|# hodiny|# hodiny|# hodin}",
 
 	"blockhelp-snuff": "Uhasit",
 	"blockhelp-refuel": "Vložit novou svíčku",
 	"blockhelp-takecandle": "Vyjmout svíčku",
-	"lantern-candle": "{0}: zbývá asi {1} h",
+	"lantern-candle": "{0}: ještě asi {p1:# hodin|# hodina|# hodiny|# hodiny|# hodiny|# hodin}",
 	"lantern-candle-spent": "{0}: dohořela",
 	"blockhelp-light": "Zapálit",
 	"blockhelp-putburner": "Vložit olejový hořák",
@@ -106,16 +107,18 @@
 	"chandelier-wax-beeswax": "Svíčky ze včelího vosku",
 	"chandelier-wax-tallow": "Svíčky z loje",
 	"burner-dry": "{0}: došel",
-	"burner-oil": "{0}: {1} l, asi {2} h",
+	"burner-oil": "{0}: {1} l, asi {p2:# hodin|# hodina|# hodiny|# hodiny|# hodiny|# hodin}",
 	"burner-litres": "{0}: {1} l",
 	"burner-wick-low": "Knot stažený",
 
-	"candles-burning": "Hoří — zbývá asi {0} h",
-	"candles-snuffed": "Uhašené — zbývá asi {0} h",
-	"candles-guttering": "Dohořelé — sotva doutnají",
-	"candles-out": "Dohořelé",
+	"candles-burning": "Hoří — ještě asi {p0:# hodin|# hodina|# hodiny|# hodiny|# hodiny|# hodin}",
+	"candles-snuffed": "{p1:Uhašené|Uhašená|Uhašené} — ještě asi {p0:# hodin|# hodina|# hodiny|# hodiny|# hodiny|# hodin}",
+	"candles-guttering": "{p0:Dohořelé — sotva doutnají|Dohořelá — sotva doutná|Dohořelé — sotva doutnají}",
+	"candles-out": "{p0:Dohořelé|Dohořelá|Dohořelé}",
 
 	"craftinginfo-candela-dipping-title": "Máčení svíček",
+	"craftinginfo-candela-dipping-text": "<strong>Máčení svíček</strong><br><i>Lůj: svíčka pro každý den, z toho, co zbude po řezníkovi.</i><br><br>Svíčky ze včelího vosku vznikají v hrnci na vaření. Svíčky z loje se máčejí, vrstvu po vrstvě, v rozpuštěném zvířecím tuku.<br><br><strong>1. Vyškvařte tuk.</strong> Uvařte <a href=\"handbooksearch://hrudka tuku\">syrový tuk</a> v hrnci na vaření na vyškvařený tuk, stejně jako pro olejovou lampu.<br><br><strong>2. Rozpusťte ho.</strong> Uvařte vyškvařený tuk v hrnci ještě jednou a rozpustí se na <a href=\"handbooksearch://rozpuštěný lůj\">rozpuštěný lůj</a>, dvě porce z hrudky. Nechte hrnec na hořícím ohništi: oheň ho udržuje tekutý. Mimo oheň brzy vychladne a ztuhne zpět na vyškvařený tuk, hrudku na každé dvě porce.<br><br><strong>3. Vyrobte klacek na máčení.</strong> <a href=\"handbooksearch://klacek\">Klacek</a> a čtyři <a href=\"handbooksearch://lněné vlákno\">lněná vlákna</a> na knoty.<br><br><strong>4. Máčejte.</strong> S klackem držte pravé tlačítko myši na ohništi, abyste jeho knoty obalili vrstvou; spotřebuje se tím jedna porce loje. Nechte každou vrstvu chvíli ztuhnout před další, jinak nechytne. Šest vrstev dá hotové svíčky.<br><br><strong>5. Odřízněte je.</strong> Hotový klacek a <a href=\"handbooksearch://nůž\">nůž</a> ve výrobní mřížce dají čtyři <a href=\"handbooksearch://svíčka z loje\">svíčky z loje</a> a klacek zpět. <br><br><strong>Nebo použijte formu.</strong> Vytvarujte <a href=\"handbooksearch://forma na svíčky\">formu na svíčky</a> z jílu a vypalte ji ve vypalovací jámě. Položte prázdnou formu na zem, sejměte hrnec s voskem z ohně a držte pravé tlačítko myši na formě, abyste ji naplnili — šest porcí loje nebo dvanáct rozpuštěného včelího vosku na čtyři svíčky. Hrnec sejmutý z ohně zůstává několik hodin vhodný k lití. Nechte formu ztuhnout, pak na ni klikněte pravým tlačítkem se dvěma <a href=\"handbooksearch://lněné vlákno\">lněnými vlákny</a> na knoty v ruce a vyjměte svíčky. Každé použití formu opotřebí; po deseti praskne.<br><br><strong>Včelí vosk.</strong> Včelí vosk se v hrnci také rozpouští, porce z hrudky, do forem — na máčení je příliš tuhý.<br><br><strong>Oharky.</strong> Dohořelé oharky se rozpouštějí zpět na svůj vosk, porce z oharku.<br><br><strong>Barevné plameny.</strong> Čtyři <a href=\"handbooksearch://lněné vlákno\">lněná vlákna</a> a minerální prášek ve výrobní mřížce dají čtyři napuštěné knoty, které hoří barevně: <a href=\"handbooksearch://rumělka\">rumělka</a> červeně, <a href=\"handbooksearch://síra\">síra</a> žlutě, <a href=\"handbooksearch://borax\">borax</a> zeleně, <a href=\"handbooksearch://měděnka\">měděnka</a> tyrkysově, <a href=\"handbooksearch://lapis lazuli\">lapis lazuli</a> modře a <a href=\"handbooksearch://sylvit sylvín\">sylvit</a> fialově. Prášky se melou v mlýnském kameni; měděnka je mletý malachit. Použijte napuštěné knoty pro klacek na máčení nebo pro formu a svíčky budou hořet touto barvou a osvětlovat jí místnost. Barva je v knotu, takže oharky se rozpouštějí na obyčejný vosk.<br><br><strong>Barvený vosk.</strong> Uvařte jakékoli <a href=\"handbooksearch://barvivo\">barvivo</a> spolu s voskem — desetinu litru na každou hrudku, ve vlastním slotu hrnce — a vosk převezme jeho barvu, a s ním i svíčky z něj odlité nebo namáčené. Namáčená svíčka má barvu své poslední vrstvy. Oharky se rozpouštějí zpět neobarvené a lze je znovu obarvit v tomtéž vaření. Napuštěné knoty a barvený vosk jdou dohromady: černé svíčky s červenými plameny.",
 
-	"gamemechanicinfo-candela-upkeep-title": "Svíčky a údržba"
+	"gamemechanicinfo-candela-upkeep-title": "Svíčky a údržba",
+	"gamemechanicinfo-candela-upkeep-text": "<strong>Svíčky a údržba</strong><br><br>Svíčky dohořívají. Svíčka ze včelího vosku vydrží asi dva měsíce herního času, svíčka z loje asi jeden — pokud to váš server nezměnil — a obě při hoření viditelně ubývají. Lůj navíc svítí o něco slaběji a víc čadí.<br><br><strong>Trsy.</strong> Shift + pravé kliknutí položí svíčku nebo ji přidá do trsu, až devět. Všechny svíčky v trsu hoří spolu. Pravé kliknutí volnou rukou jednu odebere — tu naposledy přidanou: částečně ohořelá svíčka se vrátí jako oharek, který hoří tak dlouho, kolik mu zbývá, a pokládá se jako svíčka. Svíčky ze včelího vosku a z loje nesdílejí jeden trs, svíčky s různými barvami plamene ano; místnost převezme barvu, kterou hoří většina z nich.<br><br><strong>Zhášení.</strong> Shift + pravé kliknutí volnou rukou na trs, lucernu nebo lustr je uhasí a ušetří, co zbývá. Znovu je zapálíte hořící pochodní nebo zapalovačem. Hořící svíčka zapálí i pochodeň.<br><br><strong>Dohořelé.</strong> Ve výchozím nastavení dohořelá svíčka jen slabě doutná. Váš server může nastavit, aby místo toho zhasla úplně, nebo aby vůbec nedohořívala.<br><br><strong>Lucerny</strong> pálí jednu svíčku naráz — zpočátku tu, se kterou byly vyrobeny, ze včelího vosku nebo z loje. Klikněte na lucernu pravým tlačítkem se svíčkou nebo oharkem v ruce a vložte ji; co zbylo ze staré, se vám vrátí. Lůj začazuje sklo a ubírá trochu světla. Barevné sklo barví světlo, ať uvnitř hoří cokoli. Sebraná lucerna si ponechá zbytek své svíčky.<br><br><strong>Olejové hořáky.</strong> Dva měděné pláty a <a href=\"handbooksearch://lněný provazek\">lněný provazek</a> dají <a href=\"handbooksearch://olejový hořák\">olejový hořák</a>, který zaujme v lucerně místo svíčky: klikněte na lucernu pravým tlačítkem s hořákem v ruce a vložte ho, a svíčka se vám vrátí — a svíčka vložená zpět vrátí hořák i s jeho olejem. Plňte ho z mísy, džbánu nebo vědra s olivovým či lněným olejem; pojme půl litru, který hoří asi čtyři měsíce, dvakrát déle než svíčka ze včelího vosku, a můžete ho dolévat, kdykoli chcete. Lněný olej čadí jako lůj. Ctrl + pravé kliknutí volnou rukou stáhne knot: poloviční světlo a olej vydrží dvakrát déle. Pravé kliknutí prázdnou nádobou olej zase vylije. Prázdný hořák se nezapálí.<br><br><strong>Lustry</strong> berou svíčky nebo oharky, až osm, a pálí je jako trs: ze včelího vosku nebo z loje, ale ne obojí najednou — prázdný lustr vezme kterékoli a rozhodne první svíčka. Pravé kliknutí volnou rukou jednu vyjme; tak se odstraňují dohořelé svíčky.<br><br><strong>Pochodně</strong> po položení dohořívají jako vždy, ale teď si ponechají svůj zbytek, když pochodeň seberete nebo vyjmete z držáku pochodní — zaokrouhlený dolů na čtvrtinu, a pod čtvrtinu nic. Znovu položená hoří jen tak dlouho, kolik jí zbývalo. Držák pochodeň, kterou drží, nespaluje.<br><br><strong>Hned zase sebrané.</strong> Svíčka nebo pochodeň položená na špatné místo a sebraná do hodiny se vrátí taková, jaká byla položena."
 }

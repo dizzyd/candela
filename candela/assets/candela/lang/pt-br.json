@@ -13,6 +13,7 @@
 	"itemdesc-powder-verdigris": "Malaquita moída. Pavios tratados com ela queimam em azul-turquesa.",
 
 	"with-look": "{0} ({1})",
+	"list-separator": ", ",
 	"flame-red": "chama vermelha",
 	"flame-yellow": "chama amarela",
 	"flame-green": "chama verde",
@@ -86,13 +87,13 @@
 	"item-candlestub-tallow-*": "Toco de vela de sebo",
 	"block-tallowcandles-*": "Velas de sebo",
 	"block-tallowcandle": "Vela de sebo",
-	"candle-hours": "Queima por cerca de {0} horas",
-	"torch-left": "Parcialmente queimada: restam cerca de {0} horas",
+	"candle-hours": "Queima por cerca de {p0:# horas|# hora|# horas}",
+	"torch-left": "Parcialmente queimada: {p0:restam cerca de # horas|resta cerca de # hora|restam cerca de # horas}",
 
 	"blockhelp-snuff": "Apagar",
 	"blockhelp-refuel": "Colocar uma vela nova",
 	"blockhelp-takecandle": "Tirar uma vela",
-	"lantern-candle": "{0}: restam cerca de {1} horas",
+	"lantern-candle": "{0}: {p1:restam cerca de # horas|resta cerca de # hora|restam cerca de # horas}",
 	"lantern-candle-spent": "{0}: queimada até o fim",
 	"blockhelp-light": "Acender",
 	"blockhelp-putburner": "Colocar um queimador a óleo",
@@ -106,16 +107,18 @@
 	"chandelier-wax-beeswax": "Velas de cera de abelha",
 	"chandelier-wax-tallow": "Velas de sebo",
 	"burner-dry": "{0}: esgotado",
-	"burner-oil": "{0}: {1} L, cerca de {2} horas",
+	"burner-oil": "{0}: {1} L, cerca de {p2:# horas|# hora|# horas}",
 	"burner-litres": "{0}: {1} L",
 	"burner-wick-low": "Pavio baixado",
 
-	"candles-burning": "Acesas: restam cerca de {0} horas",
-	"candles-snuffed": "Apagadas: restam cerca de {0} horas",
-	"candles-guttering": "Queimadas até o fim: a chama se apaga",
-	"candles-out": "Queimadas até o fim",
+	"candles-burning": "{p1:Acesas|Acesa|Acesas}: {p0:restam cerca de # horas|resta cerca de # hora|restam cerca de # horas}",
+	"candles-snuffed": "{p1:Apagadas|Apagada|Apagadas}: {p0:restam cerca de # horas|resta cerca de # hora|restam cerca de # horas}",
+	"candles-guttering": "{p0:Queimadas até o fim: as chamas se apagam|Queimada até o fim: a chama se apaga|Queimadas até o fim: as chamas se apagam}",
+	"candles-out": "{p0:Queimadas até o fim|Queimada até o fim|Queimadas até o fim}",
 
 	"craftinginfo-candela-dipping-title": "Velas por imersão",
+	"craftinginfo-candela-dipping-text": "<strong>Velas por imersão</strong><br><i>Sebo: a vela do dia a dia, feita com o que o açougueiro deixa.</i><br><br>As velas de cera de abelha saem da panela. As velas de sebo são feitas por imersão, uma camada de cada vez, em gordura animal derretida.<br><br><strong>1. Processe a gordura.</strong> Cozinhe <a href=\"handbooksearch://Pedaço de gordura\">gordura crua</a> em uma panela até virar gordura processada, como para uma lamparina a óleo.<br><br><strong>2. Derreta-a.</strong> Cozinhe gordura processada em uma panela de novo, e ela derrete em <a href=\"handbooksearch://Sebo derretido\">sebo derretido</a>, duas porções por pedaço. Deixe a panela sobre uma fogueira acesa: o fogo mantém o sebo derretido. Fora do fogo, ele logo esfria e volta a endurecer em gordura processada, um pedaço a cada duas porções.<br><br><strong>3. Faça uma vareta de imersão.</strong> Um <a href=\"handbooksearch://Graveto\">graveto</a> e quatro <a href=\"handbooksearch://Fibras de linho\">fibras de linho</a> para os pavios.<br><br><strong>4. Mergulhe.</strong> Segure o botão direito sobre a fogueira com a vareta para dar uma camada aos pavios, gastando uma porção de sebo. Deixe cada camada firmar por um momento antes da próxima, ou ela não pega. Seis camadas fazem velas prontas.<br><br><strong>5. Corte-as.</strong> Uma vareta pronta e uma <a href=\"handbooksearch://Faca\">faca</a> na grade de criação dão quatro <a href=\"handbooksearch://Vela de sebo\">velas de sebo</a>, e o graveto de volta. <br><br><strong>Ou use um molde.</strong> Modele um <a href=\"handbooksearch://Molde de vela\">molde de vela</a> de argila e queime-o em um forno de cova. Coloque o molde vazio no chão, tire a panela de cera do fogo e segure o botão direito sobre o molde para enchê-lo: seis porções de sebo, ou doze de cera de abelha derretida, para quatro velas. Uma panela fora do fogo continua pronta para despejar por algumas horas. Deixe o molde firmar e depois clique nele com o botão direito segurando duas <a href=\"handbooksearch://Fibras de linho\">fibras de linho</a>, para os pavios, para tirar as velas. Cada uso desgasta o molde; depois de dez, ele racha.<br><br><strong>Cera de abelha.</strong> A cera de abelha também derrete na panela, uma porção por pedaço, para moldes: é rígida demais para imersão.<br><br><strong>Tocos.</strong> Tocos queimados até o fim derretem de volta em sua própria cera, uma porção por toco.<br><br><strong>Chamas coloridas.</strong> Quatro <a href=\"handbooksearch://Fibras de linho\">fibras de linho</a> e um pó mineral na grade de criação fazem quatro pavios tratados, que queimam coloridos: vermelho com <a href=\"handbooksearch://Cinábrio\">cinábrio</a>, amarelo com <a href=\"handbooksearch://Enxofre\">enxofre</a>, verde com <a href=\"handbooksearch://Bórax\">bórax</a>, azul-turquesa com <a href=\"handbooksearch://Azinhavre\">azinhavre</a>, azul com <a href=\"handbooksearch://Lápis-lazúli\">lápis-lazúli</a> e violeta com <a href=\"handbooksearch://Silvita\">silvita</a>. Moa os pós em um moinho manual; o azinhavre é malaquita moída. Use pavios tratados em uma vareta de imersão ou em um molde, e as velas queimam nessa cor e iluminam o ambiente com ela. A cor está no pavio, então os tocos derretem de volta em cera comum.<br><br><strong>Cera tingida.</strong> Cozinhe qualquer <a href=\"handbooksearch://Corante\">corante</a> junto com a cera – um décimo de litro por pedaço, em um espaço da panela só para ele – e a cera pega a cor dele, assim como as velas despejadas ou mergulhadas nela. Uma vela por imersão tem a cor da última camada. Os tocos derretem de volta sem tingimento e podem ser tingidos de novo no mesmo cozimento. Pavios tratados e cera tingida combinam: velas pretas com chamas vermelhas.",
 
-	"gamemechanicinfo-candela-upkeep-title": "Velas e manutenção"
+	"gamemechanicinfo-candela-upkeep-title": "Velas e manutenção",
+	"gamemechanicinfo-candela-upkeep-text": "<strong>Velas e manutenção</strong><br><br>As velas queimam até o fim. Uma vela de cera de abelha dura cerca de dois meses de tempo de jogo, uma de sebo cerca de um – a menos que o seu servidor tenha mudado isso – e ambas encurtam visivelmente enquanto queimam. O sebo também ilumina um pouco menos e solta mais fumaça.<br><br><strong>Conjuntos.</strong> Shift + botão direito coloca uma vela, ou a acrescenta a um conjunto, até nove. Todas as velas de um conjunto queimam juntas. Botão direito com a mão livre tira uma – a última colocada: uma vela parcialmente queimada volta como toco, que queima o que lhe resta e se coloca como uma vela. Cera de abelha e sebo não dividem um conjunto, mas velas de cores de chama diferentes, sim; o ambiente pega a cor em que a maioria delas queima.<br><br><strong>Apagar.</strong> Shift + botão direito com a mão livre num conjunto, num lampião ou num lustre o apaga e guarda o que resta. Acenda de novo com uma tocha acesa ou um acendedor de fogo. Uma vela acesa também acende uma tocha.<br><br><strong>Queimadas até o fim.</strong> Por padrão, uma vela gasta se reduz a um brilho fraco. O seu servidor pode, em vez disso, fazê-la apagar de vez, ou nem queimar até o fim.<br><br><strong>Os lampiões</strong> queimam uma vela por vez – de início, aquela com que foram fabricados, de cera de abelha ou de sebo. Clique com o botão direito num lampião com uma vela ou um toco para colocá-la; o que restava da antiga volta para você. O sebo enfumaça o vidro e custa um pouco de luz. O vidro colorido colore a luz, seja qual for a vela. Um lampião recolhido guarda o que resta da sua vela.<br><br><strong>Queimadores a óleo.</strong> Duas chapas de cobre e um <a href=\"handbooksearch://Fio de linho\">fio de linho</a> fazem um <a href=\"handbooksearch://Queimador a óleo\">queimador a óleo</a>, que toma o lugar da vela de um lampião: clique com o botão direito num lampião com ele para colocá-lo, e a vela sai – e uma vela recolocada devolve o queimador com o seu óleo. Encha-o com uma tigela, um jarro ou um balde de azeite de oliva ou óleo de linhaça; ele comporta meio litro, que queima cerca de quatro meses, o dobro de uma vela de cera de abelha, e pode ser completado quando você quiser. O óleo de linhaça solta fumaça como o sebo. Ctrl + botão direito com a mão livre baixa o pavio: metade da luz, e o óleo dura o dobro. Botão direito com um recipiente vazio despeja o óleo de volta. Um queimador vazio não acende.<br><br><strong>Os lustres</strong> aceitam velas ou tocos, até oito, e os queimam como um conjunto: cera de abelha ou sebo, mas não os dois ao mesmo tempo – um lustre vazio aceita qualquer um, e a primeira vela decide. Botão direito com a mão livre tira uma; é assim que se retiram as velas gastas.<br><br><strong>As tochas</strong> queimam depois de colocadas, como sempre, mas agora guardam o que lhes resta quando você pega uma ou a tira de um porta-tocha – arredondado para baixo ao quarto, e nada abaixo de um quarto. Colocada de novo, ela queima só o que tinha. Um porta-tocha não queima a tocha que segura.<br><br><strong>Recolhida na hora.</strong> Uma vela ou uma tocha colocada no lugar errado e recolhida dentro de uma hora volta como estava."
 }

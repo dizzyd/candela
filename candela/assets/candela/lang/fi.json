@@ -13,6 +13,7 @@
 	"itemdesc-powder-verdigris": "Jauhettua malakiittia. Sillä käsitellyt sydämet palavat sinivihreinä.",
 
 	"with-look": "{0} ({1})",
+	"list-separator": ", ",
 	"flame-red": "punainen liekki",
 	"flame-yellow": "keltainen liekki",
 	"flame-green": "vihreä liekki",
@@ -86,13 +87,13 @@
 	"item-candlestub-tallow-*": "Talikynttilän tynkä",
 	"block-tallowcandles-*": "Talikynttilät",
 	"block-tallowcandle": "Talikynttilä",
-	"candle-hours": "Palaa noin {0} tuntia",
-	"torch-left": "Osittain palanut: noin {0} tuntia jäljellä",
+	"candle-hours": "Palaa noin {p0:# tuntia|# tunnin|# tuntia}",
+	"torch-left": "Osittain palanut: noin {p0:# tuntia|# tunti|# tuntia} jäljellä",
 
 	"blockhelp-snuff": "Sammuta",
 	"blockhelp-refuel": "Laita uusi kynttilä",
 	"blockhelp-takecandle": "Ota kynttilä pois",
-	"lantern-candle": "{0}: noin {1} tuntia jäljellä",
+	"lantern-candle": "{0}: noin {p1:# tuntia|# tunti|# tuntia} jäljellä",
 	"lantern-candle-spent": "{0}: palanut loppuun",
 	"blockhelp-light": "Sytytä",
 	"blockhelp-putburner": "Laita öljypoltin",
@@ -106,16 +107,18 @@
 	"chandelier-wax-beeswax": "Mehiläisvahakynttilät",
 	"chandelier-wax-tallow": "Talikynttilät",
 	"burner-dry": "{0}: loppunut",
-	"burner-oil": "{0}: {1} l, noin {2} tuntia",
+	"burner-oil": "{0}: {1} l, noin {p2:# tuntia|# tunti|# tuntia}",
 	"burner-litres": "{0}: {1} l",
 	"burner-wick-low": "Sydän laskettu",
 
-	"candles-burning": "Palaa – noin {0} tuntia jäljellä",
-	"candles-snuffed": "Sammutettu – noin {0} tuntia jäljellä",
-	"candles-guttering": "Palanut loppuun – lepattaa",
-	"candles-out": "Palanut loppuun",
+	"candles-burning": "{p1:Palavat|Palaa|Palavat} – noin {p0:# tuntia|# tunti|# tuntia} jäljellä",
+	"candles-snuffed": "{p1:Sammutetut|Sammutettu|Sammutetut} – noin {p0:# tuntia|# tunti|# tuntia} jäljellä",
+	"candles-guttering": "{p0:Palaneet loppuun – lepattavat|Palanut loppuun – lepattaa|Palaneet loppuun – lepattavat}",
+	"candles-out": "{p0:Palaneet loppuun|Palanut loppuun|Palaneet loppuun}",
 
 	"craftinginfo-candela-dipping-title": "Kynttilöiden kastaminen",
+	"craftinginfo-candela-dipping-text": "<strong>Kynttilöiden kastaminen</strong><br><i>Tali: arkinen kynttilä, tehty siitä, mitä teurastajalta jää.</i><br><br>Mehiläisvahakynttilät syntyvät keittoastiassa. Talikynttilät kastetaan kerros kerrallaan sulatetusta eläinrasvasta.<br><br><strong>1. Sulata rasva.</strong> Kypsennä <a href=\"handbooksearch://rasva\">raakaa rasvaa</a> keittoastiassa sulatetuksi rasvaksi, kuten öljylamppua varten.<br><br><strong>2. Sulata se.</strong> Kuumenna sulatettua rasvaa keittoastiassa uudelleen, niin siitä sulaa <a href=\"handbooksearch://sula tali\">sulaa talia</a>, kaksi annosta möykkyä kohden. Jätä astia palavalle tulisijalle: tuli pitää talin sulana. Tulelta pois otettuna se jäähtyy pian ja jähmettyy takaisin sulatetuksi rasvaksi, möykky jokaista kahta annosta kohden.<br><br><strong>3. Tee kastokeppi.</strong> <a href=\"handbooksearch://keppi\">Keppi</a> ja neljä <a href=\"handbooksearch://pellavakuidut\">pellavakuitua</a> sydämiksi.<br><br><strong>4. Kasta.</strong> Pidä hiiren oikeaa painiketta painettuna tulisijalla keppi kädessä antaaksesi sen sydämille kerroksen; se kuluttaa yhden annoksen talia. Anna jokaisen kerroksen jähmettyä hetki ennen seuraavaa, tai se ei tartu. Kuudesta kerroksesta tulee valmiit kynttilät.<br><br><strong>5. Leikkaa ne irti.</strong> Valmis keppi ja <a href=\"handbooksearch://veitsi\">veitsi</a> valmistusruudukossa antavat neljä <a href=\"handbooksearch://talikynttilä\">talikynttilää</a> ja kepin takaisin. <br><br><strong>Tai käytä muottia.</strong> Muotoile <a href=\"handbooksearch://kynttilämuotti\">kynttilämuotti</a> savesta ja polta se maakuoppauunissa. Aseta tyhjä muotti maahan, nosta vahaa sisältävä keittoastia pois tulelta ja pidä hiiren oikeaa painiketta painettuna muotin päällä täyttääksesi sen – kuusi annosta talia tai kaksitoista annosta sulaa mehiläisvahaa neljään kynttilään. Tulelta pois otetusta astiasta voi kaataa muutaman tunnin ajan. Anna muotin jähmettyä ja napsauta sitä sitten hiiren oikealla painikkeella, kädessä kaksi <a href=\"handbooksearch://pellavakuidut\">pellavakuitua</a> sydämiksi, ottaaksesi kynttilät pois. Jokainen käyttökerta kuluttaa muottia; kymmenen jälkeen se halkeaa.<br><br><strong>Mehiläisvaha.</strong> Mehiläisvahakin sulaa keittoastiassa, annos möykkyä kohden, muotteja varten – se on liian jäykkää kastettavaksi.<br><br><strong>Tyngät.</strong> Loppuun palaneet tyngät sulavat takaisin omaksi vahakseen, annos tynkää kohden.<br><br><strong>Värilliset liekit.</strong> Neljä <a href=\"handbooksearch://pellavakuidut\">pellavakuitua</a> ja mineraalijauhe valmistusruudukossa antavat neljä käsiteltyä sydäntä, jotka palavat värillisinä: <a href=\"handbooksearch://sinooperi\">sinooperi</a> antaa punaisen liekin, <a href=\"handbooksearch://rikki\">rikki</a> keltaisen, <a href=\"handbooksearch://booraksi\">booraksi</a> vihreän, <a href=\"handbooksearch://vaskihome\">vaskihome</a> sinivihreän, <a href=\"handbooksearch://lasuuri\">lasuuri</a> sinisen ja <a href=\"handbooksearch://sylviini\">sylviini</a> violetin. Jauha jauheet jauhinkivellä; vaskihome on jauhettua malakiittia. Käytä käsiteltyjä sydämiä kastokeppiin tai muottiin, niin kynttilät palavat sen värisinä ja valaisevat huoneen sillä värillä. Väri on sydämessä, joten tyngät sulavat takaisin tavalliseksi vahaksi.<br><br><strong>Värjätty vaha.</strong> Keitä mitä tahansa <a href=\"handbooksearch://väriaine\">väriainetta</a> vahan mukana – kymmenesosalitra jokaista möykkyä kohden, omassa paikassaan astiassa – niin vaha saa sen värin, ja samoin siitä valetut tai kastetut kynttilät. Kastettu kynttilä on viimeisen kerroksensa värinen. Tyngät sulavat takaisin värjäämättöminä, ja ne voi värjätä uudelleen samassa keitossa. Käsitellyt sydämet ja värjätty vaha sopivat yhteen: mustia kynttilöitä punaisin liekein.",
 
-	"gamemechanicinfo-candela-upkeep-title": "Kynttilät ja ylläpito"
+	"gamemechanicinfo-candela-upkeep-title": "Kynttilät ja ylläpito",
+	"gamemechanicinfo-candela-upkeep-text": "<strong>Kynttilät ja ylläpito</strong><br><br>Kynttilät palavat loppuun. Mehiläisvahakynttilä kestää noin kaksi kuukautta peliaikaa, talikynttilä noin yhden – ellei palvelimesi ole muuttanut sitä – ja molemmat lyhenevät näkyvästi palaessaan. Tali myös valaisee hieman himmeämmin ja savuttaa enemmän.<br><br><strong>Kimput.</strong> Aseta kynttilä tai lisää se kimppuun Shift+oikealla napsautuksella, enintään yhdeksän. Kimpun kaikki kynttilät palavat yhdessä. Ota yksi pois oikealla napsautuksella tyhjin käsin – viimeksi lisätty: osittain palanut kynttilä tulee takaisin tynkänä, joka palaa sen ajan, mikä siinä on jäljellä, ja asetetaan kuten kynttilä. Mehiläisvaha ja tali eivät käy samaan kimppuun, mutta eriväriset liekit käyvät; huone saa sen värin, jolla useimmat niistä palavat.<br><br><strong>Sammuttaminen.</strong> Napsauta kimppua, lyhtyä tai kattokruunua Shift+oikealla tyhjin käsin sammuttaaksesi sen ja säästääksesi jäljellä olevan. Sytytä uudelleen palavalla soihdulla tai tulentekovälineellä. Palava kynttilä sytyttää myös soihdun.<br><br><strong>Palanut loppuun.</strong> Loppuun palanut kynttilä lepattaa oletuksena himmeänä hehkuna. Palvelimesi voi sen sijaan antaa sen sammua kokonaan tai olla polttamatta sitä loppuun lainkaan.<br><br><strong>Lyhdyt</strong> polttavat yhtä kynttilää kerrallaan – aluksi sitä, jolla ne valmistettiin, mehiläisvaha- tai talikynttilää. Napsauta lyhtyä oikealla kynttilä tai tynkä kädessä laittaaksesi sen paikalleen; vanhasta jäljellä oleva tulee takaisin. Tali nokeaa lasin ja vie hieman valoa. Värillinen lasi värjää valon, oli kynttilä mistä tahansa. Poimittu lyhty säilyttää kynttilästään jäljellä olevan.<br><br><strong>Öljypolttimet.</strong> Kaksi kuparilevyä ja <a href=\"handbooksearch://pellavalanka\">pellavalanka</a> antavat <a href=\"handbooksearch://öljypoltin\">öljypolttimen</a>, joka korvaa lyhdyn kynttilän: napsauta lyhtyä oikealla poltin kädessä laittaaksesi sen paikalleen, ja kynttilä tulee ulos – ja takaisin vaihdettu kynttilä palauttaa polttimen öljyineen. Täytä se kulhosta, kannusta tai ämpäristä, jossa on oliivi- tai pellavaöljyä; siihen mahtuu puoli litraa, joka palaa noin neljä kuukautta, kaksi kertaa niin kauan kuin mehiläisvahakynttilä, ja sitä voi täydentää milloin haluat. Pellavaöljy savuttaa kuten tali. Ctrl+oikea napsautus tyhjin käsin laskee sydäntä: puolet valosta, ja öljy kestää kaksi kertaa niin kauan. Napsauta oikealla tyhjä astia kädessä kaataaksesi öljyn takaisin pois. Tyhjä poltin ei syty.<br><br><strong>Kattokruunut</strong> ottavat kynttilöitä tai tynkiä, enintään kahdeksan, ja polttavat niitä kuten kimppu: mehiläisvahaa tai talia, mutta ei molempia yhtä aikaa – tyhjä kattokruunu ottaa kumman tahansa, ja sen ensimmäinen kynttilä ratkaisee. Ota yksi pois oikealla napsautuksella tyhjin käsin; näin loppuun palaneet kynttilät poistetaan.<br><br><strong>Soihdut</strong> palavat loppuun asetettuina, kuten aina ennenkin, mutta säilyttävät nyt jäljellä olevan osansa, kun poimit soihdun tai otat sen soihtupidikkeestä – pyöristettynä alaspäin neljännekseen, eikä mitään alle neljänneksen. Uudelleen asetettuna se palaa vain sen, mitä sillä oli. Pidike ei polta pitelemäänsä soihtua.<br><br><strong>Heti takaisin poimittu.</strong> Väärään paikkaan laskettu ja tunnin sisällä takaisin poimittu kynttilä tai soihtu tulee takaisin sellaisena kuin se laskettiin."
 }

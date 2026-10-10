@@ -13,6 +13,7 @@
 	"itemdesc-powder-verdigris": "Malachite macinata. Gli stoppini trattati con essa bruciano color turchese.",
 
 	"with-look": "{0} ({1})",
+	"list-separator": ", ",
 	"flame-red": "fiamma rossa",
 	"flame-yellow": "fiamma gialla",
 	"flame-green": "fiamma verde",
@@ -86,13 +87,13 @@
 	"item-candlestub-tallow-*": "Mozzicone di candela di sego",
 	"block-tallowcandles-*": "Candele di sego",
 	"block-tallowcandle": "Candela di sego",
-	"candle-hours": "Brucia per circa {0} ore",
-	"torch-left": "Consumata in parte: restano circa {0} ore",
+	"candle-hours": "Brucia per circa {p0:# ore|# ora|# ore}",
+	"torch-left": "Consumata in parte: {p0:restano circa # ore|resta circa # ora|restano circa # ore}",
 
 	"blockhelp-snuff": "Spegni",
 	"blockhelp-refuel": "Metti una candela nuova",
 	"blockhelp-takecandle": "Togli una candela",
-	"lantern-candle": "{0}: restano circa {1} ore",
+	"lantern-candle": "{0}: {p1:restano circa # ore|resta circa # ora|restano circa # ore}",
 	"lantern-candle-spent": "{0}: consumata",
 	"blockhelp-light": "Accendi",
 	"blockhelp-putburner": "Inserisci un bruciatore a olio",
@@ -106,16 +107,18 @@
 	"chandelier-wax-beeswax": "Candele di cera d'api",
 	"chandelier-wax-tallow": "Candele di sego",
 	"burner-dry": "{0}: esaurito",
-	"burner-oil": "{0}: {1} L, circa {2} ore",
+	"burner-oil": "{0}: {1} L, circa {p2:# ore|# ora|# ore}",
 	"burner-litres": "{0}: {1} L",
 	"burner-wick-low": "Stoppino abbassato",
 
-	"candles-burning": "Accese: restano circa {0} ore",
-	"candles-snuffed": "Spente: restano circa {0} ore",
-	"candles-guttering": "Consumate: la fiamma si spegne",
-	"candles-out": "Consumate",
+	"candles-burning": "{p1:Accese|Accesa|Accese}: {p0:restano circa # ore|resta circa # ora|restano circa # ore}",
+	"candles-snuffed": "{p1:Spente|Spenta|Spente}: {p0:restano circa # ore|resta circa # ora|restano circa # ore}",
+	"candles-guttering": "{p0:Consumate: le fiamme si spengono|Consumata: la fiamma si spegne|Consumate: le fiamme si spengono}",
+	"candles-out": "{p0:Consumate|Consumata|Consumate}",
 
 	"craftinginfo-candela-dipping-title": "Candele a immersione",
+	"craftinginfo-candela-dipping-text": "<strong>Candele a immersione</strong><br><i>Sego: la candela di tutti i giorni, fatta con ciò che lascia il macellaio.</i><br><br>Le candele di cera d'api escono dalla pentola. Le candele di sego si fanno per immersione, uno strato alla volta, nel grasso animale fuso.<br><br><strong>1. Chiarifica il grasso.</strong> Cuoci del <a href=\"handbooksearch://Grumo di grasso\">grasso crudo</a> in una pentola per ottenere grasso chiarificato, come per una lampada a olio.<br><br><strong>2. Scioglilo.</strong> Cuoci di nuovo il grasso chiarificato in una pentola, e si scioglie in <a href=\"handbooksearch://Sego fuso\">sego fuso</a>, due porzioni per grumo. Lascia la pentola su un focolare acceso: il fuoco lo mantiene fuso. Lontano dal fuoco si raffredda presto e si rapprende tornando grasso chiarificato, un grumo ogni due porzioni.<br><br><strong>3. Fai una bacchetta per immersione.</strong> Un <a href=\"handbooksearch://Bastone\">bastone</a> e quattro <a href=\"handbooksearch://Fibre di lino\">fibre di lino</a> per gli stoppini.<br><br><strong>4. Immergi.</strong> Tieni premuto il tasto destro sul focolare con la bacchetta per dare uno strato ai suoi stoppini, usando una porzione di sego. Lascia rapprendere ogni strato per un momento prima del successivo, altrimenti non attacca. Sei strati danno candele finite.<br><br><strong>5. Staccale.</strong> Una bacchetta finita e un <a href=\"handbooksearch://Coltello\">coltello</a> nella griglia di creazione danno quattro <a href=\"handbooksearch://Candela di sego\">candele di sego</a>, e ti restituiscono il bastone. <br><br><strong>Oppure usa uno stampo.</strong> Modella uno <a href=\"handbooksearch://Stampo per candele\">stampo per candele</a> con l'argilla e cuocilo in una fornace a fossa. Posa lo stampo vuoto a terra, togli dal fuoco la pentola di cera e tieni premuto il tasto destro sullo stampo per riempirlo: sei porzioni di sego, o dodici di cera d'api fusa, per quattro candele. Una pentola tolta dal fuoco resta versabile per qualche ora. Lascia rapprendere lo stampo, poi cliccaci sopra con il tasto destro tenendo due <a href=\"handbooksearch://Fibre di lino\">fibre di lino</a>, per gli stoppini, per estrarre le candele. Ogni uso consuma lo stampo; dopo dieci si crepa.<br><br><strong>Cera d'api.</strong> Anche la cera d'api si scioglie in pentola, una porzione per grumo, per gli stampi: è troppo rigida per l'immersione.<br><br><strong>Mozziconi.</strong> I mozziconi consumati si sciolgono di nuovo nella loro cera, una porzione per mozzicone.<br><br><strong>Fiamme colorate.</strong> Quattro <a href=\"handbooksearch://Fibre di lino\">fibre di lino</a> e una polvere minerale nella griglia di creazione danno quattro stoppini trattati, che bruciano colorati: rosso con il <a href=\"handbooksearch://Cinabro\">cinabro</a>, giallo con lo <a href=\"handbooksearch://Zolfo\">zolfo</a>, verde con il <a href=\"handbooksearch://Borace\">borace</a>, turchese con il <a href=\"handbooksearch://Verderame\">verderame</a>, blu con il <a href=\"handbooksearch://Lapislazzuli\">lapislazzuli</a> e viola con la <a href=\"handbooksearch://Silvite\">silvite</a>. Macina le polveri in una macina; il verderame è malachite macinata. Usa stoppini trattati per una bacchetta per immersione o per uno stampo, e le candele bruciano di quel colore e ne illuminano la stanza. Il colore è nello stoppino, quindi i mozziconi si sciolgono di nuovo in cera normale.<br><br><strong>Cera colorata.</strong> Cuoci un qualsiasi <a href=\"handbooksearch://Colorante\">colorante</a> insieme alla cera – un decimo di litro per ogni grumo, in uno spazio della pentola tutto suo – e la cera ne prende il colore, così come le candele versate o immerse in essa. Una candela a immersione ha il colore del suo ultimo strato. I mozziconi si sciolgono di nuovo senza colore e possono essere ricolorati nella stessa cottura. Stoppini trattati e cera colorata vanno insieme: candele nere con fiamme rosse.",
 
-	"gamemechanicinfo-candela-upkeep-title": "Candele e manutenzione"
+	"gamemechanicinfo-candela-upkeep-title": "Candele e manutenzione",
+	"gamemechanicinfo-candela-upkeep-text": "<strong>Candele e manutenzione</strong><br><br>Le candele si consumano. Una candela di cera d'api dura circa due mesi di tempo di gioco, una di sego circa uno – a meno che il tuo server non l'abbia cambiato – ed entrambe si accorciano a vista d'occhio. Il sego è anche un po' meno luminoso, e fa più fumo.<br><br><strong>Gruppi di candele.</strong> Maiusc + clic destro per posare una candela, o per aggiungerla a un gruppo, fino a nove. Tutte le candele di un gruppo bruciano insieme. Clic destro a mano libera per toglierne una – l'ultima messa: una candela consumata in parte torna come mozzicone, che brucia per quanto gli resta e si posa come una candela. Cera d'api e sego non condividono un gruppo, ma candele con fiamme di colori diversi sì; la stanza prende il colore con cui brucia la maggior parte di esse.<br><br><strong>Spegnere.</strong> Maiusc + clic destro a mano libera su un gruppo, una lanterna o un lampadario per spegnerlo e conservare ciò che resta. Riaccendilo con una torcia accesa o un accendi fuoco. Anche una candela accesa accende una torcia.<br><br><strong>Consumate.</strong> Di norma una candela esaurita si riduce a un debole bagliore. Il tuo server può invece farla spegnere del tutto, o non farla consumare affatto.<br><br><strong>Le lanterne</strong> bruciano una candela alla volta: all'inizio quella con cui sono state fabbricate, di cera d'api o di sego. Clic destro su una lanterna con una candela o un mozzicone per inserirla; ciò che restava della vecchia ti torna indietro. Il sego annerisce il vetro e toglie un po' di luce. Il vetro colorato colora la luce, qualunque candela bruci. Una lanterna raccolta conserva ciò che resta della sua candela.<br><br><strong>Bruciatori a olio.</strong> Due piastre di rame e uno <a href=\"handbooksearch://Spago di lino\">spago di lino</a> fanno un <a href=\"handbooksearch://Bruciatore a olio\">bruciatore a olio</a>, che prende il posto della candela di una lanterna: clic destro su una lanterna con il bruciatore per inserirlo, e la candela esce – e una candela rimessa dentro ti restituisce il bruciatore con il suo olio. Riempilo con una ciotola, una brocca o un secchio di olio d'oliva o di olio di semi di lino; contiene mezzo litro, che brucia circa quattro mesi, il doppio di una candela di cera d'api, e si può rabboccare quando vuoi. L'olio di semi di lino fa fumo come il sego. Ctrl + clic destro a mano libera abbassa lo stoppino: metà della luce, e l'olio dura il doppio. Clic destro con un contenitore vuoto per versare via l'olio. Un bruciatore vuoto non si accende.<br><br><strong>I lampadari</strong> accolgono candele o mozziconi, fino a otto, e li bruciano come un gruppo: cera d'api o sego, ma non entrambi insieme – un lampadario vuoto accetta l'uno o l'altro, e la sua prima candela decide. Clic destro a mano libera per toglierne una; è così che si tolgono le candele esaurite.<br><br><strong>Le torce</strong> si consumano una volta piazzate, come sempre, ma ora conservano ciò che ne resta quando ne raccogli una o la togli da un supporto per torcia – arrotondato per difetto al quarto, e niente sotto un quarto. Piazzata di nuovo, brucia solo ciò che le restava. Un supporto non consuma la torcia che regge.<br><br><strong>Raccolta subito.</strong> Una candela o una torcia posata nel posto sbagliato e raccolta entro un'ora torna com'era quando è stata posata."
 }

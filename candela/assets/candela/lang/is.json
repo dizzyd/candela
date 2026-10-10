@@ -13,6 +13,7 @@
 	"itemdesc-powder-verdigris": "Malað malakít. Kveikir meðhöndlaðir með henni brenna blágrænt.",
 
 	"with-look": "{0} ({1})",
+	"list-separator": ", ",
 	"flame-red": "rauður logi",
 	"flame-yellow": "gulur logi",
 	"flame-green": "grænn logi",
@@ -86,13 +87,13 @@
 	"item-candlestub-tallow-*": "Tólgarkertisstubbur",
 	"block-tallowcandles-*": "Tólgarkerti",
 	"block-tallowcandle": "Tólgarkerti",
-	"candle-hours": "Brennur í um {0} klukkustundir",
-	"torch-left": "Hálfbrunninn: um {0} klukkustundir eftir",
+	"candle-hours": "Brennur í um {p0:# klukkustundir|# klukkustund|# klukkustundir}",
+	"torch-left": "Hálfbrunninn: um {p0:# klukkustundir|# klukkustund|# klukkustundir} eftir",
 
 	"blockhelp-snuff": "Slökkva",
 	"blockhelp-refuel": "Setja nýtt kerti í",
 	"blockhelp-takecandle": "Taka kerti út",
-	"lantern-candle": "{0}: um {1} klukkustundir eftir",
+	"lantern-candle": "{0}: um {p1:# klukkustundir|# klukkustund|# klukkustundir} eftir",
 	"lantern-candle-spent": "{0}: brunnið niður",
 	"blockhelp-light": "Kveikja",
 	"blockhelp-putburner": "Setja olíubrennara í",
@@ -106,16 +107,18 @@
 	"chandelier-wax-beeswax": "Bývaxkerti",
 	"chandelier-wax-tallow": "Tólgarkerti",
 	"burner-dry": "{0}: uppurin",
-	"burner-oil": "{0}: {1} L, um {2} klukkustundir",
+	"burner-oil": "{0}: {1} L, um {p2:# klukkustundir|# klukkustund|# klukkustundir}",
 	"burner-litres": "{0}: {1} L",
 	"burner-wick-low": "Kveikur lækkaður",
 
-	"candles-burning": "Logar – um {0} klukkustundir eftir",
-	"candles-snuffed": "Slökkt – um {0} klukkustundir eftir",
-	"candles-guttering": "Brunnið niður – flöktir",
-	"candles-out": "Brunnið niður",
+	"candles-burning": "{p1:Loga|Logar|Loga} – um {p0:# klukkustundir|# klukkustund|# klukkustundir} eftir",
+	"candles-snuffed": "Slökkt – um {p0:# klukkustundir|# klukkustund|# klukkustundir} eftir",
+	"candles-guttering": "{p0:Brunnin niður – flökta|Brunnið niður – flöktir|Brunnin niður – flökta}",
+	"candles-out": "{p0:Brunnin niður|Brunnið niður|Brunnin niður}",
 
 	"craftinginfo-candela-dipping-title": "Kertadýfing",
+	"craftinginfo-candela-dipping-text": "<strong>Kertadýfing</strong><br><i>Tólg: hversdagskertið, gert úr því sem slátrarinn skilur eftir.</i><br><br>Bývaxkerti koma úr leirpottinum. Tólgarkertum er dýft, einu lagi í einu, í bráðna dýrafitu.<br><br><strong>1. Bræddu fituna.</strong> Eldaðu <a href=\"handbooksearch://fitu\">hráa fitu</a> í leirpotti í hreina fitu, eins og fyrir olíulampa.<br><br><strong>2. Bræddu hana.</strong> Eldaðu hreina fitu aftur í leirpotti og hún bráðnar í <a href=\"handbooksearch://bráðin tólg\">bráðna tólg</a>, tvo skammta á hvern klump. Láttu pottinn standa á logandi eldstæði: eldurinn heldur tólginni bráðinni. Utan elds kólnar hún fljótt og storknar aftur í hreina fitu, einn klump fyrir hverja tvo skammta.<br><br><strong>3. Búðu til dýfingarprik.</strong> Eitt <a href=\"handbooksearch://prik\">prik</a> og fjórar <a href=\"handbooksearch://hör trefjar\">hör trefjar</a> í kveiki.<br><br><strong>4. Dýfðu.</strong> Haltu hægri músarhnappi inni á eldstæðinu með prikið til að gefa kveikjunum lag, sem notar einn skammt af tólg. Láttu hvert lag storkna augnablik áður en það næsta kemur, annars festist það ekki. Sex lög gera fullbúin kerti.<br><br><strong>5. Skerðu þau laus.</strong> Fullbúið prik og <a href=\"handbooksearch://hníf\">hnífur</a> í smíðareitunum gefa fjögur <a href=\"handbooksearch://tólgarkerti\">tólgarkerti</a>, og prikið aftur. <br><br><strong>Eða notaðu mót.</strong> Mótaðu <a href=\"handbooksearch://kertamót\">kertamót</a> úr leir og brenndu það í jarðofni. Settu tóma mótið á jörðina, lyftu vaxpottinum af eldinum og haltu hægri músarhnappi inni á mótinu til að fylla það – sex skammtar af tólg, eða tólf af bráðnu bývaxi, fyrir fjögur kerti. Úr potti utan elds má hella í nokkrar klukkustundir. Láttu mótið storkna og hægrismelltu svo á það með tvær <a href=\"handbooksearch://hör trefjar\">hör trefjar</a> í hendi, fyrir kveikina, til að taka kertin út. Hver notkun slítur mótinu; eftir tíu springur það.<br><br><strong>Bývax.</strong> Bývax bráðnar líka í leirpotti, einn skammtur á hvern klump, fyrir mót – það er of stíft til að dýfa.<br><br><strong>Stubbar.</strong> Niðurbrunnir stubbar bráðna aftur í sitt eigið vax, einn skammtur á hvern stubb.<br><br><strong>Litaðir logar.</strong> Fjórar <a href=\"handbooksearch://hör trefjar\">hör trefjar</a> og steinefnaduft í smíðareitunum gera fjóra meðhöndlaða kveiki, sem brenna í lit: <a href=\"handbooksearch://sinnóber\">sinnóber</a> rautt, <a href=\"handbooksearch://brennisteins\">brennisteinn</a> gult, <a href=\"handbooksearch://bór\">bór</a> grænt, <a href=\"handbooksearch://kopargræna\">kopargræna</a> blágrænt, <a href=\"handbooksearch://asúrsteinn\">asúrsteinn</a> blátt og <a href=\"handbooksearch://sylvín\">sylvín</a> fjólublátt. Malaðu duft í kvörn; kopargræna er malað malakít. Notaðu meðhöndlaða kveiki í dýfingarprik eða mót, og kertin brenna í þeim lit og lýsa herbergið upp með honum. Liturinn er í kveiknum, svo stubbar bráðna aftur í venjulegt vax.<br><br><strong>Litað vax.</strong> Eldaðu hvaða <a href=\"handbooksearch://litarefni\">litarefni</a> sem er með vaxinu – tíunda hluta úr lítra fyrir hvern klump, í eigin hólfi í pottinum – og vaxið tekur lit þess, og kertin sem hellt er eða dýft úr því líka. Dýft kerti hefur lit síðasta lagsins. Stubbar bráðna aftur ólitaðir og má lita aftur í sömu eldun. Meðhöndlaðir kveikir og litað vax fara saman: svört kerti með rauðum logum.",
 
-	"gamemechanicinfo-candela-upkeep-title": "Kerti og viðhald"
+	"gamemechanicinfo-candela-upkeep-title": "Kerti og viðhald",
+	"gamemechanicinfo-candela-upkeep-text": "<strong>Kerti og viðhald</strong><br><br>Kerti brenna niður. Bývaxkerti endist um tvo mánuði af leiktíma, tólgarkerti um einn – nema þjónninn þinn hafi breytt því – og bæði styttast sýnilega meðan þau brenna. Tólg gefur líka aðeins daufara ljós, og meiri reyk.<br><br><strong>Knippi.</strong> Shift-hægrismelltu til að setja kerti niður, eða bæta því í knippi, allt að níu. Öll kerti í knippi brenna saman. Hægrismelltu með tóma hönd til að taka eitt af – það sem síðast var sett á: hálfbrunnið kerti kemur aftur sem stubbur, sem brennur það sem hann á eftir og er settur niður eins og kerti. Bývax og tólg deila ekki knippi, en kerti með mismunandi logaliti gera það; herbergið fær þann lit sem flest þeirra brenna.<br><br><strong>Að slökkva.</strong> Shift-hægrismelltu á knippi, lukt eða ljósakrónu með tóma hönd til að slökkva og spara það sem eftir er. Kveiktu aftur með logandi kyndli eða eldfærum. Logandi kerti kveikir líka á kyndli.<br><br><strong>Brunnið niður.</strong> Útbrunnið kerti flöktir sjálfgefið niður í daufan bjarma. Þjónninn þinn gæti látið það slokkna í staðinn, eða alls ekki brenna niður.<br><br><strong>Luktir</strong> brenna einu kerti í einu – í upphafi kertinu sem þær voru smíðaðar með, bývaxi eða tólg. Hægrismelltu á lukt með kerti eða stubb til að setja það í; það sem eftir var af því gamla kemur aftur. Tólg sótar glerið og kostar svolítið ljós. Litað gler litar ljósið, hvað sem kertið er gert úr. Lukt sem er tekin upp heldur því sem eftir er af kertinu sínu.<br><br><strong>Olíubrennarar.</strong> Tvær koparplötur og einn <a href=\"handbooksearch://hör tvinni\">hör tvinni</a> gera <a href=\"handbooksearch://olíubrennari\">olíubrennara</a>, sem kemur í stað kertis luktarinnar: hægrismelltu á lukt með honum til að setja hann í, og kertið kemur út – og kerti sem er sett aftur í skilar brennaranum með olíunni sinni. Fylltu á hann úr skál, krús eða fötu af ólífuolíu eða hörfræolíu; hann tekur hálfan lítra, sem brennur í um fjóra mánuði, tvöfalt lengur en bývaxkerti, og það má fylla á hann hvenær sem þú vilt. Hörfræolía reykir eins og tólg. Ctrl-hægrismellur með tóma hönd lækkar kveikinn: helmingi minna ljós, og olían endist tvöfalt lengur. Hægrismelltu með tómu íláti til að hella olíunni aftur út. Tómur brennari kviknar ekki.<br><br><strong>Ljósakrónur</strong> taka kerti eða stubba, allt að átta, og brenna þeim eins og knippi: bývaxi eða tólg, en ekki hvoru tveggja í einu – tóm ljósakróna tekur hvort sem er, og fyrsta kertið ræður. Hægrismelltu með tóma hönd til að taka eitt út; þannig eru útbrunnin kerti hreinsuð burt.<br><br><strong>Kyndlar</strong> brenna niður þegar þeir hafa verið settir niður, eins og alltaf, en halda nú því sem eftir er af þeim þegar þú tekur einn upp eða tekur hann úr kyndilfestingu – námundað niður í næsta fjórðung, og ekkert undir fjórðungi. Settur niður aftur brennur hann aðeins því sem hann átti eftir. Festing brennir ekki kyndlinum sem hún heldur.<br><br><strong>Tekið strax upp aftur.</strong> Kerti eða kyndill sem settur er niður á röngum stað og tekinn upp aftur innan klukkustundar kemur aftur eins og hann var þegar hann var settur niður."
 }

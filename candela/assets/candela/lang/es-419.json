@@ -13,6 +13,7 @@
 	"itemdesc-powder-verdigris": "Malaquita molida. Las mechas tratadas con él arden de color turquesa.",
 
 	"with-look": "{0} ({1})",
+	"list-separator": ", ",
 	"flame-red": "llama roja",
 	"flame-yellow": "llama amarilla",
 	"flame-green": "llama verde",
@@ -86,13 +87,13 @@
 	"item-candlestub-tallow-*": "Cabo de vela de sebo",
 	"block-tallowcandles-*": "Velas de sebo",
 	"block-tallowcandle": "Vela de sebo",
-	"candle-hours": "Arde unas {0} horas",
-	"torch-left": "Gastada en parte: quedan unas {0} horas",
+	"candle-hours": "Arde {p0:unas # horas|aproximadamente # hora|unas # horas}",
+	"torch-left": "Gastada en parte: {p0:quedan unas # horas|queda aproximadamente # hora|quedan unas # horas}",
 
 	"blockhelp-snuff": "Apagar",
 	"blockhelp-refuel": "Poner una vela nueva",
 	"blockhelp-takecandle": "Sacar una vela",
-	"lantern-candle": "{0}: quedan unas {1} horas",
+	"lantern-candle": "{0}: {p1:quedan unas # horas|queda aproximadamente # hora|quedan unas # horas}",
 	"lantern-candle-spent": "{0}: consumida",
 	"blockhelp-light": "Encender",
 	"blockhelp-putburner": "Poner un quemador de aceite",
@@ -106,16 +107,18 @@
 	"chandelier-wax-beeswax": "Velas de cera de abejas",
 	"chandelier-wax-tallow": "Velas de sebo",
 	"burner-dry": "{0}: agotado",
-	"burner-oil": "{0}: {1} L, unas {2} horas",
+	"burner-oil": "{0}: {1} L, {p2:unas # horas|aproximadamente # hora|unas # horas}",
 	"burner-litres": "{0}: {1} L",
 	"burner-wick-low": "Mecha bajada",
 
-	"candles-burning": "Encendidas: quedan unas {0} horas",
-	"candles-snuffed": "Apagadas: quedan unas {0} horas",
-	"candles-guttering": "Consumidas: la llama se extingue",
-	"candles-out": "Consumidas",
+	"candles-burning": "{p1:Encendidas|Encendida|Encendidas}: {p0:quedan unas # horas|queda aproximadamente # hora|quedan unas # horas}",
+	"candles-snuffed": "{p1:Apagadas|Apagada|Apagadas}: {p0:quedan unas # horas|queda aproximadamente # hora|quedan unas # horas}",
+	"candles-guttering": "{p0:Consumidas: las llamas se extinguen|Consumida: la llama se extingue|Consumidas: las llamas se extinguen}",
+	"candles-out": "{p0:Consumidas|Consumida|Consumidas}",
 
 	"craftinginfo-candela-dipping-title": "Velas por inmersión",
+	"craftinginfo-candela-dipping-text": "<strong>Velas por inmersión</strong><br><i>Sebo: la vela de todos los días, hecha con lo que deja el carnicero.</i><br><br>Las velas de cera de abejas salen de la olla. Las velas de sebo se hacen por inmersión, capa a capa, en grasa animal derretida.<br><br><strong>1. Funde la grasa.</strong> Cocina <a href=\"handbooksearch://Trozo de grasa\">grasa cruda</a> en una olla hasta obtener grasa fundida, como para una lámpara de aceite.<br><br><strong>2. Derrítela.</strong> Vuelve a cocinar grasa fundida en una olla y se derrite en <a href=\"handbooksearch://Sebo fundido\">sebo fundido</a>, dos porciones por trozo. Deja la olla sobre una hoguera encendida: el fuego lo mantiene fundido. Fuera del fuego pronto se enfría y vuelve a solidificarse en grasa fundida, un trozo por cada dos porciones.<br><br><strong>3. Haz una varilla de inmersión.</strong> Un <a href=\"handbooksearch://Palo\">palo</a> y cuatro <a href=\"handbooksearch://Fibras de lino\">fibras de lino</a> para las mechas.<br><br><strong>4. Sumerge.</strong> Mantén presionado el clic derecho sobre la hoguera con la varilla para darle una capa a sus mechas, con lo que gastas una porción de sebo. Deja que cada capa cuaje un momento antes de la siguiente, o no agarrará. Seis capas dan velas terminadas.<br><br><strong>5. Córtalas.</strong> Una varilla terminada y un <a href=\"handbooksearch://Cuchillo\">cuchillo</a> en la cuadrícula de fabricación dan cuatro <a href=\"handbooksearch://Vela de sebo\">velas de sebo</a>, y te devuelven el palo. <br><br><strong>O usa un molde.</strong> Da forma a un <a href=\"handbooksearch://Molde para velas\">molde para velas</a> con arcilla y cuécelo en un horno de pozo. Deja el molde vacío en el suelo, retira del fuego la olla de cera y mantén presionado el clic derecho sobre el molde para llenarlo: seis porciones de sebo, o doce de cera de abejas fundida, para cuatro velas. Una olla fuera del fuego se puede seguir vertiendo durante unas horas. Deja que el molde cuaje y luego haz clic derecho sobre él sosteniendo dos <a href=\"handbooksearch://Fibras de lino\">fibras de lino</a>, para las mechas, para sacar las velas. Cada uso desgasta el molde; tras diez se agrieta.<br><br><strong>Cera de abejas.</strong> La cera de abejas también se funde en una olla, una porción por trozo, para moldes: es demasiado rígida para la inmersión.<br><br><strong>Cabos.</strong> Los cabos consumidos se funden de nuevo en su propia cera, una porción por cabo.<br><br><strong>Llamas de colores.</strong> Cuatro <a href=\"handbooksearch://Fibras de lino\">fibras de lino</a> y un polvo mineral en la cuadrícula de fabricación dan cuatro mechas tratadas, que arden de color: rojo con <a href=\"handbooksearch://Cinabrio\">cinabrio</a>, amarillo con <a href=\"handbooksearch://Azufre\">azufre</a>, verde con <a href=\"handbooksearch://Bórax\">bórax</a>, turquesa con <a href=\"handbooksearch://Cardenillo\">cardenillo</a>, azul con <a href=\"handbooksearch://Lapislázuli\">lapislázuli</a> y violeta con <a href=\"handbooksearch://Silvita\">silvita</a>. Muele los polvos en un molino; el cardenillo es malaquita molida. Usa mechas tratadas para una varilla de inmersión o un molde, y las velas arden de ese color e iluminan la habitación con él. El color está en la mecha, así que los cabos se funden de nuevo en cera normal.<br><br><strong>Cera teñida.</strong> Cocina cualquier <a href=\"handbooksearch://Tinte\">tinte</a> junto con la cera – una décima de litro por cada trozo, en una ranura propia de la olla – y la cera toma su color, igual que las velas vertidas o sumergidas en ella. Una vela por inmersión tiene el color de su última capa. Los cabos se funden de nuevo sin teñir y pueden volver a teñirse en la misma cocción. Las mechas tratadas y la cera teñida combinan: velas negras con llamas rojas.",
 
-	"gamemechanicinfo-candela-upkeep-title": "Velas y mantenimiento"
+	"gamemechanicinfo-candela-upkeep-title": "Velas y mantenimiento",
+	"gamemechanicinfo-candela-upkeep-text": "<strong>Velas y mantenimiento</strong><br><br>Las velas se consumen. Una vela de cera de abejas dura unos dos meses de tiempo de juego, y una de sebo, alrededor de uno – a menos que tu servidor lo haya cambiado –, y ambas se acortan a ojos vista. El sebo además da algo menos de luz y más humo.<br><br><strong>Manojos.</strong> Haz Shift + clic derecho para colocar una vela, o para añadirla a un manojo, hasta nueve. Todas las velas de un manojo arden juntas. Haz clic derecho con la mano libre para quitar una – la última que se puso: una vela gastada en parte vuelve como cabo, que arde lo que le queda y se coloca como una vela. La cera de abejas y el sebo no comparten manojo, pero las velas de distintos colores de llama sí; la habitación toma el color con el que arden la mayoría.<br><br><strong>Apagar.</strong> Haz Shift + clic derecho con la mano libre sobre un manojo, una linterna o un candelabro para apagarlo y guardar lo que queda. Vuelve a encenderlo con una antorcha encendida o un encendedor. Una vela encendida también enciende una antorcha.<br><br><strong>Consumidas.</strong> Por defecto, una vela gastada se reduce a un tenue resplandor. Tu servidor puede hacer que se apague del todo, o que no se consuma nunca.<br><br><strong>Las linternas</strong> queman una vela cada vez: al principio, la vela con la que se fabricaron, de cera de abejas o de sebo. Haz clic derecho sobre una con una vela o un cabo para ponerla; lo que quedaba de la anterior vuelve a ti. El sebo tizna el vidrio y cuesta algo de luz. El vidrio de color tiñe la luz, sea cual sea la vela. Una linterna recogida conserva lo que queda de su vela.<br><br><strong>Quemadores de aceite.</strong> Dos placas de cobre y una <a href=\"handbooksearch://Cuerda de lino\">cuerda de lino</a> hacen un <a href=\"handbooksearch://Quemador de aceite\">quemador de aceite</a>, que ocupa el lugar de la vela de una linterna: haz clic derecho sobre una linterna con él para ponerlo, y la vela sale – y una vela que vuelvas a poner te devuelve el quemador con su aceite. Llénalo con un cuenco, una jarra o un balde de aceite de oliva o de lino; cabe medio litro, que arde unos cuatro meses, el doble que una vela de cera de abejas, y puede rellenarse cuando quieras. El aceite de lino humea como el sebo. Ctrl + clic derecho con la mano libre baja la mecha: la mitad de luz, y el aceite dura el doble. Haz clic derecho con un recipiente vacío para sacar el aceite. Un quemador vacío no se enciende.<br><br><strong>Los candelabros</strong> admiten velas o cabos, hasta ocho, y los queman como un manojo: cera de abejas o sebo, pero no ambos a la vez; un candelabro vacío acepta cualquiera de los dos, y su primera vela decide. Haz clic derecho con la mano libre para sacar una; así se retiran las velas consumidas.<br><br><strong>Las antorchas</strong> se consumen una vez colocadas, como siempre, pero ahora conservan lo que les queda cuando recoges una o la sacas de un soporte para antorchas – redondeado hacia abajo al cuarto, y nada por debajo de un cuarto. Colocada de nuevo, solo quema lo que tenía. Un soporte no consume la antorcha que sostiene.<br><br><strong>Recogida al momento.</strong> Una vela o una antorcha dejada en el sitio equivocado y recogida antes de una hora vuelve tal como se dejó."
 }

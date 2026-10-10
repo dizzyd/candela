@@ -13,6 +13,7 @@
 	"itemdesc-powder-verdigris": "Muelita malakito. Meĉoj traktitaj per ĝi brulas bluverde.",
 
 	"with-look": "{0} ({1})",
+	"list-separator": ", ",
 	"flame-red": "ruĝa flamo",
 	"flame-yellow": "flava flamo",
 	"flame-green": "verda flamo",
@@ -86,13 +87,13 @@
 	"item-candlestub-tallow-*": "Seba kandelstumpo",
 	"block-tallowcandles-*": "Sebaj kandeloj",
 	"block-tallowcandle": "Seba kandelo",
-	"candle-hours": "Brulas dum ĉirkaŭ {0} horoj",
-	"torch-left": "Parte forbrulinta: restas ĉirkaŭ {0} horoj",
+	"candle-hours": "Brulas dum ĉirkaŭ {p0:# horoj|# horo|# horoj}",
+	"torch-left": "Parte forbrulinta: restas ĉirkaŭ {p0:# horoj|# horo|# horoj}",
 
 	"blockhelp-snuff": "Estingi",
 	"blockhelp-refuel": "Enmeti novan kandelon",
 	"blockhelp-takecandle": "Elpreni kandelon",
-	"lantern-candle": "{0}: restas ĉirkaŭ {1} horoj",
+	"lantern-candle": "{0}: restas ĉirkaŭ {p1:# horoj|# horo|# horoj}",
 	"lantern-candle-spent": "{0}: forbrulinta",
 	"blockhelp-light": "Ekbruligi",
 	"blockhelp-putburner": "Enmeti oleobrulilon",
@@ -106,16 +107,18 @@
 	"chandelier-wax-beeswax": "Abelvaksaj kandeloj",
 	"chandelier-wax-tallow": "Sebaj kandeloj",
 	"burner-dry": "{0}: elĉerpita",
-	"burner-oil": "{0}: {1} L, ĉirkaŭ {2} horoj",
+	"burner-oil": "{0}: {1} L, ĉirkaŭ {p2:# horoj|# horo|# horoj}",
 	"burner-litres": "{0}: {1} L",
 	"burner-wick-low": "Meĉo malaltigita",
 
-	"candles-burning": "Brulas – restas ĉirkaŭ {0} horoj",
-	"candles-snuffed": "Estingita – restas ĉirkaŭ {0} horoj",
-	"candles-guttering": "Forbrulinta – flagretas",
-	"candles-out": "Forbrulinta",
+	"candles-burning": "Brulas – restas ĉirkaŭ {p0:# horoj|# horo|# horoj}",
+	"candles-snuffed": "{p1:Estingitaj|Estingita|Estingitaj} – restas ĉirkaŭ {p0:# horoj|# horo|# horoj}",
+	"candles-guttering": "{p0:Forbrulintaj|Forbrulinta|Forbrulintaj} – flagretas",
+	"candles-out": "{p0:Forbrulintaj|Forbrulinta|Forbrulintaj}",
 
 	"craftinginfo-candela-dipping-title": "Trempado de kandeloj",
+	"craftinginfo-candela-dipping-text": "<strong>Trempado de kandeloj</strong><br><i>Sebo: la ĉiutaga kandelo, farita el tio, kion la buĉisto restigas.</i><br><br>Abelvaksaj kandeloj venas el la kuirpoto. Sebaj kandeloj estas trempataj, po unu tavolo, el fandita besta graso.<br><br><strong>1. Elfandu la grason.</strong> Kuiru <a href=\"handbooksearch://graso\">krudan grason</a> en kuirpoto ĝis elfandita graso, kiel por oleolampo.<br><br><strong>2. Fandu ĝin.</strong> Kuiru elfanditan grason denove en kuirpoto, kaj ĝi fandiĝas en <a href=\"handbooksearch://fandita sebo\">fanditan sebon</a>, du porciojn po bulo. Lasu la poton sur brulanta fajrejo: la fajro tenas ĝin fandita. For de la fajro ĝi baldaŭ malvarmiĝas kaj rehardiĝas en elfanditan grason, unu bulo po ĉiuj du porcioj.<br><br><strong>3. Faru trempbastonon.</strong> <a href=\"handbooksearch://bastono\">Bastono</a> kaj kvar <a href=\"handbooksearch://linaj fibroj\">linaj fibroj</a> por meĉoj.<br><br><strong>4. Trempu.</strong> Tenu dekstran klakon sur la fajrejo kun la bastono por doni al ĝiaj meĉoj tavolon, uzante unu porcion da sebo. Lasu ĉiun tavolon hardiĝi momenton antaŭ la sekva, alie ĝi ne algluiĝos. Ses tavoloj donas pretajn kandelojn.<br><br><strong>5. Detranĉu ilin.</strong> Preta bastono kaj <a href=\"handbooksearch://tranĉilo\">tranĉilo</a> en la metiokrado donas kvar <a href=\"handbooksearch://seba kandelo\">sebajn kandelojn</a>, kaj la bastonon reen. <br><br><strong>Aŭ uzu muldilon.</strong> Formu <a href=\"handbooksearch://kandelmuldilo\">kandelmuldilon</a> el argilo kaj bakigu ĝin en kavforno. Metu la malplenan muldilon sur la teron, levu la poton da vakso de la fajro kaj tenu dekstran klakon sur la muldilo por plenigi ĝin – ses porciojn da sebo, aŭ dek du da fandita abelvakso, por kvar kandeloj. Poto for de la fajro restas verŝebla dum kelkaj horoj. Lasu la muldilon hardiĝi, poste dekstre alklaku ĝin tenante du <a href=\"handbooksearch://linaj fibroj\">linajn fibrojn</a>, por la meĉoj, por elpreni la kandelojn. Ĉiu uzo eluzas la muldilon; post dek ĝi fendiĝas.<br><br><strong>Abelvakso.</strong> Ankaŭ abelvakso fandiĝas en poto, unu porcio po bulo, por muldiloj – ĝi estas tro rigida por trempi.<br><br><strong>Stumpoj.</strong> Forbrulintaj stumpoj refandiĝas en sian propran vakson, unu porcio po stumpo.<br><br><strong>Koloraj flamoj.</strong> Kvar <a href=\"handbooksearch://linaj fibroj\">linaj fibroj</a> kaj minerala pulvoro en la metiokrado donas kvar traktitajn meĉojn, kiuj brulas kolore: <a href=\"handbooksearch://cinabro\">cinabro</a> ruĝe, <a href=\"handbooksearch://sulfuro\">sulfuro</a> flave, <a href=\"handbooksearch://borakso\">borakso</a> verde, <a href=\"handbooksearch://verdigro\">verdigro</a> bluverde, <a href=\"handbooksearch://lazurŝtono\">lazurŝtono</a> blue kaj <a href=\"handbooksearch://silvino\">silvino</a> viole. Muelu pulvorojn per muelilo; verdigro estas muelita malakito. Uzu traktitajn meĉojn por trempbastono aŭ muldilo, kaj la kandeloj brulas en tiu koloro kaj lumigas la ĉambron per ĝi. La koloro estas en la meĉo, do stumpoj refandiĝas en simplan vakson.<br><br><strong>Farbita vakso.</strong> Kuiru ajnan <a href=\"handbooksearch://farbo\">farbon</a> kun la vakso – dekonon de litro por ĉiu bulo, en propra loko de la poto – kaj la vakso prenas ĝian koloron, kaj ankaŭ la kandeloj verŝitaj aŭ trempitaj el ĝi. Trempita kandelo havas la koloron de sia lasta tavolo. Stumpoj refandiĝas nefarbitaj, kaj povas esti refarbitaj en la sama kuirado. Traktitaj meĉoj kaj farbita vakso iras kune: nigraj kandeloj kun ruĝaj flamoj.",
 
-	"gamemechanicinfo-candela-upkeep-title": "Kandeloj kaj prizorgado"
+	"gamemechanicinfo-candela-upkeep-title": "Kandeloj kaj prizorgado",
+	"gamemechanicinfo-candela-upkeep-text": "<strong>Kandeloj kaj prizorgado</strong><br><br>Kandeloj forbrulas. Abelvaksa kandelo daŭras ĉirkaŭ du monatojn da ludtempo, seba ĉirkaŭ unu – krom se via servilo ŝanĝis tion – kaj ambaŭ videble mallongiĝas dum ili brulas. Sebo ankaŭ estas iom malpli hela, kaj pli fuma.<br><br><strong>Faskoj.</strong> Shift-dekstra klako metas kandelon, aŭ aldonas ĝin al fasko, ĝis naŭ. Ĉiuj kandeloj en fasko brulas kune. Dekstre alklaku per libera mano por depreni unu – la laste metitan: parte forbrulinta kandelo revenas kiel stumpo, kiu brulas tiom, kiom restas al ĝi, kaj metiĝas kiel kandelo. Abelvakso kaj sebo ne kunhavas faskon, sed kandeloj kun malsamaj flamkoloroj ja; la ĉambro prenas la koloron, per kiu brulas la plej multaj el ili.<br><br><strong>Estingado.</strong> Shift-dekstra klako per libera mano sur fasko, lanterno aŭ lustro estingas ĝin kaj konservas tion, kio restas. Rebruligu ĝin per brulanta torĉo aŭ ekbruligilo. Brulanta kandelo ankaŭ ekbruligas torĉon.<br><br><strong>Forbrulinta.</strong> Elĉerpita kandelo defaŭlte flagretas ĝis malforta brilo. Via servilo eble anstataŭe lasas ĝin estingiĝi, aŭ tute ne forbruli.<br><br><strong>Lanternoj</strong> bruligas po unu kandelo – komence la kandelon, per kiu ili estis faritaj, abelvaksan aŭ seban. Dekstre alklaku iun per kandelo aŭ stumpo por enmeti ĝin; kio restis de la malnova revenas. Sebo fulgigas la vitron kaj kostas iom da lumo. Kolora vitro kolorigas la lumon, el kio ajn la kandelo estas. Prenita lanterno konservas tion, kio restas de ĝia kandelo.<br><br><strong>Oleobruliloj.</strong> Du kupraj platoj kaj <a href=\"handbooksearch://lina ŝnureto\">lina ŝnureto</a> faras <a href=\"handbooksearch://oleobrulilo\">oleobrulilon</a>, kiu anstataŭas la kandelon de lanterno: dekstre alklaku lanternon per ĝi por enmeti ĝin, kaj la kandelo eliras – kaj kandelo remetita redonas la brulilon kun ĝia oleo. Plenigu ĝin el bovlo, kruĉo aŭ sitelo da olivoleo aŭ linoleo; ĝi enhavas duonan litron, kiu brulas ĉirkaŭ kvar monatojn, duoble pli longe ol abelvaksa kandelo, kaj povas esti replenigita kiam ajn vi volas. Linoleo fumas kiel sebo. Ctrl-dekstra klako per libera mano malaltigas la meĉon: duono de la lumo, kaj la oleo daŭras duoble pli longe. Dekstre alklaku per malplena ujo por elverŝi la oleon. Malplena brulilo ne ekbrulas.<br><br><strong>Lustroj</strong> prenas kandelojn aŭ stumpojn, ĝis ok, kaj bruligas ilin kiel faskon: abelvaksajn aŭ sebajn, sed ne ambaŭ samtempe – malplena lustro prenas iun ajn, kaj ĝia unua kandelo decidas. Dekstre alklaku per libera mano por elpreni unu; tiel oni forigas elĉerpitajn kandelojn.<br><br><strong>Torĉoj</strong> forbrulas post metado, kiel ĉiam, sed nun konservas tion, kio restas de ili, kiam vi prenas unu aŭ elprenas ĝin el torĉingo – rondigite malsupren al kvarono, kaj nenio sub kvarono. Remetite, ĝi bruligas nur tion, kion ĝi havis. Torĉingo ne bruligas la torĉon, kiun ĝi tenas.<br><br><strong>Tuj reprenita.</strong> Kandelo aŭ torĉo metita en malĝustan lokon kaj reprenita ene de horo revenas tia, kia ĝi estis metita."
 }

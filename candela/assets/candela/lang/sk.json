@@ -13,6 +13,7 @@
 	"itemdesc-powder-verdigris": "Mletý malachit. Knôty ňou napustené horia tyrkysovým plameňom.",
 
 	"with-look": "{0} ({1})",
+	"list-separator": ", ",
 	"flame-red": "červený plameň",
 	"flame-yellow": "žltý plameň",
 	"flame-green": "zelený plameň",
@@ -86,13 +87,13 @@
 	"item-candlestub-tallow-*": "Ohorok sviečky z loja",
 	"block-tallowcandles-*": "Sviečky z loja",
 	"block-tallowcandle": "Sviečka z loja",
-	"candle-hours": "Horí asi {0} h",
-	"torch-left": "Čiastočne zhorená: zostáva asi {0} h",
+	"candle-hours": "Doba horenia: asi {p0:# hodín|# hodina|# hodiny|# hodiny|# hodiny|# hodín}",
+	"torch-left": "Čiastočne zhorená: ešte asi {p0:# hodín|# hodina|# hodiny|# hodiny|# hodiny|# hodín}",
 
 	"blockhelp-snuff": "Zhasni",
 	"blockhelp-refuel": "Vlož novú sviečku",
 	"blockhelp-takecandle": "Vyber sviečku",
-	"lantern-candle": "{0}: zostáva asi {1} h",
+	"lantern-candle": "{0}: ešte asi {p1:# hodín|# hodina|# hodiny|# hodiny|# hodiny|# hodín}",
 	"lantern-candle-spent": "{0}: dohorela",
 	"blockhelp-light": "Zapáľ",
 	"blockhelp-putburner": "Vlož olejový horák",
@@ -106,16 +107,18 @@
 	"chandelier-wax-beeswax": "Sviečky zo včelieho vosku",
 	"chandelier-wax-tallow": "Sviečky z loja",
 	"burner-dry": "{0}: minul sa",
-	"burner-oil": "{0}: {1} l, asi {2} h",
+	"burner-oil": "{0}: {1} l, asi {p2:# hodín|# hodina|# hodiny|# hodiny|# hodiny|# hodín}",
 	"burner-litres": "{0}: {1} l",
 	"burner-wick-low": "Knôt stiahnutý",
 
-	"candles-burning": "Horia — zostáva asi {0} h",
-	"candles-snuffed": "Zhasnuté — zostáva asi {0} h",
-	"candles-guttering": "Dohorené — sotva tlejú",
-	"candles-out": "Dohorené",
+	"candles-burning": "{p1:Horia|Horí|Horia} — ešte asi {p0:# hodín|# hodina|# hodiny|# hodiny|# hodiny|# hodín}",
+	"candles-snuffed": "{p1:Zhasnuté|Zhasnutá|Zhasnuté} — ešte asi {p0:# hodín|# hodina|# hodiny|# hodiny|# hodiny|# hodín}",
+	"candles-guttering": "{p0:Dohorené — sotva tlejú|Dohorená — sotva tlie|Dohorené — sotva tlejú}",
+	"candles-out": "{p0:Dohorené|Dohorená|Dohorené}",
 
 	"craftinginfo-candela-dipping-title": "Máčanie sviečok",
+	"craftinginfo-candela-dipping-text": "<strong>Máčanie sviečok</strong><br><i>Loj: sviečka na každý deň, z toho, čo zostane po mäsiarovi.</i><br><br>Sviečky zo včelieho vosku vznikajú v hrnci na varenie. Sviečky z loja sa máčajú, vrstvu po vrstve, v roztopenom zvieracom tuku.<br><br><strong>1. Vyškvar tuk.</strong> Uvar <a href=\"handbooksearch://hrudka tuku\">surový tuk</a> v hrnci na varenie na vyškvarený tuk, rovnako ako pre olejovú lampu.<br><br><strong>2. Roztop ho.</strong> Uvar vyškvarený tuk v hrnci ešte raz a roztopí sa na <a href=\"handbooksearch://roztopený loj\">roztopený loj</a>, dve porcie z hrudky. Nechaj hrniec na horiacom ohnisku: oheň ho udržiava tekutý. Mimo ohňa čoskoro vychladne a stuhne späť na vyškvarený tuk, hrudku na každé dve porcie.<br><br><strong>3. Vyrob palicu na máčanie.</strong> <a href=\"handbooksearch://palica\">Palica</a> a štyri <a href=\"handbooksearch://ľanové vlákna\">ľanové vlákna</a> na knôty.<br><br><strong>4. Máčaj.</strong> S palicou drž pravé tlačidlo myši na ohnisku, aby si jej knôty obalil vrstvou; spotrebuje sa tým jedna porcia loja. Nechaj každú vrstvu chvíľu stuhnúť pred ďalšou, inak nechytí. Šesť vrstiev dá hotové sviečky.<br><br><strong>5. Odrež ich.</strong> Hotová palica a <a href=\"handbooksearch://nôž\">nôž</a> vo výrobnej mriežke dajú štyri <a href=\"handbooksearch://sviečka z loja\">sviečky z loja</a> a palicu späť. <br><br><strong>Alebo použi formu.</strong> Vytvaruj <a href=\"handbooksearch://forma na sviečky\">formu na sviečky</a> z ílu a vypáľ ju vo vypaľovacej jame. Polož prázdnu formu na zem, zlož hrniec s voskom z ohňa a drž pravé tlačidlo myši na forme, aby si ju naplnil — šesť porcií loja alebo dvanásť roztopeného včelieho vosku na štyri sviečky. Hrniec zložený z ohňa zostáva niekoľko hodín vhodný na liatie. Nechaj formu stuhnúť, potom na ňu klikni pravým tlačidlom s dvoma <a href=\"handbooksearch://ľanové vlákna\">ľanovými vláknami</a> na knôty v ruke a vyber sviečky. Každé použitie formu opotrebuje; po desiatich praskne.<br><br><strong>Včelí vosk.</strong> Včelí vosk sa v hrnci tiež roztápa, porcia z hrudky, do foriem — na máčanie je príliš tuhý.<br><br><strong>Ohorky.</strong> Dohorené ohorky sa roztápajú späť na svoj vosk, porcia z ohorku.<br><br><strong>Farebné plamene.</strong> Štyri <a href=\"handbooksearch://ľanové vlákna\">ľanové vlákna</a> a minerálny prášok vo výrobnej mriežke dajú štyri napustené knôty, ktoré horia farebne: <a href=\"handbooksearch://rumelka\">rumelka</a> načerveno, <a href=\"handbooksearch://síra\">síra</a> nažlto, <a href=\"handbooksearch://borax\">borax</a> nazeleno, <a href=\"handbooksearch://medenka\">medenka</a> natyrkysovo, <a href=\"handbooksearch://lapis lazuli lazurit\">lazurit</a> namodro a <a href=\"handbooksearch://sylvín\">sylvín</a> nafialovo. Prášky sa melú v mlynskom kameni; medenka je mletý malachit. Použi napustené knôty na palicu na máčanie alebo na formu a sviečky budú horieť touto farbou a osvetľovať ňou miestnosť. Farba je v knôte, takže ohorky sa roztápajú na obyčajný vosk.<br><br><strong>Farbený vosk.</strong> Uvar akékoľvek <a href=\"handbooksearch://farbivo\">farbivo</a> spolu s voskom — desatinu litra na každú hrudku, vo vlastnom slote hrnca — a vosk prevezme jeho farbu, a s ním aj sviečky z neho odliate alebo namáčané. Namáčaná sviečka má farbu svojej poslednej vrstvy. Ohorky sa roztápajú späť nefarbené a dajú sa znova zafarbiť v tom istom varení. Napustené knôty a farbený vosk idú spolu: čierne sviečky s červenými plameňmi.",
 
-	"gamemechanicinfo-candela-upkeep-title": "Sviečky a údržba"
+	"gamemechanicinfo-candela-upkeep-title": "Sviečky a údržba",
+	"gamemechanicinfo-candela-upkeep-text": "<strong>Sviečky a údržba</strong><br><br>Sviečky dohárajú. Sviečka zo včelieho vosku vydrží asi dva mesiace herného času, sviečka z loja asi jeden — ak to tvoj server nezmenil — a obe pri horení viditeľne ubúdajú. Loj navyše svieti o niečo slabšie a viac čadí.<br><br><strong>Trsy.</strong> Shift + pravé kliknutie položí sviečku alebo ju pridá do trsu, až deväť. Všetky sviečky v trse horia spolu. Pravé kliknutie voľnou rukou jednu odoberie — tú naposledy pridanú: čiastočne zhorená sviečka sa vráti ako ohorok, ktorý horí tak dlho, koľko mu zostáva, a kladie sa ako sviečka. Sviečky zo včelieho vosku a z loja nezdieľajú jeden trs, sviečky s rôznymi farbami plameňa áno; miestnosť prevezme farbu, ktorou horí väčšina z nich.<br><br><strong>Zhášanie.</strong> Shift + pravé kliknutie voľnou rukou na trs, lampáš alebo luster ich zhasne a ušetrí, čo zostáva. Znova ich zapáliš horiacou fakľou alebo zapaľovačom. Horiaca sviečka zapáli aj fakľu.<br><br><strong>Dohorené.</strong> Predvolene dohorená sviečka len slabo tlie. Tvoj server môže nastaviť, aby namiesto toho úplne zhasla, alebo aby vôbec nedohárala.<br><br><strong>Lampáše</strong> pália jednu sviečku naraz — spočiatku tú, s ktorou boli vyrobené, zo včelieho vosku alebo z loja. Klikni na lampáš pravým tlačidlom so sviečkou alebo ohorkom v ruke a vlož ju; čo zostalo zo starej, sa ti vráti. Loj začaďuje sklo a uberá trochu svetla. Farebné sklo farbí svetlo, nech vnútri horí čokoľvek. Zdvihnutý lampáš si ponechá zvyšok svojej sviečky.<br><br><strong>Olejové horáky.</strong> Dve platne z medi a <a href=\"handbooksearch://ľanový špagát\">ľanový špagát</a> dajú <a href=\"handbooksearch://olejový horák\">olejový horák</a>, ktorý zaujme v lampáši miesto sviečky: klikni na lampáš pravým tlačidlom s horákom v ruke a vlož ho, a sviečka sa ti vráti — a sviečka vložená späť vráti horák aj s jeho olejom. Plň ho z misky, džbánu alebo vedra s olivovým či ľanovým olejom; pojme pol litra, ktorý horí asi štyri mesiace, dvakrát dlhšie ako sviečka zo včelieho vosku, a môžeš ho dolievať, kedykoľvek chceš. Ľanový olej čadí ako loj. Ctrl + pravé kliknutie voľnou rukou stiahne knôt: polovičné svetlo a olej vydrží dvakrát dlhšie. Pravé kliknutie prázdnou nádobou olej zase vyleje. Prázdny horák sa nezapáli.<br><br><strong>Lustre</strong> berú sviečky alebo ohorky, až osem, a pália ich ako trs: zo včelieho vosku alebo z loja, ale nie oboje naraz — prázdny luster vezme ktorékoľvek a rozhodne prvá sviečka. Pravé kliknutie voľnou rukou jednu vyberie; tak sa odstraňujú dohorené sviečky.<br><br><strong>Fakle</strong> po položení dohárajú ako vždy, ale teraz si ponechajú svoj zvyšok, keď fakľu zdvihneš alebo vyberieš z držiaka fakieľ — zaokrúhlený nadol na štvrtinu, a pod štvrtinu nič. Znova položená horí len tak dlho, koľko jej zostávalo. Držiak fakľu, ktorú drží, nespaľuje.<br><br><strong>Hneď zase zdvihnuté.</strong> Sviečka alebo fakľa položená na zlé miesto a zdvihnutá do hodiny sa vráti taká, aká bola položená."
 }

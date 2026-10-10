@@ -13,6 +13,7 @@
 	"itemdesc-powder-verdigris": "Knust malakit. Væger behandlet med det brænder blågrønt.",
 
 	"with-look": "{0} ({1})",
+	"list-separator": ", ",
 	"flame-red": "rød flamme",
 	"flame-yellow": "gul flamme",
 	"flame-green": "grøn flamme",
@@ -86,13 +87,13 @@
 	"item-candlestub-tallow-*": "Talglysstump",
 	"block-tallowcandles-*": "Talglys",
 	"block-tallowcandle": "Talglys",
-	"candle-hours": "Brænder i omkring {0} timer",
-	"torch-left": "Delvist brændt: omkring {0} timer tilbage",
+	"candle-hours": "Brænder i omkring {p0:# timer|# time|# timer}",
+	"torch-left": "Delvist brændt: omkring {p0:# timer|# time|# timer} tilbage",
 
 	"blockhelp-snuff": "Sluk",
 	"blockhelp-refuel": "Sæt et nyt lys i",
 	"blockhelp-takecandle": "Tag et lys ud",
-	"lantern-candle": "{0}: omkring {1} timer tilbage",
+	"lantern-candle": "{0}: omkring {p1:# timer|# time|# timer} tilbage",
 	"lantern-candle-spent": "{0}: brændt ned",
 	"blockhelp-light": "Tænd",
 	"blockhelp-putburner": "Sæt en oliebrænder i",
@@ -106,16 +107,18 @@
 	"chandelier-wax-beeswax": "Bivokslys",
 	"chandelier-wax-tallow": "Talglys",
 	"burner-dry": "{0}: løbet tør",
-	"burner-oil": "{0}: {1} L, omkring {2} timer",
+	"burner-oil": "{0}: {1} L, omkring {p2:# timer|# time|# timer}",
 	"burner-litres": "{0}: {1} L",
 	"burner-wick-low": "Vægen skruet ned",
 
-	"candles-burning": "Brænder – omkring {0} timer tilbage",
-	"candles-snuffed": "Slukket – omkring {0} timer tilbage",
+	"candles-burning": "Brænder – omkring {p0:# timer|# time|# timer} tilbage",
+	"candles-snuffed": "Slukket – omkring {p0:# timer|# time|# timer} tilbage",
 	"candles-guttering": "Brændt ned – blafrer",
 	"candles-out": "Brændt ned",
 
 	"craftinginfo-candela-dipping-title": "Dypning af lys",
+	"craftinginfo-candela-dipping-text": "<strong>Dypning af lys</strong><br><i>Talg: hverdagslyset, lavet af det, slagteren efterlader.</i><br><br>Bivokslys kommer fra gryden. Talglys dyppes, et lag ad gangen, i smeltet dyrefedt.<br><br><strong>1. Smelt fedtet ud.</strong> Kog <a href=\"handbooksearch://fedt\">råt fedt</a> i en gryde til udsmeltet fedt, som til en olielampe.<br><br><strong>2. Smelt det.</strong> Kog udsmeltet fedt i en gryde igen, så smelter det til <a href=\"handbooksearch://smeltet talg\">smeltet talg</a>, to portioner pr. klump. Lad gryden stå på et brændende bålsted: ilden holder talgen smeltet. Væk fra ilden køler den snart af og stivner igen til udsmeltet fedt, en klump for hver to portioner.<br><br><strong>3. Lav en dyppepind.</strong> En <a href=\"handbooksearch://pind\">pind</a> og fire <a href=\"handbooksearch://hørfiber\">hørfiber</a> til væger.<br><br><strong>4. Dyp.</strong> Hold højreklik nede på bålstedet med pinden for at give dens væger et lag, hvilket bruger en portion talg. Lad hvert lag stivne et øjeblik før det næste, ellers sætter det sig ikke. Seks lag giver færdige lys.<br><br><strong>5. Skær dem løs.</strong> En færdig pind og en <a href=\"handbooksearch://kniv\">kniv</a> i fremstillingsgitteret giver fire <a href=\"handbooksearch://talglys\">talglys</a> og pinden tilbage. <br><br><strong>Eller brug en form.</strong> Form en <a href=\"handbooksearch://lysform\">lysform</a> af ler, og brænd den i en grubeovn. Sæt den tomme form på jorden, løft gryden med voks af ilden, og hold højreklik nede på formen for at fylde den – seks portioner talg, eller tolv smeltet bivoks, til fire lys. Fra en gryde væk fra ilden kan der hældes i nogle timer. Lad formen stivne, og højreklik så på den med to <a href=\"handbooksearch://hørfiber\">hørfiber</a> i hånden, til vægerne, for at tage lysene ud. Hver brug slider på formen; efter ti revner den.<br><br><strong>Bivoks.</strong> Bivoks smelter også i en gryde, en portion pr. klump, til forme – den er for stiv til at dyppe.<br><br><strong>Stumper.</strong> Nedbrændte stumper smelter tilbage til deres egen voks, en portion pr. stump.<br><br><strong>Farvede flammer.</strong> Fire <a href=\"handbooksearch://hørfiber\">hørfiber</a> og et mineralpulver i fremstillingsgitteret giver fire behandlede væger, som brænder i farve: <a href=\"handbooksearch://cinnober\">cinnober</a> rødt, <a href=\"handbooksearch://svovl\">svovl</a> gult, <a href=\"handbooksearch://boraks\">boraks</a> grønt, <a href=\"handbooksearch://irr\">irr</a> blågrønt, <a href=\"handbooksearch://lapis lazuli\">lapis lazuli</a> blåt og <a href=\"handbooksearch://sylvin\">sylvin</a> violet. Mal pulver i en stenmølle; irr er knust malakit. Brug behandlede væger til en dyppepind eller en form, så brænder lysene i den farve og oplyser rummet med den. Farven sidder i vægen, så stumper smelter tilbage til almindelig voks.<br><br><strong>Farvet voks.</strong> Kog et hvilket som helst <a href=\"handbooksearch://farvestof\">farvestof</a> med voksen – en tiendedel liter pr. klump, på sin egen plads i gryden – så tager voksen dets farve, og det gør lysene, der hældes eller dyppes af den, også. Et dyppet lys har farven fra sit sidste lag. Stumper smelter tilbage ufarvede og kan farves igen i samme kogning. Behandlede væger og farvet voks kan kombineres: sorte lys med røde flammer.",
 
-	"gamemechanicinfo-candela-upkeep-title": "Lys og vedligehold"
+	"gamemechanicinfo-candela-upkeep-title": "Lys og vedligehold",
+	"gamemechanicinfo-candela-upkeep-text": "<strong>Lys og vedligehold</strong><br><br>Lys brænder ned. Et bivokslys holder omkring to måneders spiltid, et talglys omkring én – medmindre din server har ændret det – og begge bliver synligt kortere, mens de brænder. Talg lyser også lidt svagere, og oser mere.<br><br><strong>Bundter.</strong> Shift-højreklik for at placere et lys eller føje et til et bundt, op til ni. Alle lys i et bundt brænder sammen. Højreklik med en tom hånd for at tage et af – det, der blev sat på sidst: et delvist brændt lys kommer tilbage som en stump, der brænder i den tid, den har tilbage, og placeres som et lys. Bivoks og talg deler ikke bundt, men lys med forskellige flammefarver gør; rummet får den farve, de fleste af dem brænder med.<br><br><strong>Slukning.</strong> Shift-højreklik på et bundt, en lanterne eller en lysekrone med en tom hånd for at slukke og gemme det, der er tilbage. Tænd igen med en tændt fakkel eller en ildplov. Et tændt lys tænder også en fakkel.<br><br><strong>Brændt ned.</strong> Et opbrugt lys blafrer som standard ned til et svagt skær. Din server kan lade det gå ud i stedet, eller slet ikke brænde ned.<br><br><strong>Lanterner</strong> brænder ét lys ad gangen – til at begynde med det lys, de blev fremstillet med, bivoks eller talg. Højreklik på en med et lys eller en stump for at sætte det i; det, der var tilbage af det gamle, kommer tilbage. Talg soder glasset og koster lidt lys. Farvet glas farver lyset, uanset hvad lyset er lavet af. En lanterne, der samles op, beholder det, der er tilbage af dens lys.<br><br><strong>Oliebrændere.</strong> To kobberplader og et <a href=\"handbooksearch://hørgarn\">hørgarn</a> giver en <a href=\"handbooksearch://oliebrænder\">oliebrænder</a>, som tager pladsen for lanternens lys: højreklik på en lanterne med den for at sætte den i, så kommer lyset ud – og et lys, der sættes i igen, giver brænderen tilbage med dens olie. Fyld den fra en skål, kande eller spand med olivenolie eller hørfrøolie; den rummer en halv liter, som brænder omkring fire måneder, dobbelt så længe som et bivokslys, og kan fyldes op, når du vil. Hørfrøolie oser ligesom talg. Ctrl-højreklik med en tom hånd skruer vægen ned: halvt så meget lys, og olien holder dobbelt så længe. Højreklik med en tom beholder for at hælde olien ud igen. En tom brænder kan ikke tændes.<br><br><strong>Lysekroner</strong> tager lys eller stumper, op til otte, og brænder dem som et bundt: bivoks eller talg, men ikke begge på én gang – en tom lysekrone tager begge slags, og dens første lys bestemmer. Højreklik med en tom hånd for at tage et ud; sådan fjernes opbrugte lys.<br><br><strong>Fakler</strong> brænder ned, når de er placeret, som de altid har gjort, men beholder nu det, der er tilbage af dem, når du samler en op eller tager den ud af en fakkelholder – rundet ned til nærmeste kvart, og intet under en kvart. Placeret igen brænder den kun det, den havde. En holder brænder ikke den fakkel, den holder.<br><br><strong>Samlet op med det samme.</strong> Et lys eller en fakkel, der sættes ned det forkerte sted og samles op igen inden for en time, kommer tilbage, som det var, da det blev sat ned."
 }

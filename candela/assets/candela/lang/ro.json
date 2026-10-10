@@ -13,6 +13,7 @@
 	"itemdesc-powder-verdigris": "Malachit măcinat. Fitilele tratate cu el ard turcoaz.",
 
 	"with-look": "{0} ({1})",
+	"list-separator": ", ",
 	"flame-red": "flacără roșie",
 	"flame-yellow": "flacără galbenă",
 	"flame-green": "flacără verde",
@@ -86,13 +87,13 @@
 	"item-candlestub-tallow-*": "Muc de lumânare din seu",
 	"block-tallowcandles-*": "Lumânări din seu",
 	"block-tallowcandle": "Lumânare din seu",
-	"candle-hours": "Arde cam {0} ore",
-	"torch-left": "Parțial arsă: cam {0} ore rămase",
+	"candle-hours": "Arde cam {p0:# ore|# oră|# ore}",
+	"torch-left": "Parțial arsă: cam {p0:# ore rămase|# oră rămasă|# ore rămase}",
 
 	"blockhelp-snuff": "Stinge",
 	"blockhelp-refuel": "Pune o lumânare nouă",
 	"blockhelp-takecandle": "Scoate o lumânare",
-	"lantern-candle": "{0}: cam {1} ore rămase",
+	"lantern-candle": "{0}: cam {p1:# ore rămase|# oră rămasă|# ore rămase}",
 	"lantern-candle-spent": "{0}: s-a consumat",
 	"blockhelp-light": "Aprinde",
 	"blockhelp-putburner": "Pune un arzător cu ulei",
@@ -106,16 +107,18 @@
 	"chandelier-wax-beeswax": "Lumânări din ceară de albine",
 	"chandelier-wax-tallow": "Lumânări din seu",
 	"burner-dry": "{0}: s-a terminat",
-	"burner-oil": "{0}: {1} L, cam {2} ore",
+	"burner-oil": "{0}: {1} L, cam {p2:# ore|# oră|# ore}",
 	"burner-litres": "{0}: {1} L",
 	"burner-wick-low": "Fitil coborât",
 
-	"candles-burning": "Arde – cam {0} ore rămase",
-	"candles-snuffed": "Stins – cam {0} ore rămase",
-	"candles-guttering": "Consumat – pâlpâie",
-	"candles-out": "Consumat",
+	"candles-burning": "{p1:Ard|Arde|Ard} – cam {p0:# ore rămase|# oră rămasă|# ore rămase}",
+	"candles-snuffed": "{p1:Stinse|Stinsă|Stinse} – cam {p0:# ore rămase|# oră rămasă|# ore rămase}",
+	"candles-guttering": "{p0:Consumate|Consumată|Consumate} – pâlpâie",
+	"candles-out": "{p0:Consumate|Consumată|Consumate}",
 
 	"craftinginfo-candela-dipping-title": "Înmuierea lumânărilor",
+	"craftinginfo-candela-dipping-text": "<strong>Înmuierea lumânărilor</strong><br><i>Seul: lumânarea de zi cu zi, făcută din ce lasă măcelarul.</i><br><br>Lumânările din ceară de albine vin din oală. Lumânările din seu se înmoaie, strat cu strat, în grăsime animală topită.<br><br><strong>1. Topește grăsimea.</strong> Gătește <a href=\"handbooksearch://grăsime\">grăsime crudă</a> într-o oală până devine untură, ca pentru o lampă cu ulei.<br><br><strong>2. Topește-o.</strong> Gătește din nou untura într-o oală și se topește în <a href=\"handbooksearch://seu topit\">seu topit</a>, două porții la bucată. Lasă oala pe un foc de tabără aprins: focul îl ține topit. Luat de pe foc, se răcește curând și se întărește la loc în untură, o bucată la fiecare două porții.<br><br><strong>3. Fă un băț de înmuiat.</strong> Un <a href=\"handbooksearch://băț\">băț</a> și patru <a href=\"handbooksearch://fibre de in\">fibre de in</a> pentru fitile.<br><br><strong>4. Înmoaie.</strong> Ține apăsat click-dreapta pe foc cu bățul pentru a da fitilelor un strat, folosind o porție de seu. Lasă fiecare strat să se întărească o clipă înainte de următorul, altfel nu se prinde. Șase straturi dau lumânări gata.<br><br><strong>5. Desprinde-le.</strong> Un băț gata și un <a href=\"handbooksearch://cuțit\">cuțit</a> în grila de meșteșugit dau patru <a href=\"handbooksearch://lumânare din seu\">lumânări din seu</a>, plus bățul înapoi. <br><br><strong>Sau folosește o matriță.</strong> Modelează o <a href=\"handbooksearch://matriță de lumânări\">matriță de lumânări</a> din lut și arde-o într-un cuptor în groapă. Pune matrița goală pe pământ, ridică oala cu ceară de pe foc și ține apăsat click-dreapta pe matriță ca s-o umpli – șase porții de seu sau douăsprezece de ceară de albine topită, pentru patru lumânări. O oală luată de pe foc rămâne bună de turnat câteva ore. Lasă matrița să se întărească, apoi dă click-dreapta pe ea ținând două <a href=\"handbooksearch://fibre de in\">fibre de in</a>, pentru fitile, ca să scoți lumânările. Fiecare folosire uzează matrița; după zece crapă.<br><br><strong>Ceara de albine.</strong> Și ceara de albine se topește într-o oală, o porție la bucată, pentru matrițe – e prea vâscoasă pentru înmuiat.<br><br><strong>Mucurile.</strong> Mucurile consumate se topesc la loc în propria lor ceară, o porție la muc.<br><br><strong>Flăcări colorate.</strong> Patru <a href=\"handbooksearch://fibre de in\">fibre de in</a> și o pulbere minerală în grila de meșteșugit dau patru fitile tratate, care ard colorat: <a href=\"handbooksearch://cinabru\">cinabrul</a> roșu, <a href=\"handbooksearch://sulf\">sulful</a> galben, <a href=\"handbooksearch://borax\">boraxul</a> verde, <a href=\"handbooksearch://cocleț\">coclețul</a> turcoaz, <a href=\"handbooksearch://lapis lazuli\">lapis lazuli</a> albastru și <a href=\"handbooksearch://silvină\">silvina</a> violet. Macină pulberile cu o piatră de moară; coclețul este malachit măcinat. Folosește fitile tratate pentru un băț de înmuiat sau o matriță, iar lumânările ard în acea culoare și luminează camera cu ea. Culoarea e în fitil, așa că mucurile se topesc la loc în ceară simplă.<br><br><strong>Ceară vopsită.</strong> Gătește orice <a href=\"handbooksearch://dye\">colorant</a> împreună cu ceara – o zecime de litru la fiecare bucată, într-un loc separat al oalei – și ceara îi ia culoarea, la fel și lumânările turnate sau înmuiate din ea. O lumânare înmuiată are culoarea ultimului strat. Mucurile se topesc la loc nevopsite și pot fi vopsite din nou în aceeași gătire. Fitilele tratate și ceara vopsită merg împreună: lumânări negre cu flăcări roșii.",
 
-	"gamemechanicinfo-candela-upkeep-title": "Lumânări și întreținere"
+	"gamemechanicinfo-candela-upkeep-title": "Lumânări și întreținere",
+	"gamemechanicinfo-candela-upkeep-text": "<strong>Lumânări și întreținere</strong><br><br>Lumânările se consumă. O lumânare din ceară de albine ține cam două luni de timp de joc, una din seu cam una – dacă serverul tău nu a schimbat asta – și amândouă se scurtează vizibil pe măsură ce ard. Seul luminează și puțin mai slab, și scoate mai mult fum.<br><br><strong>Mănunchiuri.</strong> Shift + click-dreapta ca să așezi o lumânare sau s-o adaugi la un mănunchi, până la nouă. Toate lumânările dintr-un mănunchi ard împreună. Click-dreapta cu mâna liberă ca să iei una – ultima pusă: o lumânare parțial arsă se întoarce ca muc, care arde cât i-a mai rămas și se așază ca o lumânare. Ceara de albine și seul nu împart un mănunchi, dar lumânările cu flăcări de culori diferite da; camera ia culoarea cu care ard cele mai multe.<br><br><strong>Stingerea.</strong> Shift + click-dreapta cu mâna liberă pe un mănunchi, un felinar sau un candelabru ca să-l stingi și să păstrezi ce a rămas. Aprinde-l din nou cu o torță aprinsă sau cu un amnar. O lumânare aprinsă aprinde și o torță.<br><br><strong>Consumate.</strong> O lumânare consumată pâlpâie implicit până la o lumină slabă. Serverul tău o poate face să se stingă de tot, sau să nu se consume deloc.<br><br><strong>Felinarele</strong> ard câte o lumânare – la început pe cea cu care au fost meșteșugite, din ceară de albine sau din seu. Dă click-dreapta pe unul cu o lumânare sau un muc ca s-o pui; ce a rămas din cea veche se întoarce. Seul afumă sticla și costă puțină lumină. Sticla colorată colorează lumina, indiferent din ce e lumânarea. Un felinar ridicat păstrează ce a rămas din lumânarea lui.<br><br><strong>Arzătoare cu ulei.</strong> Două plăci din cupru și o <a href=\"handbooksearch://împletitură de in\">împletitură de in</a> fac un <a href=\"handbooksearch://arzător cu ulei\">arzător cu ulei</a>, care ia locul lumânării din felinar: dă click-dreapta pe un felinar cu el ca să-l pui, iar lumânarea iese – și o lumânare pusă la loc dă înapoi arzătorul cu uleiul lui. Umple-l dintr-un bol, ulcior sau găleată cu ulei de măsline sau ulei de in; ține o jumătate de litru, care arde cam patru luni, de două ori cât o lumânare din ceară de albine, și poate fi completat oricând vrei. Uleiul de in fumegă ca seul. Ctrl + click-dreapta cu mâna liberă coboară fitilul: jumătate din lumină, iar uleiul ține de două ori mai mult. Click-dreapta cu un recipient gol ca să verși uleiul înapoi. Un arzător gol nu se aprinde.<br><br><strong>Candelabrele</strong> iau lumânări sau mucuri, până la opt, și le ard ca pe un mănunchi: din ceară de albine sau din seu, dar nu amândouă deodată – un candelabru gol le ia pe oricare, iar prima lui lumânare hotărăște. Click-dreapta cu mâna liberă ca să scoți una; așa se curăță lumânările consumate.<br><br><strong>Torțele</strong> se consumă odată așezate, ca dintotdeauna, dar acum păstrează ce a rămas din ele când ridici una sau o scoți dintr-un suport de torță – rotunjit în jos la sfert, și nimic sub un sfert. Așezată din nou, arde doar cât mai avea. Un suport nu arde torța pe care o ține.<br><br><strong>Ridicate imediat înapoi.</strong> O lumânare sau o torță pusă jos în locul greșit și ridicată din nou în decurs de o oră se întoarce așa cum a fost pusă."
 }

@@ -13,6 +13,7 @@
 	"itemdesc-powder-verdigris": "Malachite broyée. Les mèches traitées avec brûlent d'une flamme turquoise.",
 
 	"with-look": "{0} ({1})",
+	"list-separator": ", ",
 	"flame-red": "flamme rouge",
 	"flame-yellow": "flamme jaune",
 	"flame-green": "flamme verte",
@@ -86,13 +87,13 @@
 	"item-candlestub-tallow-*": "Bout de bougie en suif",
 	"block-tallowcandles-*": "Bougies en suif",
 	"block-tallowcandle": "Bougie en suif",
-	"candle-hours": "Brûle environ {0} heures",
-	"torch-left": "Entamée : environ {0} heures restantes",
+	"candle-hours": "Brûle environ {p0:# heures|# heure|# heures}",
+	"torch-left": "Entamée : environ {p0:# heures restantes|# heure restante|# heures restantes}",
 
 	"blockhelp-snuff": "Éteindre",
 	"blockhelp-refuel": "Mettre une bougie neuve",
 	"blockhelp-takecandle": "Retirer une bougie",
-	"lantern-candle": "{0} : environ {1} heures restantes",
+	"lantern-candle": "{0} : environ {p1:# heures restantes|# heure restante|# heures restantes}",
 	"lantern-candle-spent": "{0} : consumée",
 	"blockhelp-light": "Allumer",
 	"blockhelp-putburner": "Mettre un brûleur à huile",
@@ -106,16 +107,18 @@
 	"chandelier-wax-beeswax": "Bougies en cire d'abeille",
 	"chandelier-wax-tallow": "Bougies en suif",
 	"burner-dry": "{0} : à sec",
-	"burner-oil": "{0} : {1} L, environ {2} heures",
+	"burner-oil": "{0} : {1} L, environ {p2:# heures|# heure|# heures}",
 	"burner-litres": "{0} : {1} L",
 	"burner-wick-low": "Mèche baissée",
 
-	"candles-burning": "Allumées : environ {0} heures restantes",
-	"candles-snuffed": "Éteintes : environ {0} heures restantes",
-	"candles-guttering": "Consumées : la flamme vacille",
-	"candles-out": "Consumées",
+	"candles-burning": "{p1:Allumées|Allumée|Allumées} : environ {p0:# heures restantes|# heure restante|# heures restantes}",
+	"candles-snuffed": "{p1:Éteintes|Éteinte|Éteintes} : environ {p0:# heures restantes|# heure restante|# heures restantes}",
+	"candles-guttering": "{p0:Consumées : les flammes vacillent|Consumée : la flamme vacille|Consumées : les flammes vacillent}",
+	"candles-out": "{p0:Consumées|Consumée|Consumées}",
 
 	"craftinginfo-candela-dipping-title": "Bougies trempées",
+	"craftinginfo-candela-dipping-text": "<strong>Bougies trempées</strong><br><i>Le suif : la bougie de tous les jours, faite de ce que laisse le boucher.</i><br><br>Les bougies en cire d'abeille sortent de la marmite. Les bougies en suif se trempent, couche après couche, dans de la graisse animale fondue.<br><br><strong>1. Préparez la graisse.</strong> Cuisez de la <a href=\"handbooksearch://graisse brute\">graisse brute</a> dans une marmite pour obtenir de la graisse, comme pour une lampe à huile.<br><br><strong>2. Faites-la fondre.</strong> Cuisez de nouveau cette graisse dans une marmite, et elle fond en <a href=\"handbooksearch://Suif fondu\">suif fondu</a>, deux portions par morceau. Laissez la marmite sur un foyer allumé : le feu garde le suif fondu. Hors du feu, il refroidit vite et se fige de nouveau en graisse, un morceau pour deux portions.<br><br><strong>3. Fabriquez une baguette de trempage.</strong> Un <a href=\"handbooksearch://Bâton\">bâton</a> et quatre <a href=\"handbooksearch://Fibre de lin\">fibres de lin</a> pour les mèches.<br><br><strong>4. Trempez.</strong> Maintenez le clic droit sur le foyer avec la baguette pour donner une couche à ses mèches, ce qui consomme une portion de suif. Laissez chaque couche prendre un instant avant la suivante, sinon elle n'accroche pas. Six couches donnent des bougies finies.<br><br><strong>5. Détachez-les.</strong> Une baguette finie et un <a href=\"handbooksearch://Couteau\">couteau</a> dans la grille d'artisanat donnent quatre <a href=\"handbooksearch://Bougie en suif\">bougies en suif</a>, et vous rendent le bâton. <br><br><strong>Ou utilisez un moule.</strong> Façonnez un <a href=\"handbooksearch://Moule à bougies\">moule à bougies</a> en argile et cuisez-le dans un four en fosse. Posez le moule vide au sol, retirez la marmite de cire du feu et maintenez le clic droit sur le moule pour le remplir : six portions de suif, ou douze de cire d'abeille fondue, pour quatre bougies. Une marmite retirée du feu reste coulable pendant quelques heures. Laissez le moule prendre, puis faites un clic droit dessus en tenant deux <a href=\"handbooksearch://Fibre de lin\">fibres de lin</a>, pour les mèches, afin d'en sortir les bougies. Chaque utilisation use le moule ; au bout de dix, il se fend.<br><br><strong>Cire d'abeille.</strong> La cire d'abeille fond aussi dans une marmite, une portion par morceau, pour les moules : elle est trop raide pour le trempage.<br><br><strong>Bouts.</strong> Les bouts consumés refondent en leur propre cire, une portion par bout.<br><br><strong>Flammes colorées.</strong> Quatre <a href=\"handbooksearch://Fibre de lin\">fibres de lin</a> et une poudre minérale dans la grille d'artisanat donnent quatre mèches traitées, qui brûlent en couleur : rouge au <a href=\"handbooksearch://Cinabre\">cinabre</a>, jaune au <a href=\"handbooksearch://Soufre\">soufre</a>, vert au <a href=\"handbooksearch://Borax\">borax</a>, turquoise au <a href=\"handbooksearch://Vert-de-gris\">vert-de-gris</a>, bleu au <a href=\"handbooksearch://Lapis-lazuli\">lapis-lazuli</a> et violet à la <a href=\"handbooksearch://Sylvine\">sylvine</a>. Broyez les poudres dans une meule ; le vert-de-gris est de la malachite broyée. Utilisez des mèches traitées pour une baguette de trempage ou un moule, et les bougies brûlent de cette couleur et en baignent la pièce. La couleur est dans la mèche, si bien que les bouts refondent en cire ordinaire.<br><br><strong>Cire teinte.</strong> Faites cuire n'importe quelle <a href=\"handbooksearch://Teinture\">teinture</a> avec la cire – un dixième de litre par morceau, dans un emplacement de la marmite rien que pour elle – et la cire prend sa couleur, tout comme les bougies coulées ou trempées dedans. Une bougie trempée a la couleur de sa dernière couche. Les bouts refondent sans teinture et peuvent être reteints dans la même cuisson. Mèches traitées et cire teinte vont ensemble : des bougies noires aux flammes rouges.",
 
-	"gamemechanicinfo-candela-upkeep-title": "Bougies et entretien"
+	"gamemechanicinfo-candela-upkeep-title": "Bougies et entretien",
+	"gamemechanicinfo-candela-upkeep-text": "<strong>Bougies et entretien</strong><br><br>Les bougies se consument. Une bougie en cire d'abeille dure environ deux mois de temps de jeu, une bougie en suif environ un – à moins que votre serveur ne l'ait modifié – et toutes deux raccourcissent à vue d'œil. Le suif éclaire aussi un peu moins, et fume davantage.<br><br><strong>Bouquets.</strong> Faites Maj + clic droit pour poser une bougie, ou pour l'ajouter à un bouquet, jusqu'à neuf. Toutes les bougies d'un bouquet brûlent ensemble. Un clic droit main libre en retire une – la dernière posée : une bougie entamée revient sous forme de bout, qui brûle ce qu'il lui reste et se pose comme une bougie. La cire d'abeille et le suif ne partagent pas un bouquet, mais des bougies aux flammes de couleurs différentes, si ; la pièce prend la couleur dans laquelle brûlent la plupart d'entre elles.<br><br><strong>Éteindre.</strong> Faites Maj + clic droit main libre sur un bouquet, une lanterne ou un lustre pour l'éteindre et garder ce qu'il reste. Rallumez-le avec une torche allumée ou un allume-feu. Une bougie allumée allume aussi une torche.<br><br><strong>Consumées.</strong> Par défaut, une bougie usée s'éteint peu à peu en une faible lueur. Votre serveur peut plutôt la faire s'éteindre tout à fait, ou ne pas la faire se consumer du tout.<br><br><strong>Les lanternes</strong> brûlent une bougie à la fois – au départ, celle avec laquelle elles ont été fabriquées, en cire d'abeille ou en suif. Faites un clic droit sur une lanterne avec une bougie ou un bout pour l'y mettre ; ce qui restait de l'ancienne vous revient. Le suif noircit le verre et coûte un peu de lumière. Le verre coloré colore la lumière, quelle que soit la bougie. Une lanterne ramassée garde ce qu'il reste de sa bougie.<br><br><strong>Brûleurs à huile.</strong> Deux plaques de cuivre et une <a href=\"handbooksearch://Ficelle de lin\">ficelle de lin</a> donnent un <a href=\"handbooksearch://Brûleur à huile\">brûleur à huile</a>, qui prend la place de la bougie d'une lanterne : faites un clic droit sur une lanterne avec le brûleur pour l'y mettre, et la bougie ressort – et une bougie remise à sa place vous rend le brûleur avec son huile. Remplissez-le avec un bol, un cruchon ou un seau d'huile d'olive ou d'huile de lin ; il contient un demi-litre, qui brûle environ quatre mois, deux fois plus longtemps qu'une bougie en cire d'abeille, et peut être complété quand vous voulez. L'huile de lin fume comme le suif. Ctrl + clic droit main libre baisse la mèche : moitié moins de lumière, et l'huile dure deux fois plus longtemps. Un clic droit avec un récipient vide reverse l'huile. Un brûleur vide ne s'allume pas.<br><br><strong>Les lustres</strong> prennent des bougies ou des bouts, jusqu'à huit, et les brûlent comme un bouquet : cire d'abeille ou suif, mais pas les deux à la fois – un lustre vide accepte l'un ou l'autre, et sa première bougie décide. Un clic droit main libre en retire une ; c'est ainsi qu'on enlève les bougies usées.<br><br><strong>Les torches</strong> se consument une fois posées, comme toujours, mais gardent désormais ce qu'il leur reste quand vous en ramassez une ou la retirez d'un porte-torche – arrondi au quart inférieur, et rien en dessous d'un quart. Reposée, elle ne brûle que ce qu'il lui restait. Un porte-torche ne consume pas la torche qu'il tient.<br><br><strong>Ramassée aussitôt.</strong> Une bougie ou une torche posée au mauvais endroit et ramassée dans l'heure revient telle qu'elle a été posée."
 }

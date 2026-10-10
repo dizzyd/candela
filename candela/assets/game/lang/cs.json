@@ -1,3 +1,4 @@
 {
-	"item-candle": "Svíčka ze včelího vosku"
+	"item-candle": "Svíčka ze včelího vosku",
+	"block-bunchocandles-*": "Svíčky ze včelího vosku"
 }

@@ -1,3 +1,4 @@
 {
-	"item-candle": "Bivokslys"
+	"item-candle": "Bivokslys",
+	"block-bunchocandles-*": "Bivokslys"
 }

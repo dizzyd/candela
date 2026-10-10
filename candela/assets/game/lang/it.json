@@ -1,3 +1,4 @@
 {
-	"item-candle": "Candela di cera d'api"
+	"item-candle": "Candela di cera d'api",
+	"block-bunchocandles-*": "Candele di cera d'api"
 }

@@ -1,3 +1,4 @@
 {
-	"item-candle": "Bougie en cire d'abeille"
+	"item-candle": "Bougie en cire d'abeille",
+	"block-bunchocandles-*": "Bougies en cire d'abeille"
 }

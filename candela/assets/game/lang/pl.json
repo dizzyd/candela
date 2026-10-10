@@ -1,3 +1,4 @@
 {
-	"item-candle": "Świeca z wosku pszczelego"
+	"item-candle": "Świeca z wosku pszczelego",
+	"block-bunchocandles-*": "Świece z wosku pszczelego"
 }

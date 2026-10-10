@@ -1,3 +1,4 @@
 {
-	"item-candle": "밀랍 양초"
+	"item-candle": "밀랍 양초",
+	"block-bunchocandles-*": "밀랍 양초"
 }

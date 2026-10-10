@@ -1,3 +1,4 @@
 {
-	"item-candle": "Bijenwaskaars"
+	"item-candle": "Bijenwaskaars",
+	"block-bunchocandles-*": "Bijenwaskaarsen"
 }

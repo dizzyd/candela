@@ -1,3 +1,4 @@
 {
-	"item-candle": "Vela de cera de abelha"
+	"item-candle": "Vela de cera de abelha",
+	"block-bunchocandles-*": "Velas de cera de abelha"
 }

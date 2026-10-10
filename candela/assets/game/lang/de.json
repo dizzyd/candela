@@ -1,3 +1,4 @@
 {
-	"item-candle": "Bienenwachskerze"
+	"item-candle": "Bienenwachskerze",
+	"block-bunchocandles-*": "Bienenwachskerzen"
 }

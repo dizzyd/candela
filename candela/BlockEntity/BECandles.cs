@@ -30,6 +30,9 @@ namespace candela;
 /// in the order the candles went in, so a bunch or a chandelier can mix them. The last one in is
 /// the first taken off. Candles with no entry - a bunch from before colours, or one
 /// vanilla made - are plain.
+///
+/// A bunch's wax is its block's. A chandelier takes either, one at a time, so its
+/// wax is kept here (<see cref="BunchCode"/>): whatever its first candle was.
 /// </summary>
 public class BECandles : BlockEntity, IIgnitable
 {
@@ -38,6 +41,10 @@ public class BECandles : BlockEntity, IIgnitable
     // One entry a candle, empty for plain; left out altogether while all are plain.
     private const string FlamesKey = "candela:flames";
     private const string DyesKey = "candela:dyes";
+    private const string BunchKey = "candela:bunch";
+
+    /// <summary>A chandelier's kind of candle, as its bunch code; null for beeswax, and for a bunch.</summary>
+    private string bunchCode;
 
     /// <summary>
     /// Each candle's look, plain by default, by the order they went in. Replaced whole,
@@ -59,7 +66,30 @@ public class BECandles : BlockEntity, IIgnitable
 
     public int Quantity => (Block as ICandleHolder)?.Quantity ?? 1;
 
-    public double FullHours => (Block as ICandleHolder)?.BurnHours ?? 48;
+    public double FullHours => Kind?.BurnHours ?? (Block as ICandleHolder)?.BurnHours ?? 48;
+
+    /// <summary>
+    /// The kind of candle burning here, as the bunch block that stands for it: a
+    /// bunch's own block, or a chandelier's candles' (<see cref="BunchCode"/>).
+    /// </summary>
+    public BlockCandelaCandles Kind => Block as BlockCandelaCandles ?? (Api == null ? null : BlockCandelaCandles.KindOf(Api.World, BunchCode));
+
+    /// <summary>The bunch code of a chandelier's candles: beeswax until a tallow candle is its first.</summary>
+    public string BunchCode => bunchCode ?? (Block as BlockCandelaChandelier)?.DefaultBunchCode ?? BEBehaviorLanternFuel.DefaultBunchCode;
+
+    /// <summary>
+    /// Makes an empty chandelier's candles <paramref name="code"/>'s kind, for the
+    /// first candle going in. Server side, before <see cref="AddCandle"/>.
+    /// </summary>
+    public void SetKind(string code)
+    {
+        // Relit here rather than left to the exchange AddCandle's caller makes: empty,
+        // there is no light to change, but one set up already full - the showcase's -
+        // would go on lighting the world as beeswax.
+        byte[] light = Relight.Capture(this);
+        bunchCode = code == (Block as BlockCandelaChandelier)?.DefaultBunchCode ? null : code;
+        Changed(light);
+    }
 
     /// <summary>Candle <paramref name="index"/>'s look, plain if it has none.</summary>
     public CandleLook LookOf(int index)
@@ -242,6 +272,7 @@ public class BECandles : BlockEntity, IIgnitable
     {
         base.GetBlockInfo(forPlayer, dsc);
         int count = Math.Max(1, Quantity);
+        if (Block is BlockCandelaChandelier && Quantity > 0 && Kind?.Wax is string wax) dsc.AppendLine(Lang.Get("candela:chandelier-wax-" + wax));
         CandleInfo.Append(dsc, flame, flame.FuelAt(Api.World.Calendar.TotalHours, count) / count);
         CandleInfo.AppendLooks(dsc, Looks.ToList());
     }
@@ -253,6 +284,8 @@ public class BECandles : BlockEntity, IIgnitable
         // One entry a candle, empty for plain; each left out altogether while all are plain.
         SaveList(tree, FlamesKey, looks.Select(l => l.Flame));
         SaveList(tree, DyesKey, looks.Select(l => l.Dye));
+        if (bunchCode != null) tree.SetString(BunchKey, bunchCode);
+        else tree.RemoveAttribute(BunchKey);
     }
 
     private static void SaveList(ITreeAttribute tree, string key, IEnumerable<string> entries)
@@ -273,9 +306,11 @@ public class BECandles : BlockEntity, IIgnitable
         bool spentBefore = Spent;
         string lightColourBefore = FlameColours.Prevailing(FlameColoursOfCandles);
         string looksBefore = string.Join(",", Looks);
+        string bunchBefore = bunchCode;
         byte[] lightBefore = Api != null && Block != null ? Relight.Capture(this) : null;
 
         flame.FromTreeAttributes(tree);
+        bunchCode = tree.GetString(BunchKey);
         string[] flames = LoadList(tree, FlamesKey), dyes = LoadList(tree, DyesKey);
         SetLooks(Enumerable.Range(0, Math.Max(flames.Length, dyes.Length)).Select(i => new CandleLook(
             i < flames.Length ? FlameColours.Get(flames[i])?.Code : null,
@@ -285,7 +320,7 @@ public class BECandles : BlockEntity, IIgnitable
         {
             // Redrawn for looks too: a chandelier's flames, a bunch's tips and every
             // candle's wax are in its mesh.
-            if (HeightFactor != heightBefore || Flaming != flamingBefore || string.Join(",", Looks) != looksBefore) MarkDirty(true);
+            if (HeightFactor != heightBefore || Flaming != flamingBefore || string.Join(",", Looks) != looksBefore || bunchCode != bunchBefore) MarkDirty(true);
             Relight.Synced(this, lightBefore);
             return;
         }
@@ -296,7 +331,8 @@ public class BECandles : BlockEntity, IIgnitable
         // full until something else changed. Deferred a tick rather than exchanging
         // the block from inside its own deserialisation. A coloured one was lit plain,
         // the same way.
-        if (lightBefore != null && (Flaming != flamingBefore || Spent != spentBefore || FlameColours.Prevailing(FlameColoursOfCandles) != lightColourBefore))
+        if (lightBefore != null && (Flaming != flamingBefore || Spent != spentBefore || FlameColours.Prevailing(FlameColoursOfCandles) != lightColourBefore
+            || bunchCode != bunchBefore))
         {
             RegisterDelayedCallback(_ => Changed(lightBefore), 0);
         }

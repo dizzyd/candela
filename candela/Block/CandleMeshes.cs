@@ -19,6 +19,9 @@ namespace candela;
 /// <see cref="FlameTextureCode"/>. The block maps those codes to files - the beeswax or
 /// tallow dyes as its wax is, and the flames tools/tint.py turns to each hue - in the
 /// textures the patches add, so the atlas has them.
+///
+/// A chandelier holds either wax, so it maps both, and its candles are painted for
+/// theirs: under <see cref="WaxTextureCode"/> undyed, and the wax's own dye codes dyed.
 /// </summary>
 public static class CandleMeshes
 {
@@ -29,15 +32,25 @@ public static class CandleMeshes
     public static string DyeTextureCode(string dye) => "candela-dye-" + dye;
 
     /// <summary>
-    /// A copy of <paramref name="shape"/> with its candles, in the order they appear,
-    /// looking as <paramref name="lookOf"/> their index says; a plain look keeps one as it
-    /// was. The original is left alone - it is the shape vanilla draws plain ones from.
+    /// The block texture code for <paramref name="wax"/> dyed <paramref name="dye"/>, in a
+    /// holder of either wax; null <paramref name="wax"/> is the holder's own.
     /// </summary>
-    public static Shape Recoloured(Shape shape, System.Func<int, CandleLook> lookOf)
+    public static string DyeTextureCode(string dye, string wax) => wax == null ? DyeTextureCode(dye) : "candela-dye-" + wax + "-" + dye;
+
+    /// <summary>The block texture code for undyed <paramref name="wax"/>, in a holder of either wax.</summary>
+    public static string WaxTextureCode(string wax) => "candela-wax-" + wax;
+
+    /// <summary>
+    /// A copy of <paramref name="shape"/> with its candles, in the order they appear,
+    /// looking as <paramref name="lookOf"/> their index says, and of <paramref name="wax"/>
+    /// when it is not the holder's own; a plain look of its own wax keeps one as it was.
+    /// The original is left alone - it is the shape vanilla draws plain ones from.
+    /// </summary>
+    public static Shape Recoloured(Shape shape, System.Func<int, CandleLook> lookOf, string wax = null)
     {
         Shape copy = shape.Clone();
         int index = 0;
-        foreach (ShapeElement element in copy.Elements) Visit(element, lookOf, ref index);
+        foreach (ShapeElement element in copy.Elements) Visit(element, lookOf, wax, ref index);
         return copy;
     }
 
@@ -123,17 +136,18 @@ public static class CandleMeshes
     /// A candle is an element textured with the candle that has a flame among its
     /// children. Every candle is counted, plain or not, so each keeps its place.
     /// </summary>
-    private static void Visit(ShapeElement element, System.Func<int, CandleLook> lookOf, ref int index)
+    private static void Visit(ShapeElement element, System.Func<int, CandleLook> lookOf, string wax, ref int index)
     {
         if (UsesCandle(element) && element.Children?.FirstOrDefault(IsFlame) is ShapeElement flame)
         {
             CandleLook look = lookOf(index++);
-            if (WaxDyes.Get(look.Dye) is string dye) Paint(element, DyeTextureCode(dye));
+            if (WaxDyes.Get(look.Dye) is string dye) Paint(element, DyeTextureCode(dye, wax));
+            else if (wax != null) Paint(element, WaxTextureCode(wax));
             if (FlameColours.Get(look.Flame) is FlameColours.Colour colour) Paint(flame, FlameTextureCode(colour.Code));
             return;
         }
         if (element.Children == null) return;
-        foreach (ShapeElement child in element.Children) Visit(child, lookOf, ref index);
+        foreach (ShapeElement child in element.Children) Visit(child, lookOf, wax, ref index);
     }
 
     /// <summary>
@@ -199,15 +213,18 @@ public class ColouredCandleMeshes
         shape = new(() => Shape.TryGet(capi, block.Shape.Base.CopyWithPathPrefixAndAppendixOnce("shapes/", ".json")));
     }
 
-    /// <summary>The block with its candles looking <paramref name="looks"/>, or null while all are plain.</summary>
-    public MeshData For(ITesselatorAPI tesselator, IReadOnlyList<CandleLook> looks)
+    /// <summary>
+    /// The block with its candles looking <paramref name="looks"/>, of <paramref name="wax"/>
+    /// if not the block's own; null while all are plain and of its own.
+    /// </summary>
+    public MeshData For(ITesselatorAPI tesselator, IReadOnlyList<CandleLook> looks, string wax = null)
     {
-        if (looks.All(l => l.IsPlain) || shape.Value == null) return null;
+        if ((wax == null && looks.All(l => l.IsPlain)) || shape.Value == null) return null;
 
-        return byLooks.GetOrAdd(string.Join(";", looks.Select(l => l.Flame + "/" + l.Dye)), _ =>
+        return byLooks.GetOrAdd(wax + ":" + string.Join(";", looks.Select(l => l.Flame + "/" + l.Dye)), _ =>
         {
             CompositeShape cs = block.Shape;
-            tesselator.TesselateShape(block, CandleMeshes.Recoloured(shape.Value, i => i < looks.Count ? looks[i] : CandleLook.Plain), out MeshData mesh,
+            tesselator.TesselateShape(block, CandleMeshes.Recoloured(shape.Value, i => i < looks.Count ? looks[i] : CandleLook.Plain, wax), out MeshData mesh,
                 new Vec3f(cs.rotateX, cs.rotateY, cs.rotateZ), cs.QuantityElements);
             return mesh;
         });

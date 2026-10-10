@@ -41,9 +41,11 @@ burns forever. Candela adds the candles people actually made and gives light a c
   Linseed smokes like tallow, two light levels less. Ctrl-right-click with a free hand
   turns the wick down: half the light for twice the time. An empty container takes
   the oil back out. A lantern picked up keeps its burner, oil and wick setting
-- **Chandeliers burn too** - their candles are one pool like a bunch's, beeswax
-  whole or stub as in vanilla, and can now be taken out again, which is how spent
-  ones are cleared. One that falls lands with the candles it had
+- **Chandeliers burn too** - their candles are one pool like a bunch's, whole or
+  stub, and can now be taken out again, which is how spent ones are cleared. They
+  take tallow as well as vanilla's beeswax, one or the other: an empty chandelier's
+  first candle decides. Tallow is a level dimmer, as its bunches are. One that falls
+  lands with the candles it had
 - **Coloured flames** - four flax fibres and a mineral powder make four treated
   wicks: cinnabar burns red, sulfur yellow, borax green, verdigris teal, lapis lazuli
   blue and sylvite violet. Verdigris is new: grind a malachite nugget in a quern.

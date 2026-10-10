@@ -12,7 +12,9 @@
 	behaviors: [ { name: "Unstable" } ],
 	attributes: {
 		// lanternDim: light levels a lantern loses burning this - soot on the glass.
-		candela: { wax: "tallow", candle: "candela:candle-tallow", stub: "candela:candlestub-tallow-", lanternDim: 2 }
+		// openDim: light levels a chandelier of it gives less than one of beeswax, as
+		// this bunch's own light is a level under vanilla's.
+		candela: { wax: "tallow", candle: "candela:candle-tallow", stub: "candela:candlestub-tallow-", lanternDim: 2, openDim: 1 }
 	},
 	shapeByType: {
 		"*-1": {

@@ -8,7 +8,9 @@
 		file: "game:blocktypes/metal/chandelier.json"
 	},
 	{
-		op: "add", side: "Server", path: "/attributes", value: { candela: { wax: "beeswax", bunch: "game:bunchocandles" } },
+		// No wax here: CandleWax.IsCandle takes anything with both wax and bunch for a
+		// candle, and a chandelier with them went into lanterns and chandeliers as one.
+		op: "add", side: "Server", path: "/attributes", value: { candela: { bunch: "game:bunchocandles" } },
 		file: "game:blocktypes/metal/chandelier.json"
 	},
 	{
@@ -31,7 +33,20 @@
 			"candela-dye-pink": { base: "candela:block/candle-beeswax-pink" },
 			"candela-dye-white": { base: "candela:block/candle-beeswax-white" },
 			"candela-dye-gray": { base: "candela:block/candle-beeswax-gray" },
-			"candela-dye-black": { base: "candela:block/candle-beeswax-black" }
+			"candela-dye-black": { base: "candela:block/candle-beeswax-black" },
+			// Tallow candles in a chandelier, which takes either wax: CandleMeshes.WaxTextureCode.
+			"candela-wax-tallow": { base: "candela:block/candle-tallow" },
+			"candela-dye-tallow-red": { base: "candela:block/candle-tallow-red" },
+			"candela-dye-tallow-orange": { base: "candela:block/candle-tallow-orange" },
+			"candela-dye-tallow-yellow": { base: "candela:block/candle-tallow-yellow" },
+			"candela-dye-tallow-green": { base: "candela:block/candle-tallow-green" },
+			"candela-dye-tallow-blue": { base: "candela:block/candle-tallow-blue" },
+			"candela-dye-tallow-woad": { base: "candela:block/candle-tallow-woad" },
+			"candela-dye-tallow-purple": { base: "candela:block/candle-tallow-purple" },
+			"candela-dye-tallow-pink": { base: "candela:block/candle-tallow-pink" },
+			"candela-dye-tallow-white": { base: "candela:block/candle-tallow-white" },
+			"candela-dye-tallow-gray": { base: "candela:block/candle-tallow-gray" },
+			"candela-dye-tallow-black": { base: "candela:block/candle-tallow-black" }
 		},
 		file: "game:blocktypes/metal/chandelier.json"
 	}

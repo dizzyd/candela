@@ -13,8 +13,8 @@ namespace Candela.Tests
 {
     /// <summary>
     /// Chandeliers, whose candles burned forever and made them the way around upkeep:
-    /// now one pool like a bunch, beeswax only as in vanilla, with candles that can be
-    /// taken out again - and, with bunches, what happens to the fuel when the block
+    /// now one pool like a bunch, of beeswax or tallow but not both, with candles that
+    /// can be taken out again - and, with bunches, what happens to the fuel when the block
     /// under or over one is taken away.
     /// </summary>
     public class CandelaChandeliers
@@ -22,6 +22,8 @@ namespace Candela.Tests
         static BlockPos Chandelier => P(8, 1, 8);
 
         const double BeeswaxHours = 432;
+        const double TallowHours = 216;
+        const string Tallow = "candela:tallowcandles";
 
         [BeforeEach, AfterEach]
         public void DefaultConfig()
@@ -99,6 +101,64 @@ namespace Candela.Tests
             Assert.Equal("game:chandelier-candle0", drops[0].Collectible.Code.ToString());
             Assert.Equal("candela:candlestub-beeswax-50", drops[1].Collectible.Code.ToString());
             Assert.Equal(4, drops[1].StackSize);
+        }
+
+        /// <summary>
+        /// A chandelier of tallow candles: tallow's hours, a level under beeswax's light
+        /// as a tallow bunch is, and tallow stubs back - and it is still tallow after
+        /// the round trip through its saved state that falling and loading make.
+        /// </summary>
+        [VsTest]
+        public async Task ATallowChandelierBurnsAsTallow()
+        {
+            await Place(4);
+            byte beeswaxLight = Light()[2];
+
+            var be = await Place(4);
+            be.SetKind(Tallow);
+            Assert.Equal(beeswaxLight - 1, Light()[2], "tallow should be a level dimmer");
+            Assert.Equal(beeswaxLight - 1, await EngineLight.Settled(Chandelier, beeswaxLight - 1), "the world is still lit as by beeswax");
+
+            be.SetFuel(4 * TallowHours, CandleLook.Plain);
+            Assert.Equal(TallowHours, be.FullHours);
+
+            var tree = new Vintagestory.API.Datastructures.TreeAttribute();
+            be.ToTreeAttributes(tree);
+            var fresh = await Place(4);
+            fresh.FromTreeAttributes(tree, Sapi.World);
+            Assert.Equal(Tallow, fresh.BunchCode, "the saved state lost the wax");
+
+            await Burn(TallowHours * 0.4);
+            ItemStack[] drops = World.GetBlock(Chandelier).GetDrops(Sapi.World, Chandelier, null);
+            Assert.Equal("candela:candlestub-tallow-50", drops[1].Collectible.Code.ToString());
+            Assert.Equal(4, drops[1].StackSize);
+        }
+
+        /// <summary>
+        /// The chandelier block once carried candela's wax and bunch attributes, which
+        /// is all IsCandle looks for: a held chandelier went into a chandelier, or a
+        /// lantern, as a beeswax candle.
+        /// </summary>
+        [VsTest]
+        public async Task AChandelierIsNotACandle()
+        {
+            var be = await Place(2);
+            var placed = (BlockCandelaChandelier)World.GetBlock(Chandelier);
+            for (int n = 0; n <= 8; n++)
+            {
+                Block chandelier = Sapi.World.GetBlock(new AssetLocation("game:chandelier-candle" + n));
+                Assert.False(CandleWax.IsCandle(chandelier), "chandelier-candle" + n + " counts as a candle");
+                Assert.False(placed.AcceptsCandle(chandelier, be), "a chandelier takes chandelier-candle" + n);
+            }
+        }
+
+        /// <summary>One from before Candela, or from vanilla, holds beeswax.</summary>
+        [VsTest]
+        public async Task AChandelierIsBeeswaxUntilToldOtherwise()
+        {
+            var be = await Place(3);
+            Assert.Equal("game:bunchocandles", be.BunchCode);
+            Assert.Equal(BeeswaxHours, be.FullHours);
         }
 
         /// <summary>
@@ -186,7 +246,7 @@ namespace Candela.Tests
         // ----- with a player -----
 
         [VsTest(TimeoutMs = 60000), RequiresClient]
-        public async Task CandlesAndStubsGoInAndTallowDoesNot()
+        public async Task CandlesAndStubsGoInAndTallowDoesNotJoinBeeswax()
         {
             var be = await Place(2);
             await Burn(10);
@@ -209,6 +269,40 @@ namespace Candela.Tests
             await Interact.UseBlock(Chandelier);
             await Ticks(4);
             Assert.Equal("game:chandelier-candle4", World.BlockCode(Chandelier), "a chandelier took a tallow candle");
+        }
+
+        /// <summary>An empty one takes either wax; its first candle decides, until it is empty again.</summary>
+        [VsTest(TimeoutMs = 60000), RequiresClient]
+        public async Task AnEmptyChandelierTakesTallowAndThenOnlyTallow()
+        {
+            EmptyPockets();
+            var be = await Place(0);
+
+            await Player.Hold("candela:candle-tallow");
+            await Interact.UseBlock(Chandelier);
+            await Ticks(4);
+            Assert.Equal("game:chandelier-candle1", World.BlockCode(Chandelier));
+            Assert.Equal(Tallow, be.BunchCode);
+            Assert.Close(be.Fuel, TallowHours, 0.5);
+
+            await Player.Hold("game:candle");
+            await Interact.UseBlock(Chandelier);
+            await Ticks(4);
+            Assert.Equal("game:chandelier-candle1", World.BlockCode(Chandelier), "beeswax joined tallow");
+
+            // Burned a while, so what comes back is a stub and not the candle still in hand.
+            await Burn(TallowHours * 0.4);
+            await EmptyHand();
+            await Interact.UseBlock(Chandelier);
+            await Ticks(4);
+            Assert.Equal("game:chandelier-candle0", World.BlockCode(Chandelier));
+            Assert.True(PlayerHas("candela:candlestub-tallow-50"), "the tallow candle did not come back as tallow");
+
+            await Player.Hold("game:candle");
+            await Interact.UseBlock(Chandelier);
+            await Ticks(4);
+            Assert.Equal("game:chandelier-candle1", World.BlockCode(Chandelier), "emptied, it would not take beeswax");
+            Assert.Equal("game:bunchocandles", be.BunchCode);
         }
 
         [VsTest(TimeoutMs = 60000), RequiresClient]

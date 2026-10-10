@@ -36,6 +36,12 @@ public class BlockCandelaCandles : BlockBunchOCandles, ICandleHolder
     public int LanternDim { get; private set; }
 
     /// <summary>
+    /// Light levels this kind gives less than beeswax in an open holder, a chandelier:
+    /// tallow's one, as its own bunches give. A bunch's light is in its block's JSON.
+    /// </summary>
+    public int OpenDim { get; private set; }
+
+    /// <summary>
     /// The block standing for a kind of candle, by the bunch code its items carry
     /// (<c>game:bunchocandles</c>, <c>candela:tallowcandles</c>): what it burns for,
     /// and what a part-burned one comes back as.
@@ -67,6 +73,7 @@ public class BlockCandelaCandles : BlockBunchOCandles, ICandleHolder
         candleCode = attrs?["candle"].AsString("game:candle");
         stubPrefix = attrs?["stub"].AsString();
         LanternDim = attrs?["lanternDim"].AsInt(0) ?? 0;
+        OpenDim = attrs?["openDim"].AsInt(0) ?? 0;
 
         bool single = attrs?["single"].AsBool(false) ?? false;
         Quantity = single ? 1 : Variant["quantity"].ToInt(1);

@@ -18,9 +18,11 @@ namespace candela;
 /// falling block, fuel included.
 ///
 /// Its candles are one <see cref="BECandles"/> pool like a bunch's, at one candle's
-/// worth an hour per candle. Vanilla takes beeswax candles only, and so does this -
-/// part-burned beeswax stubs included, which is a use for them. Unlike vanilla, a
-/// candle can be taken out again, which is how spent ones are cleared.
+/// worth an hour per candle. Vanilla takes beeswax candles only; this takes tallow
+/// too, one wax or the other, as a bunch does: an empty chandelier takes either, and
+/// its first candle decides (<see cref="BECandles.BunchCode"/>). Part-burned stubs go
+/// in too, which is a use for them. Unlike vanilla, a candle can be taken out again,
+/// which is how spent ones are cleared.
 ///
 /// Its candles and their flames are part of its model, so dyed or coloured candles get
 /// a copy of it in their looks (<see cref="CandleMeshes"/>); all plain, it is drawn as
@@ -32,9 +34,11 @@ public class BlockCandelaChandelier : Block, ICandleHolder
 
     public int Quantity { get; private set; }
 
-    public double BurnHours => CandelaConfig.Current.HoursFor(Wax) ?? 48;
+    /// <summary>Hours a new beeswax candle burns for; a chandelier of tallow ones asks its block entity.</summary>
+    public double BurnHours => CandelaConfig.Current.HoursFor("beeswax") ?? 48;
 
-    private string Wax => Attributes?["candela"]["wax"].AsString("beeswax") ?? "beeswax";
+    /// <summary>The kind of candle a chandelier from before Candela, or from vanilla, holds.</summary>
+    public string DefaultBunchCode => Attributes?["candela"]["bunch"].AsString(BEBehaviorLanternFuel.DefaultBunchCode) ?? BEBehaviorLanternFuel.DefaultBunchCode;
 
     private WorldInteraction[] interactions;
 
@@ -50,7 +54,7 @@ public class BlockCandelaChandelier : Block, ICandleHolder
 
         interactions = ObjectCacheUtil.GetOrCreate(api, "candelaChandelierInteractions", () =>
         {
-            ItemStack[] candles = api.World.Collectibles.Where(c => AcceptsCandle(c)).Select(c => new ItemStack(c)).ToArray();
+            ItemStack[] candles = api.World.Collectibles.Where(CandleWax.IsCandle).Select(c => new ItemStack(c)).ToArray();
             ItemStack[] torches = api.World.SearchBlocks(new AssetLocation("game:torch-*-lit-*")).Select(b => new ItemStack(b)).ToArray();
 
             return new WorldInteraction[]
@@ -63,18 +67,37 @@ public class BlockCandelaChandelier : Block, ICandleHolder
         });
     }
 
-    /// <summary>Whether this kind of candle goes in: whole or stub, of this chandelier's wax.</summary>
-    public bool AcceptsCandle(CollectibleObject candle) =>
-        CandleWax.IsCandle(candle) && candle.Attributes["candela"]["wax"].AsString() == Wax;
+    /// <summary>
+    /// Whether this candle goes in, whole or stub: any while the chandelier is empty,
+    /// and after that only those of its candles' kind. <paramref name="be"/> null - one
+    /// from before Candela - holds beeswax.
+    /// </summary>
+    public bool AcceptsCandle(CollectibleObject candle, BECandles be) =>
+        CandleWax.IsCandle(candle) && Quantity < MaxCandles
+        && (Quantity == 0 || CandleWax.BunchOf(candle) == (be?.BunchCode ?? DefaultBunchCode));
 
-    /// <summary>The chandelier with <paramref name="be"/>'s candles in their looks, or null while all are plain.</summary>
-    public MeshData ColouredMesh(ITesselatorAPI tesselator, BECandles be) => coloured?.For(tesselator, be.Looks.ToArray());
+    /// <summary>
+    /// The chandelier with <paramref name="be"/>'s candles in their looks and wax, or
+    /// null while they are plain beeswax.
+    /// </summary>
+    public MeshData ColouredMesh(ITesselatorAPI tesselator, BECandles be)
+    {
+        string wax = be.Kind?.Wax;
+        return coloured?.For(tesselator, be.Looks.ToArray(), wax == "beeswax" ? null : wax);
+    }
 
+    /// <summary>
+    /// Vanilla's light for this many candles, less what their wax costs in the open -
+    /// tallow's one level, as a bunch of it gives - and in their flames' colour.
+    /// </summary>
     public override byte[] GetLightHsv(IBlockAccessor blockAccessor, BlockPos pos, ItemStack stack = null)
     {
         byte[] full = base.GetLightHsv(blockAccessor, pos, stack);
-        if (pos != null && blockAccessor.GetBlockEntity(pos) is BECandles be) return be.LightHsv(full);
-        return full;
+        if (pos == null || blockAccessor.GetBlockEntity(pos) is not BECandles be) return full;
+
+        int dim = be.Kind?.OpenDim ?? 0;
+        if (dim > 0 && full[2] > 0) full = [full[0], full[1], (byte)System.Math.Max(1, full[2] - dim)];
+        return be.LightHsv(full);
     }
 
     public override bool OnBlockInteractStart(IWorldAccessor world, IPlayer byPlayer, BlockSelection blockSel)
@@ -83,7 +106,7 @@ public class BlockCandelaChandelier : Block, ICandleHolder
         ItemStack held = slot?.Itemstack;
         bool shift = byPlayer.Entity.Controls.ShiftKey;
 
-        bool add = held != null && AcceptsCandle(held.Collectible) && Quantity < MaxCandles;
+        bool add = held != null && AcceptsCandle(held.Collectible, world.BlockAccessor.GetBlockEntity(blockSel.Position) as BECandles);
         bool light = held?.Block is BlockTorch && held.Block.Variant["state"] == "lit";
         bool snuff = held == null && shift;
         bool take = held == null && !shift && Quantity > 0;
@@ -98,6 +121,7 @@ public class BlockCandelaChandelier : Block, ICandleHolder
 
         if (add)
         {
+            if (Quantity == 0) be.SetKind(CandleWax.BunchOf(held.Collectible));
             be.AddCandle(CandleWax.HoursOf(held.Collectible) ?? 0, CandleLook.Of(held));
             if (byPlayer.WorldData.CurrentGameMode != EnumGameMode.Creative) slot.TakeOut(1);
             slot.MarkDirty();
@@ -107,7 +131,7 @@ public class BlockCandelaChandelier : Block, ICandleHolder
         else if (take)
         {
             double hours = be.TakeCandle(out CandleLook look);
-            ItemStack candle = Kind(world)?.CandleForHours(world, hours, look);
+            ItemStack candle = be.Kind?.CandleForHours(world, hours, look);
             world.BlockAccessor.ExchangeBlock(WithCandles(world, Quantity - 1).BlockId, pos);
             if (candle != null && !byPlayer.InventoryManager.TryGiveItemstack(candle, slotNotifyEffect: true))
             {
@@ -128,17 +152,13 @@ public class BlockCandelaChandelier : Block, ICandleHolder
 
     private Block WithCandles(IWorldAccessor world, int count) => world.GetBlock(CodeWithVariant("type", "candle" + count));
 
-    /// <summary>The bunch of the same wax, which decides what a share of the pool comes back as.</summary>
-    private BlockCandelaCandles Kind(IWorldAccessor world) =>
-        BlockCandelaCandles.KindOf(world, Attributes?["candela"]["bunch"].AsString("game:bunchocandles"));
-
     public override ItemStack[] GetDrops(IWorldAccessor world, BlockPos pos, IPlayer byPlayer, float dropQuantityMultiplier = 1)
     {
         if (world.BlockAccessor.GetBlockEntity(pos) is not BECandles be) return base.GetDrops(world, pos, byPlayer, dropQuantityMultiplier);
         be.Settle();
 
         var drops = new List<ItemStack> { new(WithCandles(world, 0)) };
-        drops.AddRange(BlockCandelaCandles.CandlesOf(world, be, Kind(world)));
+        drops.AddRange(BlockCandelaCandles.CandlesOf(world, be, be.Kind));
         return drops.ToArray();
     }
 

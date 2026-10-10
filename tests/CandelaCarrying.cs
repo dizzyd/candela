@@ -43,7 +43,7 @@ namespace Candela.Tests
 
             var info = new StringBuilder();
             hand.Itemstack.Collectible.GetHeldItemInfo(hand, info, Sapi.World, false);
-            Assert.True(info.ToString().Contains(Lang.Get("candela:pot-holds", "12x " + Lang.Get("candela:item-tallow-molten").ToLower())), "the tooltip does not say what it holds: " + info);
+            Assert.True(info.ToString().Contains(Lang.Get("candela:pot-holds", "12x " + Lang.Get("candela:item-tallow-molten"))), "the tooltip does not say what it holds: " + info);
         }
 
         [VsTest]
@@ -83,7 +83,7 @@ namespace Candela.Tests
             await Hours(CarriedWax.PourableHours);
             var info = new StringBuilder();
             hand.Itemstack.Collectible.GetHeldItemInfo(hand, info, Sapi.World, false);
-            Assert.True(info.ToString().Contains("6x " + Lang.Get("item-fat-rendered").ToLower()), "a cold pot should say it has set: " + info);
+            Assert.True(info.ToString().Contains("6x " + Lang.Get("item-fat-rendered")), "a cold pot should say it has set: " + info);
 
             hand.TryPutInto(Sapi.World, firepit.inputSlot);
             await Ticks(2);

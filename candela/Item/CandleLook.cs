@@ -38,6 +38,6 @@ public readonly record struct CandleLook(string Flame, string Dye)
         var parts = new List<string>();
         if (look.Dye != null) parts.Add(Lang.Get("candela:dye-" + look.Dye));
         if (look.Flame != null) parts.Add(Lang.Get("candela:flame-" + look.Flame));
-        return parts.Count == 0 ? name : Lang.Get("candela:with-look", name, string.Join(", ", parts));
+        return parts.Count == 0 ? name : Lang.Get("candela:with-look", name, CandleInfo.List(parts));
     }
 }

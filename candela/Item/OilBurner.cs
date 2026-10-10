@@ -96,11 +96,13 @@ public static class BurnerStack
     {
         if (oil == null) dsc.AppendLine(Lang.Get("candela:burner-empty"));
         else if (litres <= 0) dsc.AppendLine(Lang.Get("candela:burner-dry", LampOil.Name(world, oil)));
-        else if (!withHours) dsc.AppendLine(Lang.Get("candela:burner-litres", LampOil.Name(world, oil), litres.ToString("0.00")));
+        // Invariant, as the game writes its own numbers: the culture is the machine's,
+        // not the game's language, and would put a comma in "0,35 L" under English.
+        else if (!withHours) dsc.AppendLine(Lang.Get("candela:burner-litres", LampOil.Name(world, oil), litres.ToString("0.00", GlobalConstants.DefaultCultureInfo)));
         else
         {
             int hours = Math.Max(1, (int)Math.Round(litres / LampOil.LitresPerHour(wickLow)));
-            dsc.AppendLine(Lang.Get("candela:burner-oil", LampOil.Name(world, oil), litres.ToString("0.00"), hours));
+            dsc.AppendLine(Lang.Get("candela:burner-oil", LampOil.Name(world, oil), litres.ToString("0.00", GlobalConstants.DefaultCultureInfo), hours));
         }
         if (wickLow) dsc.AppendLine(Lang.Get("candela:burner-wick-low"));
     }

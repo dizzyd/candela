@@ -195,11 +195,11 @@ public static class CarriedWax
             .Where(stack => stack?.ResolveBlockOrItem(world) == true)
             .Select(stack => DescribeStack(world, stack))
             .ToArray();
-        return parts.Length > 0 ? string.Join(", ", parts) : null;
+        return parts.Length > 0 ? CandleInfo.List(parts) : null;
     }
 
     /// <summary>
-    /// "12x molten tallow", or once it has cooled below its setting point what it
+    /// "12x Molten tallow", or once it has cooled below its setting point what it
     /// sets into - which it does in fact become when the pot is next on a fire.
     /// </summary>
     private static string DescribeStack(IWorldAccessor world, ItemStack stack)
@@ -211,9 +211,9 @@ public static class CarriedWax
             if (set != null)
             {
                 int count = (int)(stack.StackSize * harden.TransitionRatio);
-                return count > 0 ? $"{count}x {set.GetName().ToLower()}" : Lang.Get("candela:pot-holds-scrap");
+                return count > 0 ? $"{count}x {set.GetName()}" : Lang.Get("candela:pot-holds-scrap");
             }
         }
-        return $"{stack.StackSize}x {stack.GetName().ToLower()}";
+        return $"{stack.StackSize}x {stack.GetName()}";
     }
 }

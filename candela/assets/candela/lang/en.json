@@ -102,7 +102,7 @@
 	"item-oilburner": "Oil burner",
 	"itemdesc-oilburner": "Takes a lantern's candle's place. Fill it in the lantern from a bowl, jug or bucket of olive or linseed oil.",
 	"lantern-burner": "Oil burner",
-	"burner-empty": "Empty",
+	"burner-empty": "Empty: no oil",
 	"burner-dry": "{0}: run dry",
 	"burner-oil": "{0}: {1} L, about {2} hours",
 	"burner-litres": "{0}: {1} L",

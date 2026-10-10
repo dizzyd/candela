@@ -270,8 +270,7 @@ public class BlockCandelaLantern : BlockLantern, IContainedMeshSource
             return;
         }
 
-        BlockCandelaCandles kind = BlockCandelaCandles.KindOf(world, LanternStack.BunchCode(stack));
-        string candleName = kind == null ? "?" : kind.CandleForHours(world, kind.BurnHours, LanternStack.Look(stack))?.GetName() ?? "?";
+        string candleName = LanternStack.CandleName(world, LanternStack.BunchCode(stack), LanternStack.Look(stack));
         double hours = LanternStack.Fuel(stack);
 
         dsc.AppendLine(hours > 0

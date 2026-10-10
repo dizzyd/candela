@@ -247,6 +247,7 @@ namespace Candela.Tests
             Log(info);
             Assert.True(info.Contains(Lang.Get("lantern-materialwithpanels", Lang.Get("material-copper"), Lang.Get("block-glass-quartz"))), "vanilla's line is gone");
             Assert.True(info.Contains(want), "no candle line, or the wrong hours");
+            Assert.True(info.Contains(LanternStack.CandleName(Sapi.World, "game:bunchocandles", CandleLook.Plain)), "the candle is not named");
         }
 
         /// <summary>CandleStory replaced the lantern's class and lost this.</summary>

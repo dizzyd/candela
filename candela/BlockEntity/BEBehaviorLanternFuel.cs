@@ -297,6 +297,7 @@ public class BEBehaviorLanternFuel : BlockEntityBehavior, IIgnitable
         double fuel = flame.FuelAt(Api.World.Calendar.TotalHours, Rate);
         if (!HasBurner)
         {
+            dsc.AppendLine(LanternStack.CandleName(Api.World, BunchCode, Look));
             CandleInfo.Append(dsc, flame, fuel);
             return;
         }
@@ -409,6 +410,13 @@ public static class LanternStack
         CandleLook.Plain.Stamp(stack);
         stack.Attributes.SetBool(BurnerKey, true);
         BurnerStack.Write(stack, oil, litres, wickLow);
+    }
+
+    /// <summary>"Tallow candle", or a dyed or coloured one's name: what a candle of this kind and look is called whole.</summary>
+    public static string CandleName(IWorldAccessor world, string bunchCode, CandleLook look)
+    {
+        BlockCandelaCandles kind = BlockCandelaCandles.KindOf(world, bunchCode);
+        return kind?.CandleForHours(world, kind.BurnHours, look)?.GetName() ?? "?";
     }
 
     /// <summary>The light levels a lantern stack's soot costs: its candle's wax, or its burner's oil.</summary>

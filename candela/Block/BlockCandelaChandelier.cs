@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Vintagestory.API.Client;
@@ -34,11 +35,11 @@ public class BlockCandelaChandelier : Block, ICandleHolder
 
     public int Quantity { get; private set; }
 
-    /// <summary>Hours a new beeswax candle burns for; a chandelier of tallow ones asks its block entity.</summary>
-    public double BurnHours => CandelaConfig.Current.HoursFor("beeswax") ?? 48;
-
-    /// <summary>The kind of candle a chandelier from before Candela, or from vanilla, holds.</summary>
-    public string DefaultBunchCode => Attributes?["candela"]["bunch"].AsString(BEBehaviorLanternFuel.DefaultBunchCode) ?? BEBehaviorLanternFuel.DefaultBunchCode;
+    /// <summary>
+    /// Hours a new beeswax candle burns for. Only for a block entity not yet
+    /// initialised: one that is asks its own kind (<see cref="BECandles.Kind"/>).
+    /// </summary>
+    public double BurnHours => (api == null ? null : BlockCandelaCandles.KindOf(api.World, BlockCandelaCandles.BeeswaxBunchCode))?.BurnHours ?? 48;
 
     private WorldInteraction[] interactions;
 
@@ -74,7 +75,7 @@ public class BlockCandelaChandelier : Block, ICandleHolder
     /// </summary>
     public bool AcceptsCandle(CollectibleObject candle, BECandles be) =>
         CandleWax.IsCandle(candle) && Quantity < MaxCandles
-        && (Quantity == 0 || CandleWax.BunchOf(candle) == (be?.BunchCode ?? DefaultBunchCode));
+        && (Quantity == 0 || CandleWax.BunchOf(candle) == (be?.BunchCode ?? BlockCandelaCandles.BeeswaxBunchCode));
 
     /// <summary>
     /// The chandelier with <paramref name="be"/>'s candles in their looks and wax, or
@@ -82,8 +83,8 @@ public class BlockCandelaChandelier : Block, ICandleHolder
     /// </summary>
     public MeshData ColouredMesh(ITesselatorAPI tesselator, BECandles be)
     {
-        string wax = be.Kind?.Wax;
-        return coloured?.For(tesselator, be.Looks.ToArray(), wax == "beeswax" ? null : wax);
+        string wax = be.BunchCode == BlockCandelaCandles.BeeswaxBunchCode ? null : be.Kind?.Wax;
+        return coloured?.For(tesselator, be.Looks.ToArray(), wax);
     }
 
     /// <summary>
@@ -95,8 +96,9 @@ public class BlockCandelaChandelier : Block, ICandleHolder
         byte[] full = base.GetLightHsv(blockAccessor, pos, stack);
         if (pos == null || blockAccessor.GetBlockEntity(pos) is not BECandles be) return full;
 
+        // Never dimmed out altogether: a lit candle, however sooty, still gives light.
         int dim = be.Kind?.OpenDim ?? 0;
-        if (dim > 0 && full[2] > 0) full = [full[0], full[1], (byte)System.Math.Max(1, full[2] - dim)];
+        if (dim > 0 && full[2] > 0) full = [full[0], full[1], (byte)Math.Max(1, full[2] - dim)];
         return be.LightHsv(full);
     }
 
@@ -121,7 +123,7 @@ public class BlockCandelaChandelier : Block, ICandleHolder
 
         if (add)
         {
-            if (Quantity == 0) be.SetKind(CandleWax.BunchOf(held.Collectible));
+            if (Quantity == 0) be.SetBunchCode(CandleWax.BunchOf(held.Collectible));
             be.AddCandle(CandleWax.HoursOf(held.Collectible) ?? 0, CandleLook.Of(held));
             if (byPlayer.WorldData.CurrentGameMode != EnumGameMode.Creative) slot.TakeOut(1);
             slot.MarkDirty();

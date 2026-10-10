@@ -214,7 +214,7 @@ namespace Candela.Showcase
             var be = World.BE<BECandles>(at);
             if (kind != Beeswax)
             {
-                be.SetKind(kind);
+                be.SetBunchCode(kind);
                 be.SetFuel(all.Length * be.FullHours, CandleLook.Plain);
             }
             SetLooks(be, all);

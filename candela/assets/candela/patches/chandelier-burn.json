@@ -8,12 +8,6 @@
 		file: "game:blocktypes/metal/chandelier.json"
 	},
 	{
-		// No wax here: CandleWax.IsCandle takes anything with both wax and bunch for a
-		// candle, and a chandelier with them went into lanterns and chandeliers as one.
-		op: "add", side: "Server", path: "/attributes", value: { candela: { bunch: "game:bunchocandles" } },
-		file: "game:blocktypes/metal/chandelier.json"
-	},
-	{
 		// The coloured flames and dyed wax CandleMeshes draws in place of vanilla's -
 		// textures the block declares, so they are in the block atlas.
 		op: "addmerge", side: "Server", path: "/textures", value: {

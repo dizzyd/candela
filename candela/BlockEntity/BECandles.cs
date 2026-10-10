@@ -47,6 +47,14 @@ public class BECandles : BlockEntity, IIgnitable
     private string bunchCode;
 
     /// <summary>
+    /// <see cref="Kind"/> for the bunch code it was found from. One reference, so the
+    /// lighting and tesselation threads read a code and its block together, never a
+    /// block left over from the code before.
+    /// </summary>
+    private sealed record ResolvedKind(string Code, BlockCandelaCandles Block);
+    private ResolvedKind resolvedKind;
+
+    /// <summary>
     /// Each candle's look, plain by default, by the order they went in. Replaced whole,
     /// never changed in place: the client's particle thread reads it while state from
     /// the server is being applied.
@@ -72,22 +80,35 @@ public class BECandles : BlockEntity, IIgnitable
     /// The kind of candle burning here, as the bunch block that stands for it: a
     /// bunch's own block, or a chandelier's candles' (<see cref="BunchCode"/>).
     /// </summary>
-    public BlockCandelaCandles Kind => Block as BlockCandelaCandles ?? (Api == null ? null : BlockCandelaCandles.KindOf(Api.World, BunchCode));
+    public BlockCandelaCandles Kind
+    {
+        get
+        {
+            if (Block is BlockCandelaCandles own) return own;
+            if (Api == null) return null;
+
+            string code = BunchCode;
+            ResolvedKind known = resolvedKind;
+            if (known?.Code == code) return known.Block;
+            resolvedKind = known = new ResolvedKind(code, BlockCandelaCandles.KindOf(Api.World, code));
+            return known.Block;
+        }
+    }
 
     /// <summary>The bunch code of a chandelier's candles: beeswax until a tallow candle is its first.</summary>
-    public string BunchCode => bunchCode ?? (Block as BlockCandelaChandelier)?.DefaultBunchCode ?? BEBehaviorLanternFuel.DefaultBunchCode;
+    public string BunchCode => bunchCode ?? BlockCandelaCandles.BeeswaxBunchCode;
 
     /// <summary>
-    /// Makes an empty chandelier's candles <paramref name="code"/>'s kind, for the
-    /// first candle going in. Server side, before <see cref="AddCandle"/>.
+    /// Makes a chandelier's candles those of the bunch <paramref name="code"/>, and
+    /// relights it: its first candle going in decides, and the showcase sets up full
+    /// ones of tallow. Server side; for a first candle, before <see cref="AddCandle"/>.
     /// </summary>
-    public void SetKind(string code)
+    public void SetBunchCode(string code)
     {
-        // Relit here rather than left to the exchange AddCandle's caller makes: empty,
-        // there is no light to change, but one set up already full - the showcase's -
-        // would go on lighting the world as beeswax.
+        // The exchange after AddCandle relights an empty one; one already lit would
+        // otherwise keep the light of the kind it was.
         byte[] light = Relight.Capture(this);
-        bunchCode = code == (Block as BlockCandelaChandelier)?.DefaultBunchCode ? null : code;
+        bunchCode = code == BlockCandelaCandles.BeeswaxBunchCode ? null : code;
         Changed(light);
     }
 
@@ -273,7 +294,7 @@ public class BECandles : BlockEntity, IIgnitable
         base.GetBlockInfo(forPlayer, dsc);
         int count = Math.Max(1, Quantity);
         if (Block is BlockCandelaChandelier && Quantity > 0 && Kind?.Wax is string wax) dsc.AppendLine(Lang.Get("candela:chandelier-wax-" + wax));
-        CandleInfo.Append(dsc, flame, flame.FuelAt(Api.World.Calendar.TotalHours, count) / count);
+        CandleInfo.Append(dsc, flame, flame.FuelAt(Api.World.Calendar.TotalHours, count) / count, count);
         CandleInfo.AppendLooks(dsc, Looks.ToList());
     }
 
@@ -356,13 +377,21 @@ public class BECandles : BlockEntity, IIgnitable
 /// <summary>The block info line every candle flame shows.</summary>
 public static class CandleInfo
 {
-    public static void Append(StringBuilder dsc, Flame flame, double hoursPerCandle)
+    /// <summary>
+    /// "Burning - about 3 hours left", or snuffed, guttering or out. The number of
+    /// candles goes in too, unused in English, for languages whose "burning" agrees
+    /// with it: {1} after the hours, {0} on the two lines without them.
+    /// </summary>
+    public static void Append(StringBuilder dsc, Flame flame, double hoursPerCandle, int candles = 1)
     {
         if (flame.Mode == BurnoutMode.None) return;
 
-        if (flame.Spent) dsc.AppendLine(Lang.Get(flame.Mode == BurnoutMode.Dark ? "candela:candles-out" : "candela:candles-guttering"));
-        else dsc.AppendLine(Lang.Get(flame.Snuffed ? "candela:candles-snuffed" : "candela:candles-burning", Math.Max(1, (int)Math.Round(hoursPerCandle))));
+        if (flame.Spent) dsc.AppendLine(Lang.Get(flame.Mode == BurnoutMode.Dark ? "candela:candles-out" : "candela:candles-guttering", candles));
+        else dsc.AppendLine(Lang.Get(flame.Snuffed ? "candela:candles-snuffed" : "candela:candles-burning", Math.Max(1, (int)Math.Round(hoursPerCandle)), candles));
     }
+
+    /// <summary>Entries joined as the language lists them: a comma in English, 、 in Japanese.</summary>
+    public static string List(IEnumerable<string> entries) => string.Join(Lang.Get("candela:list-separator"), entries);
 
     /// <summary>"Flames: 2 green, 1 plain" and "Wax: 1 black, 2 undyed", each when any is coloured.</summary>
     public static void AppendLooks(StringBuilder dsc, IReadOnlyCollection<CandleLook> looks)
@@ -376,6 +405,6 @@ public static class CandleInfo
         var groups = entries.GroupBy(e => e).ToList();
         if (groups.All(g => g.Key == null)) return;
         dsc.AppendLine(Lang.Get(line,
-            string.Join(", ", groups.Select(g => Lang.Get("candela:candles-flames-count", g.Count(), Lang.Get(prefix + (g.Key ?? none)))))));
+            List(groups.Select(g => Lang.Get("candela:candles-flames-count", g.Count(), Lang.Get(prefix + (g.Key ?? none)))))));
     }
 }

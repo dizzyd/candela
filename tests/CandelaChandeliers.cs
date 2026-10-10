@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using candela;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
+using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
 using Vintagestory.GameContent;
 using VsTestkit.Testing;
@@ -115,14 +116,14 @@ namespace Candela.Tests
             byte beeswaxLight = Light()[2];
 
             var be = await Place(4);
-            be.SetKind(Tallow);
+            be.SetBunchCode(Tallow);
             Assert.Equal(beeswaxLight - 1, Light()[2], "tallow should be a level dimmer");
             Assert.Equal(beeswaxLight - 1, await EngineLight.Settled(Chandelier, beeswaxLight - 1), "the world is still lit as by beeswax");
 
             be.SetFuel(4 * TallowHours, CandleLook.Plain);
             Assert.Equal(TallowHours, be.FullHours);
 
-            var tree = new Vintagestory.API.Datastructures.TreeAttribute();
+            var tree = new TreeAttribute();
             be.ToTreeAttributes(tree);
             var fresh = await Place(4);
             fresh.FromTreeAttributes(tree, Sapi.World);
@@ -185,7 +186,7 @@ namespace Candela.Tests
             await World.TickNow(hanging);
             Assert.True(be.Spent);
 
-            var saved = new Vintagestory.API.Datastructures.TreeAttribute();
+            var saved = new TreeAttribute();
             be.ToTreeAttributes(saved);
             World.SetBlock("game:air", hanging);
 
@@ -289,6 +290,7 @@ namespace Candela.Tests
             await Interact.UseBlock(Chandelier);
             await Ticks(4);
             Assert.Equal("game:chandelier-candle1", World.BlockCode(Chandelier), "beeswax joined tallow");
+            Assert.Equal("game:candle", Player.Held?.Collectible.Code.ToString(), "the beeswax candle left the hand, so nothing was refused");
 
             // Burned a while, so what comes back is a stub and not the candle still in hand.
             await Burn(TallowHours * 0.4);

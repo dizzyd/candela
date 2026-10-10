@@ -164,10 +164,17 @@ namespace Candela.Tests
 
             ItemSlot hand = Player.Me.InventoryManager.ActiveHotbarSlot;
             hand.Itemstack = World.Stack("game:chandelier-candle0", 1);
-            Assert.False(fuel.TryRefuel(Player.Me, hand), "the lantern took a chandelier as its candle");
-            Assert.Equal("game:chandelier-candle0", hand.Itemstack?.Collectible.Code.ToString(), "the chandelier left the hand");
-            hand.Itemstack = null;
-            hand.MarkDirty();
+            try
+            {
+                Assert.False(fuel.TryRefuel(Player.Me, hand), "the lantern took a chandelier as its candle");
+                Assert.Equal("game:chandelier-candle0", hand.Itemstack?.Collectible.Code.ToString(), "the chandelier left the hand");
+            }
+            finally
+            {
+                // The harness keeps the inventory: left in hand, the next test clicks with it.
+                hand.Itemstack = null;
+                hand.MarkDirty();
+            }
         }
 
         [VsTest]
@@ -248,7 +255,7 @@ namespace Candela.Tests
             await World.TickNow(Lantern);
 
             // The client hears of the jump in time with its next calendar packet.
-            string want = Lang.Get("candela:candles-burning", (int)BeeswaxHours - 10);
+            string want = Lang.Get("candela:candles-burning", (int)BeeswaxHours - 10, 1);
             string info = null;
             for (int i = 0; i < 200 && info?.Contains(want) != true; i++)
             {

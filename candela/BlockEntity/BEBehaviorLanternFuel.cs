@@ -31,7 +31,8 @@ public class BEBehaviorLanternFuel : BlockEntityBehavior, IIgnitable
     /// </summary>
     public string BunchCode { get; private set; } = DefaultBunchCode;
 
-    public const string DefaultBunchCode = "game:bunchocandles";
+    /// <summary>The candle a lantern from before Candela, or from vanilla, holds: beeswax.</summary>
+    public const string DefaultBunchCode = BlockCandelaCandles.BeeswaxBunchCode;
 
     /// <summary>How the candle looks: its flame colour and wax dye. Plain with a burner in.</summary>
     public CandleLook Look { get; private set; }

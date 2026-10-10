@@ -41,6 +41,9 @@ public class BlockCandelaCandles : BlockBunchOCandles, ICandleHolder
     /// </summary>
     public int OpenDim { get; private set; }
 
+    /// <summary>Vanilla's bunch, the beeswax one: the kind a lantern or chandelier holds until told otherwise.</summary>
+    public const string BeeswaxBunchCode = "game:bunchocandles";
+
     /// <summary>
     /// The block standing for a kind of candle, by the bunch code its items carry
     /// (<c>game:bunchocandles</c>, <c>candela:tallowcandles</c>): what it burns for,

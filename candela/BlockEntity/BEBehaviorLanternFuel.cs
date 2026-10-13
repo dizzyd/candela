@@ -1,9 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.Text;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
+using Vintagestory.API.Server;
 using Vintagestory.GameContent;
 
 namespace candela;
@@ -49,8 +51,15 @@ public class BEBehaviorLanternFuel : BlockEntityBehavior, IIgnitable
     /// <summary>The burner's wick turned down: half the light, and the oil lasts twice as long.</summary>
     public bool WickLow { get; private set; }
 
+    /// <summary>
+    /// A lantern worldgen hung - a trader camp's - whose candle someone keeps for it, so
+    /// it does not burn down. Only while that candle is in: put another in and it burns
+    /// as any other, and picked up, it is an ordinary new candle.
+    /// </summary>
+    public bool Tended { get; private set; }
+
     /// <summary>Fuel burned a game hour: an hour of candle, or litres of oil.</summary>
-    private double Rate => HasBurner ? LampOil.LitresPerHour(WickLow) : 1;
+    private double Rate => Tended ? 0 : HasBurner ? LampOil.LitresPerHour(WickLow) : 1;
 
     public Flame Flame => flame;
 
@@ -69,7 +78,11 @@ public class BEBehaviorLanternFuel : BlockEntityBehavior, IIgnitable
         Blockentity.RegisterGameTickListener(OnBurnTick, 4000, api.World.Rand.Next(4000));
 
         // The time it was unloaded burned at once, rather than up to four seconds on.
-        Blockentity.RegisterDelayedCallback(_ => Settle(), 0);
+        Blockentity.RegisterDelayedCallback(_ =>
+        {
+            Settle();
+            Relight.Heal(Blockentity);
+        }, 0);
     }
 
     public override void OnBlockPlaced(ItemStack byItemStack = null)
@@ -83,8 +96,31 @@ public class BEBehaviorLanternFuel : BlockEntityBehavior, IIgnitable
         HasBurner = LanternStack.HasBurner(byItemStack);
         Oil = HasBurner ? BurnerStack.Oil(byItemStack) : null;
         WickLow = HasBurner && BurnerStack.WickLow(byItemStack);
+        Tended = false;
         flame.SetFuel(LanternStack.Fuel(byItemStack), LanternStack.Snuffed(byItemStack));
         Changed(light);
+    }
+
+    /// <summary>
+    /// Worldgen, once a chunk column is all but done: tends the lanterns placed in it.
+    /// By then every neighbour has finished its structures, so none is placed after.
+    /// </summary>
+    public static void TendGenerated(IChunkColumnGenerateRequest request)
+    {
+        foreach (IServerChunk chunk in request.Chunks) TendNew(chunk.BlockEntities.Values);
+    }
+
+    /// <summary>
+    /// Tends the lanterns among <paramref name="blockEntities"/> that have no candle of
+    /// their own yet. One from a structure saved with Candela's state keeps that state.
+    /// </summary>
+    public static void TendNew(IEnumerable<BlockEntity> blockEntities)
+    {
+        foreach (BlockEntity be in blockEntities)
+        {
+            var fuel = be?.GetBehavior<BEBehaviorLanternFuel>();
+            if (fuel != null && !fuel.flame.HasState) fuel.Tended = true;
+        }
     }
 
     private void OnBurnTick(float dt)
@@ -107,9 +143,13 @@ public class BEBehaviorLanternFuel : BlockEntityBehavior, IIgnitable
         return true;
     }
 
-    /// <summary>The light the lantern gives, from what vanilla says it would.</summary>
-    public byte[] LightHsv(byte[] full) =>
-        LanternStack.Adjust(full, Dim(Api.World), HasBurner && WickLow, flame.Flaming, flame.Spent, Look.Flame, (Blockentity as BELantern)?.glass);
+    /// <summary>
+    /// The light the lantern gives, from what vanilla says it would. The world is the
+    /// block's: worldgen asks before this behavior is initialised, while
+    /// <see cref="BlockEntityBehavior.Api"/> is still null.
+    /// </summary>
+    public byte[] LightHsv(byte[] full, IWorldAccessor world) =>
+        LanternStack.Adjust(full, Dim(world), HasBurner && WickLow, flame.Flaming, flame.Spent, Look.Flame, (Blockentity as BELantern)?.glass);
 
     /// <summary>The light levels its soot costs: the candle's wax, or the burner's oil.</summary>
     private int Dim(IWorldAccessor world) =>
@@ -129,6 +169,9 @@ public class BEBehaviorLanternFuel : BlockEntityBehavior, IIgnitable
 
         Settle();
         byte[] light = Relight.Capture(Blockentity);
+        // After Settle: the time up to now burned the tenders' candle, which costs
+        // nothing, and it goes back full.
+        Tended = false;
         ItemStack old = HasBurner
             ? BurnerStack.Make(Api.World, Oil, flame.Fuel, WickLow)
             : BlockCandelaCandles.KindOf(Api.World, BunchCode)?.CandleForHours(Api.World, flame.Fuel, Look);
@@ -299,7 +342,9 @@ public class BEBehaviorLanternFuel : BlockEntityBehavior, IIgnitable
         if (!HasBurner)
         {
             dsc.AppendLine(LanternStack.CandleName(Api.World, BunchCode, Look));
-            CandleInfo.Append(dsc, flame, fuel);
+            // A tended candle's hours never go down, so they are not worth quoting.
+            if (Tended && flame.Flaming && flame.Mode != BurnoutMode.None) dsc.AppendLine(Lang.Get("candela:lantern-tended"));
+            else CandleInfo.Append(dsc, flame, fuel);
             return;
         }
 
@@ -317,6 +362,7 @@ public class BEBehaviorLanternFuel : BlockEntityBehavior, IIgnitable
         tree.SetBool("candela:burner", HasBurner);
         SaveOrRemove(tree, "candela:oil", Oil);
         tree.SetBool("candela:wickLow", WickLow);
+        tree.SetBool("candela:tended", Tended);
     }
 
     private static void SaveOrRemove(ITreeAttribute tree, string key, string value)
@@ -339,6 +385,7 @@ public class BEBehaviorLanternFuel : BlockEntityBehavior, IIgnitable
         HasBurner = tree.GetBool("candela:burner");
         Oil = tree.GetString("candela:oil");
         WickLow = tree.GetBool("candela:wickLow");
+        Tended = tree.GetBool("candela:tended");
 
         if (Api?.Side == EnumAppSide.Client)
         {

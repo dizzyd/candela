@@ -49,6 +49,24 @@ public static class Relight
         be.RegisterDelayedCallback(_ => Apply(be, before), 0);
     }
 
+    /// <summary>
+    /// Server side, once a block entity is up: lights the world as the block says it
+    /// should be if the engine has it darker. Worldgen lit placed structures before
+    /// their block entities were initialised, which used to come out dark - a trader
+    /// camp's lanterns burning with no light - and stayed dark, since nothing about the
+    /// candle changed after. Only ever adds light, so a correct one is left be.
+    /// </summary>
+    public static void Heal(BlockEntity be)
+    {
+        if (be.Api?.Side != EnumAppSide.Server || be.Block == null) return;
+
+        IBlockAccessor blockAccessor = be.Api.World.BlockAccessor;
+        byte[] light = be.Block.GetLightHsv(blockAccessor, be.Pos);
+        if (light[2] == 0 || blockAccessor.GetLightLevel(be.Pos, EnumLightLevelType.OnlyBlockLight) >= light[2]) return;
+
+        blockAccessor.ExchangeBlock(be.Block.Id, be.Pos);
+    }
+
     private static void Apply(BlockEntity be, byte[] before)
     {
         if (be.Block == null) return;

@@ -334,6 +334,35 @@ namespace Candela.Tests
             Assert.Equal(2 * BeeswaxHours, be.Fuel);
         }
 
+        /// <summary>
+        /// Worldgen asks for the light of a structure's candles before their block entity
+        /// is initialised - created and given its behaviors, as SpawnBlockEntity leaves it.
+        /// </summary>
+        [VsTest]
+        public void AnUninitialisedBunchLightsAsNewCandles()
+        {
+            Block block = Sapi.World.GetBlock(new AssetLocation("game:bunchocandles-3"));
+            var be = (BECandles)Sapi.ClassRegistry.CreateBlockEntity(block.EntityClass);
+            be.CreateBehaviors(block, Sapi.World);
+            be.Pos = Bunch.Copy();
+
+            Assert.Equal(block.LightHsv[2], be.LightHsv(block.LightHsv)[2]);
+        }
+
+        /// <summary>A bunch the world was lit dark around - generated before the fix - comes back on when it loads.</summary>
+        [VsTest]
+        public async Task ABunchLitDarkIsHealedOnLoad()
+        {
+            await PlaceBunch(2);
+            Assert.Equal(8, await EngineLight.Settled(Bunch, 8));
+
+            Sapi.World.BlockAccessor.RemoveBlockLight(Light(), Bunch);
+            Assert.Equal(0, await EngineLight.Settled(Bunch, 0), "could not darken the world to start with");
+
+            World.BE<BECandles>(Bunch).Initialize(Sapi);
+            Assert.Equal(8, await EngineLight.Settled(Bunch, 8), "the dark bunch was not healed");
+        }
+
         // ----- with a player -----
 
         [VsTest(TimeoutMs = 60000), RequiresClient]

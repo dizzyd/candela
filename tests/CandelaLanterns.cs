@@ -4,6 +4,7 @@ using candela;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
+using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
 using Vintagestory.GameContent;
 using VsTestkit.Testing;
@@ -105,6 +106,128 @@ namespace Candela.Tests
             Assert.True(fuel.TryIgnite());
             Assert.Equal(VanillaLight, Light()[2]);
             Assert.Equal(VanillaLight, await EngineLight.Settled(Lantern, VanillaLight), "relighting did not light the world");
+        }
+
+        /// <summary>
+        /// Worldgen lights a placed structure - a trader camp's lanterns - before its
+        /// block entities are initialised: created and given their behaviors, as
+        /// SpawnBlockEntity leaves them, with no Api. That lit them dark.
+        /// </summary>
+        [VsTest]
+        public void AnUninitialisedLanternLightsAsANewCandle()
+        {
+            Block block = Sapi.World.GetBlock(new AssetLocation(LanternCode));
+            BlockEntity be = Sapi.ClassRegistry.CreateBlockEntity(block.EntityClass);
+            be.CreateBehaviors(block, Sapi.World);
+            be.Pos = Lantern.Copy();
+
+            var fuel = be.GetBehavior<BEBehaviorLanternFuel>();
+            Assert.NotNull(fuel);
+            Assert.Equal(VanillaLight, fuel.LightHsv([7, 3, VanillaLight], Sapi.World)[2]);
+        }
+
+        /// <summary>
+        /// A lantern the world was already lit dark around - a camp generated before the
+        /// fix - comes back on when its chunk next loads.
+        /// </summary>
+        [VsTest]
+        public async Task ALanternLitDarkIsHealedOnLoad()
+        {
+            await PlaceLantern();
+            Assert.Equal(VanillaLight, await EngineLight.Settled(Lantern, VanillaLight));
+
+            Sapi.World.BlockAccessor.RemoveBlockLight(Light(), Lantern);
+            Assert.Equal(0, await EngineLight.Settled(Lantern, 0), "could not darken the world to start with");
+
+            World.BE<BlockEntity>(Lantern).Initialize(Sapi);
+            Assert.Equal(VanillaLight, await EngineLight.Settled(Lantern, VanillaLight), "the dark lantern was not healed");
+        }
+
+        /// <summary>
+        /// A vanilla schematic pasted over a lantern says nothing about its candle, and
+        /// leaves the one it has rather than burning it down.
+        /// </summary>
+        [VsTest]
+        public async Task PastingAVanillaSchematicKeepsTheCandle()
+        {
+            var fuel = await PlaceLantern();
+            await Burn(10);
+
+            World.BE<BlockEntity>(Lantern).FromTreeAttributes(VanillaTree(), Sapi.World);
+            await Ticks(2);
+
+            Assert.False(fuel.Flame.Spent);
+            Assert.Close(fuel.Flame.Fuel, BeeswaxHours - 10, 0.2);
+            Assert.Equal(VanillaLight, Light()[2]);
+        }
+
+        /// <summary>A lantern worldgen hung - a trader camp's - keeps its candle new, lit and bright.</summary>
+        [VsTest]
+        public async Task AGeneratedLanternDoesNotBurnDown()
+        {
+            var fuel = await PlaceGeneratedLantern();
+            Assert.True(fuel.Tended);
+            Assert.Equal(BeeswaxHours, fuel.Flame.Fuel);
+
+            await Burn(BeeswaxHours + 100);
+
+            Assert.Equal(BeeswaxHours, fuel.Flame.Fuel);
+            Assert.Equal(VanillaLight, Light()[2]);
+            Assert.Equal(VanillaLight, await EngineLight.Settled(Lantern, VanillaLight), "the world is not lit by a tended lantern");
+        }
+
+        [VsTest]
+        public async Task ATendedLanternStillSnuffsAndRelights()
+        {
+            var fuel = await PlaceGeneratedLantern();
+
+            fuel.Snuff();
+            Assert.Equal(0, Light()[2]);
+            Assert.True(fuel.TryIgnite());
+            Assert.Equal(VanillaLight, Light()[2]);
+            Assert.True(fuel.Tended, "snuffing it was taken for a candle of the player's own");
+        }
+
+        /// <summary>Only lanterns worldgen made: one a player placed already has a candle of its own.</summary>
+        [VsTest]
+        public async Task APlacedLanternIsNotTended()
+        {
+            var fuel = await PlaceLantern();
+            BEBehaviorLanternFuel.TendNew([World.BE<BlockEntity>(Lantern)]);
+            Assert.False(fuel.Tended);
+        }
+
+        /// <summary>Taken down, it is an ordinary new candle - not one that never burns.</summary>
+        [VsTest]
+        public async Task PickingUpATendedLanternGivesAnOrdinaryCandle()
+        {
+            await PlaceGeneratedLantern();
+            await Burn(100);
+
+            ItemStack picked = World.GetBlock(Lantern).OnPickBlock(Sapi.World, Lantern);
+            Assert.Equal(BeeswaxHours, LanternStack.Fuel(picked));
+            Assert.False(picked.Attributes.HasAttribute("candela:tended"));
+
+            var fuel = await PlaceLantern(picked);
+            Assert.False(fuel.Tended);
+            await Burn(10);
+            Assert.Close(fuel.Flame.Fuel, BeeswaxHours - 10, 0.2);
+        }
+
+        /// <summary>A candle of the player's own burns as any other.</summary>
+        [VsTest, RequiresClient]
+        public async Task RefuellingATendedLanternEndsIt()
+        {
+            var fuel = await PlaceGeneratedLantern();
+
+            ItemSlot hand = Player.Me.InventoryManager.ActiveHotbarSlot;
+            hand.Itemstack = World.Stack("candela:candle-tallow", 1);
+            Assert.True(fuel.TryRefuel(Player.Me, hand));
+            Assert.False(fuel.Tended);
+            Assert.True(PlayerHas("game:candle"), "the camp's candle did not come back new");
+
+            await Burn(10);
+            Assert.Close(fuel.Flame.Fuel, TallowHours - 10, 0.2);
         }
 
         /// <summary>Breaking and replacing a lantern must not refill it.</summary>
@@ -271,6 +394,28 @@ namespace Candela.Tests
             Assert.True(info.Contains(LanternStack.CandleName(Sapi.World, "game:bunchocandles", CandleLook.Plain)), "the candle is not named");
         }
 
+        /// <summary>A tended lantern names its candle and says it is kept, rather than quoting hours that never go down.</summary>
+        [VsTest(TimeoutMs = 60000), RequiresClient]
+        public async Task ATendedLanternSaysItIsKept()
+        {
+            await PlaceGeneratedLantern();
+
+            string want = Lang.Get("candela:lantern-tended");
+            string info = null;
+            for (int i = 0; i < 200 && info?.Contains(want) != true; i++)
+            {
+                await Ticks(1);
+                await OnClient();
+                info = Capi.World.BlockAccessor.GetBlock(Lantern).GetPlacedBlockInfo(Capi.World, Lantern, Capi.World.Player);
+                await OnServer();
+            }
+
+            Log(info);
+            Assert.True(info.Contains(want), "no tended line");
+            Assert.True(info.Contains(LanternStack.CandleName(Sapi.World, "game:bunchocandles", CandleLook.Plain)), "the candle is not named");
+            Assert.False(info.Contains(Lang.Get("candela:candles-burning", (int)BeeswaxHours, 1)), "it still quotes hours");
+        }
+
         /// <summary>CandleStory replaced the lantern's class and lost this.</summary>
         [VsTest(TimeoutMs = 60000), RequiresClient]
         public async Task LanternsStillHangFromCeilings()
@@ -320,6 +465,43 @@ namespace Candela.Tests
                 await Ticks(2);
             }
             return be.GetBehavior<BEBehaviorLanternFuel>();
+        }
+
+        /// <summary>
+        /// A lantern as worldgen leaves one, through to its first load: made from a
+        /// vanilla schematic's state with no candle and never initialised, tended at the
+        /// end of generation, saved, then loaded over a placed lantern and initialised.
+        /// </summary>
+        static async Task<BEBehaviorLanternFuel> PlaceGeneratedLantern()
+        {
+            await PlaceLantern();
+            var be = World.BE<BlockEntity>(Lantern);
+
+            BlockEntity generated = Sapi.ClassRegistry.CreateBlockEntity(be.Block.EntityClass);
+            generated.CreateBehaviors(be.Block, Sapi.World);
+            generated.Pos = Lantern.Copy();
+            generated.FromTreeAttributes(VanillaTree(), Sapi.World);
+
+            BEBehaviorLanternFuel.TendNew([generated]);
+            var saved = new TreeAttribute();
+            generated.ToTreeAttributes(saved);
+            Assert.False(saved.HasAttribute("candela:fuel"), "a lantern with no candle yet saved one as burned down");
+
+            be.FromTreeAttributes(saved, Sapi.World);
+            be.Initialize(Sapi);
+            // Loaded for real, the client would get this state with the chunk.
+            be.MarkDirty(true);
+            await World.TickNow(Lantern);
+            return be.GetBehavior<BEBehaviorLanternFuel>();
+        }
+
+        /// <summary>The placed lantern's state as a vanilla schematic holds it: no candle.</summary>
+        static TreeAttribute VanillaTree()
+        {
+            var tree = new TreeAttribute();
+            World.BE<BlockEntity>(Lantern).ToTreeAttributes(tree);
+            foreach (string key in tree.Keys.Where(k => k.StartsWith("candela:")).ToList()) tree.RemoveAttribute(key);
+            return tree;
         }
 
         static byte[] Light() => World.GetBlock(Lantern).GetLightHsv(Sapi.World.BlockAccessor, Lantern);

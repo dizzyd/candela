@@ -32,7 +32,9 @@ burns forever. Candela adds the candles people actually made and gives light a c
   Right-click it with a candle or stub to swap in a fresh one, and what was left of
   the old one comes back. Tallow soots the glass: two light levels less. Picking a
   lantern up keeps what is left of its candle. Shift-click snuffs it, a torch or
-  firestarter relights it, and lanterns still hang from ceilings
+  firestarter relights it, and lanterns still hang from ceilings. A lantern the
+  world generates - at a trader's camp, say - is kept by its owners and never burns
+  down, until you put a candle of your own in it
 - **Oil burners** - two copper plates and a flax twine make an oil burner, which
   takes a lantern's candle's place: right-click a lantern with one and the candle
   comes out, and a candle put back returns the burner with its oil. Fill it in the

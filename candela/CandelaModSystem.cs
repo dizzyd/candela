@@ -1,5 +1,6 @@
 using System;
 using Vintagestory.API.Common;
+using Vintagestory.API.Server;
 
 namespace candela;
 
@@ -46,6 +47,12 @@ public class CandelaModSystem : ModSystem
         if (api.Side != EnumAppSide.Server) return;
         BlockBehaviorDipVat.AddToFirepits(api);
         TorchTime.AddToTorchHolders(api);
+    }
+
+    public override void StartServerSide(ICoreServerAPI api)
+    {
+        base.StartServerSide(api);
+        api.Event.ChunkColumnGeneration(BEBehaviorLanternFuel.TendGenerated, EnumWorldGenPass.PreDone, "standard");
     }
 
     public override void Dispose()

@@ -154,7 +154,11 @@ public class BECandles : BlockEntity, IIgnitable
         RegisterGameTickListener(OnBurnTick, 4000, api.World.Rand.Next(4000));
 
         // The time it was unloaded burned at once, rather than up to four seconds on.
-        RegisterDelayedCallback(_ => Settle(), 0);
+        RegisterDelayedCallback(_ =>
+        {
+            Settle();
+            Relight.Heal(this);
+        }, 0);
     }
 
     private void OnBurnTick(float dt)

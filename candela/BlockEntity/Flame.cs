@@ -37,7 +37,11 @@ public class Flame
 
     private double lastUpdateHours;
 
-    public bool Spent => Fuel <= 0 && Mode != BurnoutMode.None;
+    /// <summary>
+    /// Burned down. Never before there is any state: a block entity worldgen placed is
+    /// asked for its light before it is initialised, and Initialize gives it new candles.
+    /// </summary>
+    public bool Spent => HasState && Fuel <= 0 && Mode != BurnoutMode.None;
 
     /// <summary>Whether there is a flame: not snuffed, and not burned down into the dark.</summary>
     public bool Flaming => !Snuffed && !(Spent && Mode == BurnoutMode.Dark);
@@ -165,6 +169,9 @@ public class Flame
 
     public void ToTreeAttributes(ITreeAttribute tree)
     {
+        // Nothing yet - worldgen saving a structure's block entity before it was ever
+        // initialised - is saved as nothing, or it would load as a burned-down candle.
+        if (!HasState) return;
         tree.SetDouble("candela:fuel", Fuel);
         tree.SetBool("candela:snuffed", Snuffed);
         tree.SetDouble("candela:lastUpdateHours", lastUpdateHours);
@@ -173,7 +180,10 @@ public class Flame
 
     public void FromTreeAttributes(ITreeAttribute tree)
     {
-        HasState = tree.HasAttribute("candela:fuel");
+        // A tree that says nothing about the candle - a vanilla schematic pasted over a
+        // running block entity - leaves what Initialize gave it: new candles.
+        if (!tree.HasAttribute("candela:fuel")) return;
+        HasState = true;
         Fuel = tree.GetDouble("candela:fuel");
         Snuffed = tree.GetBool("candela:snuffed");
         lastUpdateHours = tree.GetDouble("candela:lastUpdateHours");

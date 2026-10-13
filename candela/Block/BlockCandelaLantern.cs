@@ -165,7 +165,7 @@ public class BlockCandelaLantern : BlockLantern, IContainedMeshSource
         if (pos != null)
         {
             var fuel = blockAccessor.GetBlockEntity(pos)?.GetBehavior<BEBehaviorLanternFuel>();
-            return fuel != null ? fuel.LightHsv(full) : full;
+            return fuel != null ? fuel.LightHsv(full, api.World) : full;
         }
 
         // In hand: the candle does not burn there, but it shows what is left of it.
